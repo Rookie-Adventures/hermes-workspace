@@ -216,15 +216,33 @@ function getMessageRetryAttachments(
   })
 }
 
-function CompactingOverlay() {
+function CompactingOverlay({ onDismiss }: { onDismiss: () => void }) {
+  // Auto-dismiss after 30s in case onCompactionEnd never fires
+  useEffect(() => {
+    const t = window.setTimeout(onDismiss, 30_000)
+    return () => window.clearTimeout(t)
+  }, [onDismiss])
+
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="flex flex-col items-center gap-4 rounded-2xl border border-primary-200/60 bg-primary-50 px-10 py-8 shadow-2xl dark:border-primary-300/20 dark:bg-primary-100">
+    <div
+      className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={onDismiss}
+    >
+      <div
+        className="flex flex-col items-center gap-4 rounded-2xl border border-primary-200/60 bg-primary-50 px-10 py-8 shadow-2xl dark:border-primary-300/20 dark:bg-primary-100"
+        onClick={(e) => e.stopPropagation()}
+      >
         <BrailleSpinner preset="claw" size={36} className="text-primary-500 dark:text-primary-400" speed={90} />
         <div className="text-center">
           <p className="text-sm font-semibold text-ink">Compacting context</p>
           <p className="mt-0.5 text-xs text-primary-500">Summarizing older messages to free up space…</p>
         </div>
+        <button
+          onClick={onDismiss}
+          className="text-[10px] text-primary-400 hover:text-primary-600 transition-colors"
+        >
+          dismiss
+        </button>
       </div>
     </div>
   )
@@ -1831,7 +1849,7 @@ export function ChatScreen({
 
           <ContextBar compact={compact} />
 
-          {isCompacting && <CompactingOverlay />}
+          {isCompacting && <CompactingOverlay onDismiss={() => setIsCompacting(false)} />}
 
           {gatewayNotice && <div className="sticky top-0 z-20 px-4 py-2">{gatewayNotice}</div>}
           {pendingApprovals.length > 0 && (

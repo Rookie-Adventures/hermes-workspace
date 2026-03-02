@@ -290,14 +290,10 @@ export function useRealtimeChatHistory({
       .join('\n')
       .toLowerCase()
 
-    // Only trigger on OpenClaw's actual compaction system messages, not casual
-    // mentions of the word "compaction" in normal conversation.
-    const isCompactionSignal =
-      textCandidates.includes('compacting context') ||
-      textCandidates.includes('pre-compaction memory flush') ||
-      textCandidates.includes('store durable memories now') ||
-      (textCandidates.includes('pre-compaction') && latest.role === 'user')
-    if (!isCompactionSignal) return
+    // Only trigger on OpenClaw's actual mid-compaction signal.
+    // "pre-compaction memory flush" and "store durable memories now" are routine
+    // heartbeat messages — do NOT match those here.
+    if (!textCandidates.includes('compacting context')) return
 
     const signal = `${latest.role ?? ''}:${textCandidates}`
     if (signal === lastCompactionSignalRef.current) return
