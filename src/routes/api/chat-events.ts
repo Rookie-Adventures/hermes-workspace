@@ -95,7 +95,12 @@ export const Route = createFileRoute('/api/chat-events')({
                     sendEvent('thinking', { text: data.text, runId, sessionKey: targetSessionKey })
                   } else if (stream === 'tool') {
                     sendEvent('tool', {
-                      phase: data?.phase, name: data?.name, toolCallId: data?.toolCallId,
+                      // Default phase to 'calling' when the gateway omits it —
+                      // the upstream agent emits tool events without an explicit
+                      // phase when a tool starts, so we treat missing phase as
+                      // 'calling' so the thinking indicator can show the tool name.
+                      phase: data?.phase ?? 'calling',
+                      name: data?.name, toolCallId: data?.toolCallId,
                       args: data?.args, runId, sessionKey: targetSessionKey,
                     })
                   }
