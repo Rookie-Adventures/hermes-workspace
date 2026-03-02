@@ -78,6 +78,7 @@ import { MobileSessionsPanel } from '@/components/mobile-sessions-panel'
 import { ContextAlertModal } from '@/components/usage-meter/context-alert-modal'
 // MOBILE_TAB_BAR_OFFSET removed — tab bar always hidden in chat
 import { useTapDebug } from '@/hooks/use-tap-debug'
+import { BrailleSpinner } from '@/components/ui/braille-spinner'
 
 type ChatScreenProps = {
   activeFriendlyId: string
@@ -213,6 +214,20 @@ function getMessageRetryAttachments(
   return message.attachments.filter((attachment) => {
     return Boolean(attachment) && typeof attachment === 'object'
   })
+}
+
+function CompactingOverlay() {
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-primary-200/60 bg-primary-50 px-10 py-8 shadow-2xl dark:border-primary-300/20 dark:bg-primary-100">
+        <BrailleSpinner preset="claw" size={36} className="text-primary-500 dark:text-primary-400" speed={90} />
+        <div className="text-center">
+          <p className="text-sm font-semibold text-ink">Compacting context</p>
+          <p className="mt-0.5 text-xs text-primary-500">Summarizing older messages to free up space…</p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function ChatScreen({
@@ -1816,12 +1831,7 @@ export function ChatScreen({
 
           <ContextBar compact={compact} />
 
-          {isCompacting && (
-            <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs font-medium text-amber-700 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-300">
-              <span className="animate-spin">⚙️</span>
-              <span>Compacting context — summarizing older messages...</span>
-            </div>
-          )}
+          {isCompacting && <CompactingOverlay />}
 
           {gatewayNotice && <div className="sticky top-0 z-20 px-4 py-2">{gatewayNotice}</div>}
           {pendingApprovals.length > 0 && (

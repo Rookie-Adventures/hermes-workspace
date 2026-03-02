@@ -38,7 +38,7 @@ import { useSettings } from '@/hooks/use-settings'
 import { MOBILE_TAB_BAR_OFFSET } from '@/components/mobile-tab-bar'
 import { useWorkspaceStore } from '@/stores/workspace-store'
 import { Button } from '@/components/ui/button'
-import { fetchModels, setDefaultModel, switchModel } from '@/lib/gateway-api'
+import { fetchModels, switchModel } from '@/lib/gateway-api'
 import type {
   GatewayModelCatalogEntry,
   GatewayModelSwitchResponse,
@@ -729,22 +729,7 @@ function ChatComposerComponent({
     },
   })
 
-  const defaultModelMutation = useMutation({
-    mutationFn: async (model: string) => await setDefaultModel(model),
-    onSuccess: (_payload, model) => {
-      setModelNotice({
-        tone: 'success',
-        message: `Default model set to ${model}`,
-      })
-    },
-    onError: (error) => {
-      const message = error instanceof Error ? error.message : String(error)
-      setModelNotice({
-        tone: 'error',
-        message: message || 'Failed to set default model',
-      })
-    },
-  })
+
 
   const handleModelSelect = useCallback(
     function handleModelSelect(nextModel: string) {
@@ -788,18 +773,9 @@ function ChatComposerComponent({
     }
   }, [currentModel, thinkingLevel, onThinkingLevelChange])
 
-  const handleSetDefaultModel = useCallback(() => {
-    const model = currentModel.trim()
-    if (!model) return
-    setModelNotice(null)
-    defaultModelMutation.mutate(model)
-  }, [currentModel, defaultModelMutation])
-
   const modelsUnavailable = modelsQuery.isError
   const isModelSwitcherDisabled =
     disabled || modelsQuery.isLoading || modelSwitchMutation.isPending
-  const isDefaultModelDisabled =
-    disabled || defaultModelMutation.isPending || currentModel.trim().length === 0
   const draftStorageKey = useMemo(
     () => toDraftStorageKey(sessionKey),
     [sessionKey],
@@ -2118,21 +2094,7 @@ function ChatComposerComponent({
                       className="opacity-60"
                     />
                   </button>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      handleSetDefaultModel()
-                    }}
-                    className={cn(
-                      'hidden md:inline-flex h-7 items-center rounded-full border border-primary-200 bg-primary-50 px-2 text-[11px] font-medium text-primary-600 transition-colors hover:bg-primary-100 dark:hover:bg-primary-800',
-                      isDefaultModelDisabled && 'cursor-not-allowed opacity-50',
-                    )}
-                    disabled={isDefaultModelDisabled}
-                    title={currentModel ? `Set ${currentModel} as default` : 'No active model'}
-                  >
-                    Set as default
-                  </button>
+
                   {modelAvailabilityLabel ? (
                     <span className="hidden text-xs text-primary-500 text-pretty md:inline">
                       {modelAvailabilityLabel}

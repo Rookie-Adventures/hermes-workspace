@@ -28,8 +28,9 @@ import { cn } from '@/lib/utils'
 /** Duration (ms) the thinking indicator stays visible after waitingForResponse
  *  clears, giving the first response message time to render before the
  *  indicator disappears — prevents a flash of blank space (Bug 2 fix).
- *  Increased to 800ms as a safety net for slow connections. */
-const THINKING_GRACE_PERIOD_MS = 800
+ *  Set high (5s) as a hard ceiling — early-cancel via streamingText arriving
+ *  is the primary exit path, not the timer. */
+const THINKING_GRACE_PERIOD_MS = 5_000
 
 /** Map tool names to human-readable status strings */
 const TOOL_STATUS_MAP: Record<string, string> = {
@@ -438,6 +439,19 @@ function ChatMessageListComponent({
 
   // Bug 2 fix: grace-period effects — placed after displayMessages so they can
   // reference it safely.
+
+  // Early-cancel grace when streaming text actually starts flowing — this is the
+  // primary exit path (not the 10s ceiling timer). Ensures zero blank gap.
+  useEffect(() => {
+    if (thinkingGrace && streamingText && streamingText.trim().length > 0) {
+      if (thinkingGraceTimerRef.current) {
+        clearTimeout(thinkingGraceTimerRef.current)
+        thinkingGraceTimerRef.current = null
+      }
+      setThinkingGrace(false)
+    }
+  }, [streamingText, thinkingGrace])
+
   useEffect(() => {
     const currentAssistantCount = displayMessages.filter(
       (m) => m.role === 'assistant',
@@ -708,6 +722,10 @@ function ChatMessageListComponent({
       const lastId = getStableMessageId(lastMessage, displayMessages.length - 1)
       const isBeingTypewritten = streamingState.streamingTargets.has(lastId)
       if (isBeingTypewritten) return false
+      // If we're in grace period waiting for a NEW response, the last assistant
+      // message is from the PREVIOUS turn — don't let its text hide the bubble.
+      // Only suppress once we know this IS the new response (i.e. not waiting).
+      if (thinkingGrace || waitingForResponse || sending) return true
       // Check if assistant message has visible text — if not, keep showing indicator
       const msgText = textFromMessage(lastMessage)
       if (!msgText || msgText.trim().length === 0) return true
@@ -716,6 +734,13 @@ function ChatMessageListComponent({
     return true
   })()
 
+  const shouldBottomPin =
+    displayMessages.length > 0 ||
+    showToolOnlyNotice ||
+    showTypingIndicator ||
+    liveToolActivity.length > 0 ||
+    (isStreaming && !streamingText) ||
+    (isStreaming && activeToolCalls.length > 0)
 
 
   // Pin the last user+assistant group without adding bottom padding.
@@ -1131,8 +1156,12 @@ function ChatMessageListComponent({
             </div>
           </div>
         )}
-        <ChatContainerContent className="pt-2.5 md:pt-6" style={chatContentStyle}>
+        <ChatContainerContent
+          className="pt-2.5 md:pt-6 flex min-h-full flex-col"
+          style={chatContentStyle}
+        >
           {notice && noticePosition === 'start' ? notice : null}
+          {shouldBottomPin ? <div className="flex-1" aria-hidden="true" /> : null}
           {showToolOnlyNotice ? (
             <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
