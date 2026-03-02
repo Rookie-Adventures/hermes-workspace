@@ -56,6 +56,7 @@ import type {
   ChatComposerAttachment,
   ChatComposerHandle,
   ChatComposerHelpers,
+  ThinkingLevel,
 } from './components/chat-composer'
 import type { ApprovalRequest } from '@/screens/gateway/lib/approvals-store'
 import type { GatewayAttachment, GatewayMessage, SessionMeta } from './types'
@@ -249,6 +250,14 @@ export function ChatScreen({
     [],
   )
   const [isCompacting, setIsCompacting] = useState(false)
+  // Per-session thinking level — stored in sessionStorage keyed by session
+  const [thinkingLevel, setThinkingLevel] = useState<ThinkingLevel>(() => {
+    if (typeof window === 'undefined') return 'low'
+    const key = `clawsuite-thinking-${activeFriendlyId || 'new'}`
+    const stored = window.sessionStorage.getItem(key)
+    if (stored === 'off' || stored === 'low' || stored === 'adaptive') return stored
+    return 'low'
+  })
   const { alertOpen, alertThreshold, alertPercent, dismissAlert } =
     useContextAlert()
 
@@ -846,6 +855,36 @@ export function ChatScreen({
 
   const currentModel = currentModelQuery.data || ''
 
+  // Ref so sendMessage can always read latest thinkingLevel without being in deps
+  const thinkingLevelRef = useRef<ThinkingLevel>(thinkingLevel)
+  useEffect(() => { thinkingLevelRef.current = thinkingLevel }, [thinkingLevel])
+
+  // Auto-upgrade thinking to adaptive for Claude 4.6 when session first loads
+  const thinkingInitializedRef = useRef(false)
+  useEffect(() => {
+    if (!currentModel) return
+    if (thinkingInitializedRef.current) return
+    thinkingInitializedRef.current = true
+    const is46 = currentModel.toLowerCase().includes('4-6') || currentModel.toLowerCase().includes('claude-4.6')
+    if (is46) {
+      const key = `clawsuite-thinking-${activeFriendlyId || 'new'}`
+      const stored = typeof window !== 'undefined' ? window.sessionStorage.getItem(key) : null
+      // Only auto-set if not explicitly configured
+      if (!stored) {
+        setThinkingLevel('adaptive')
+      }
+    }
+  }, [currentModel, activeFriendlyId])
+
+  // Persist thinking level changes to sessionStorage
+  const handleThinkingLevelChange = useCallback((level: ThinkingLevel) => {
+    setThinkingLevel(level)
+    if (typeof window !== 'undefined') {
+      const key = `clawsuite-thinking-${activeFriendlyId || 'new'}`
+      window.sessionStorage.setItem(key, level)
+    }
+  }, [activeFriendlyId])
+
   const { suggestion, dismiss, dismissForSession } = useModelSuggestions({
     currentModel, // Real model from session-status (fail closed if empty)
     sessionKey: resolvedSessionKey || 'main',
@@ -1080,6 +1119,8 @@ export function ChatScreen({
       skipOptimistic = false,
       existingClientId = '',
     ) {
+      // Read from ref so we always get the latest value without capturing it in deps
+      const currentThinkingLevel = thinkingLevelRef.current
       setLocalActivity('reading')
       const normalizedAttachments = attachments.map((attachment) => ({
         ...attachment,
@@ -1186,7 +1227,7 @@ export function ChatScreen({
           message: enrichedBody,
           attachments:
             payloadAttachments.length > 0 ? payloadAttachments : undefined,
-          thinking: 'low',
+          thinking: currentThinkingLevel === 'off' ? undefined : currentThinkingLevel,
           idempotencyKey: optimisticClientId || crypto.randomUUID(),
           clientId: optimisticClientId || undefined,
         }),
@@ -1769,6 +1810,7 @@ export function ChatScreen({
               pullOffset={0}
               statusMode={headerStatusMode}
               activeToolName={activeHeaderToolName}
+              thinkingLevel={thinkingLevel}
             />
           )}
 
@@ -1885,6 +1927,8 @@ export function ChatScreen({
               composerRef={composerHandleRef}
               // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime safety
               focusKey={`${isNewChat ? 'new' : activeFriendlyId}:${activeCanonicalKey ?? ''}`}
+              thinkingLevel={thinkingLevel}
+              onThinkingLevelChange={handleThinkingLevelChange}
             />
           ) : null}
         </main>

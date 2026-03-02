@@ -60,6 +60,8 @@ type ChatComposerAttachment = {
   kind?: 'image' | 'file' | 'audio'
 }
 
+type ThinkingLevel = 'off' | 'low' | 'adaptive'
+
 type ChatComposerProps = {
   onSubmit: (
     value: string,
@@ -75,6 +77,10 @@ type ChatComposerProps = {
   onNewSession?: () => void
   onToggleWebSearch?: (enabled: boolean) => void
   webSearchEnabled?: boolean
+  /** Current thinking level for this session */
+  thinkingLevel?: ThinkingLevel
+  /** Called when user changes thinking level */
+  onThinkingLevelChange?: (level: ThinkingLevel) => void
 }
 
 type ChatComposerHelpers = {
@@ -86,6 +92,30 @@ type ChatComposerHelpers = {
 type ChatComposerHandle = {
   setValue: (value: string) => void
   insertText: (value: string) => void
+}
+
+function thinkingLevelLabel(level: ThinkingLevel): string {
+  if (level === 'adaptive') return '⚡ Adaptive'
+  if (level === 'low') return '💡 Low'
+  return '○ Off'
+}
+
+function thinkingLevelTooltip(level: ThinkingLevel): string {
+  if (level === 'adaptive') return 'Thinking: Adaptive — Claude reasons before responding'
+  if (level === 'low') return 'Thinking: Low — minimal reasoning'
+  return 'Thinking: Off — no extended reasoning'
+}
+
+function nextThinkingLevel(level: ThinkingLevel): ThinkingLevel {
+  if (level === 'off') return 'low'
+  if (level === 'low') return 'adaptive'
+  return 'off'
+}
+
+/** Returns true if the model id suggests Claude 4.6 (should default to adaptive) */
+function isClaude46Model(model: string): boolean {
+  const normalized = model.toLowerCase()
+  return normalized.includes('4-6') || normalized.includes('claude-4.6')
 }
 
 type ModelOption = {
@@ -532,6 +562,8 @@ function ChatComposerComponent({
   onNewSession,
   onToggleWebSearch: _onToggleWebSearch,
   webSearchEnabled,
+  thinkingLevel: externalThinkingLevel,
+  onThinkingLevelChange,
 }: ChatComposerProps) {
   const mobileKeyboardInset = useWorkspaceStore((s) => s.mobileKeyboardInset)
   const mobileComposerFocused = useWorkspaceStore((s) => s.mobileComposerFocused)
@@ -561,6 +593,18 @@ function ChatComposerComponent({
   const [isWebSearchMode, _setIsWebSearchMode] = useState(false)
   const [isSlashMenuDismissed, setIsSlashMenuDismissed] = useState(false)
   const [modelNotice, setModelNotice] = useState<ModelSwitchNotice | null>(null)
+  // Per-session thinking level — controlled externally (chat-screen owns the state)
+  // Falls back to internal state if no external controller provided
+  const [internalThinkingLevel, setInternalThinkingLevel] = useState<ThinkingLevel>('low')
+  const thinkingLevel = externalThinkingLevel ?? internalThinkingLevel
+  const handleThinkingToggle = useCallback(() => {
+    const next = nextThinkingLevel(thinkingLevel)
+    if (onThinkingLevelChange) {
+      onThinkingLevelChange(next)
+    } else {
+      setInternalThinkingLevel(next)
+    }
+  }, [thinkingLevel, onThinkingLevelChange])
   const promptRef = useRef<HTMLTextAreaElement | null>(null)
   const slashMenuRef = useRef<SlashCommandMenuHandle | null>(null)
   const attachmentInputRef = useRef<HTMLInputElement | null>(null)
@@ -729,6 +773,20 @@ function ChatComposerComponent({
   )
 
   const currentModel = currentModelQuery.data ?? ''
+
+  // When model switches to Claude 4.6 and thinking is 'off', auto-upgrade to 'adaptive'
+  const prevModelRef = useRef('')
+  useEffect(() => {
+    if (!currentModel || currentModel === prevModelRef.current) return
+    prevModelRef.current = currentModel
+    if (isClaude46Model(currentModel) && thinkingLevel === 'off') {
+      if (onThinkingLevelChange) {
+        onThinkingLevelChange('adaptive')
+      } else {
+        setInternalThinkingLevel('adaptive')
+      }
+    }
+  }, [currentModel, thinkingLevel, onThinkingLevelChange])
 
   const handleSetDefaultModel = useCallback(() => {
     const model = currentModel.trim()
@@ -2109,6 +2167,27 @@ function ChatComposerComponent({
                       ) : null}
                     </span>
                   ) : null}
+                  {/* Thinking level toggle — desktop only */}
+                  <button
+                    type="button"
+                    title={thinkingLevelTooltip(thinkingLevel)}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      handleThinkingToggle()
+                    }}
+                    className={cn(
+                      'hidden md:inline-flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition-colors',
+                      thinkingLevel === 'adaptive'
+                        ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50'
+                        : thinkingLevel === 'low'
+                          ? 'bg-primary-100/70 text-primary-600 hover:bg-primary-200 dark:hover:bg-primary-800'
+                          : 'bg-primary-100/40 text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900',
+                    )}
+                    aria-label={thinkingLevelTooltip(thinkingLevel)}
+                    disabled={disabled}
+                  >
+                    {thinkingLevelLabel(thinkingLevel)}
+                  </button>
                   {!isModelSwitcherDisabled && isModelMenuOpen ? (
                     <div className="absolute bottom-[calc(100%+0.5rem)] left-0 right-0 sm:right-auto z-40 min-w-[16rem] max-w-[calc(100vw-2rem)] sm:max-w-[24rem] rounded-xl border border-primary-200 bg-surface shadow-lg">
                       {groupedModels.length === 0 && modelsUnavailable ? (
@@ -2440,4 +2519,4 @@ function ChatComposerComponent({
 const MemoizedChatComposer = memo(ChatComposerComponent)
 
 export { MemoizedChatComposer as ChatComposer }
-export type { ChatComposerAttachment, ChatComposerHelpers, ChatComposerHandle }
+export type { ChatComposerAttachment, ChatComposerHelpers, ChatComposerHandle, ThinkingLevel }
