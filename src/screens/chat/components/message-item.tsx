@@ -100,6 +100,12 @@ type StreamToolCall = {
   result?: string
 }
 
+type ExecNotification = {
+  name: string
+  exitCode: number | null
+  ok: boolean | null
+}
+
 type MessageItemProps = {
   message: GatewayMessage
   toolResultsByCallId?: Map<string, GatewayMessage>
@@ -236,6 +242,24 @@ function normalizeStreamToolPhase(
     return 'error'
   }
   return 'running'
+}
+
+function readExecNotification(message: GatewayMessage): ExecNotification | null {
+  const raw = (message as any).__execNotification as
+    | Record<string, unknown>
+    | undefined
+  if (!raw || typeof raw !== 'object') return null
+  const name = typeof raw.name === 'string' ? raw.name : ''
+  const exitCode =
+    typeof raw.exitCode === 'number' && Number.isFinite(raw.exitCode)
+      ? raw.exitCode
+      : null
+  const ok = typeof raw.ok === 'boolean' ? raw.ok : null
+  return {
+    name: name || 'Exec',
+    exitCode,
+    ok,
+  }
 }
 
 function ToolCallPill({ toolCall }: { toolCall: StreamToolCall }) {
@@ -495,6 +519,7 @@ function MessageItemComponent({
       ? remoteStreamingThinking
       : thinkingFromMessage(message)
   const isUser = role === 'user'
+  const execNotification = isUser ? readExecNotification(message) : null
   const timestamp = getMessageTimestamp(message)
   const attachments = Array.isArray(message.attachments)
     ? message.attachments.filter(
@@ -584,6 +609,33 @@ function MessageItemComponent({
     const timer = window.setTimeout(() => setIsStuckSending(true), remaining)
     return () => window.clearTimeout(timer)
   }, [isUser, message, message.status])
+
+  if (execNotification) {
+    const isSuccess =
+      execNotification.ok ?? (execNotification.exitCode === 0)
+    const statusIcon = isSuccess ? '✓' : '✗'
+    const exitLabel = `exit ${execNotification.exitCode ?? '—'}`
+    return (
+      <div
+        ref={wrapperRef}
+        data-chat-message-role={role}
+        data-chat-message-id={wrapperDataMessageId}
+        style={
+          typeof wrapperScrollMarginTop === 'number'
+            ? { scrollMarginTop: `${wrapperScrollMarginTop}px` }
+            : undefined
+        }
+        className={cn(
+          'flex items-center justify-center gap-2 py-1 text-xs text-primary-300',
+          wrapperClassName,
+        )}
+      >
+        <span className="font-semibold">{statusIcon}</span>
+        <span className="font-medium">{execNotification.name}</span>
+        <span className="text-primary-400">{exitLabel}</span>
+      </div>
+    )
+  }
 
   // System message — minimal styled row, no bubble/avatar
   if (role === 'system') {

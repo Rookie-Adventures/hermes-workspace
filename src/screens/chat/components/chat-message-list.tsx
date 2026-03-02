@@ -714,7 +714,8 @@ function ChatMessageListComponent({
     // on screen from send until response is complete.
     const streamingButEmpty =
       isStreaming && (!streamingText || streamingText.trim().length === 0)
-    if (!effectivelyWaiting && !streamingButEmpty) return false
+    if (streamingButEmpty) return true
+    if (!effectivelyWaiting) return false
     // If streaming has visible text, hide indicator — response is rendering
     if (isStreaming && streamingText && streamingText.length > 0) return false
     const lastMessage = displayMessages[displayMessages.length - 1]
@@ -906,8 +907,8 @@ function ChatMessageListComponent({
       }
     }
 
-    // Scroll to bottom if sticking
-    if (stickToBottomRef.current) {
+    // Scroll to bottom only if the user is already near the bottom
+    if (isNearBottomRef.current) {
       // Use smooth scroll only when user is near bottom (<200px) and new messages arrive;
       // use instant scroll during streaming to avoid choppiness.
       const behavior: ScrollBehavior = isNearBottomRef.current && !isStreaming ? 'smooth' : 'auto'

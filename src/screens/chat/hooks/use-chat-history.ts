@@ -26,6 +26,87 @@ function normalizeSessionCandidate(value: string | undefined): string {
   return trimmed
 }
 
+type ExecNotification = {
+  name: string
+  exitCode: number | null
+  ok: boolean | null
+}
+
+function coerceExitCode(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (/^-?\d+$/.test(trimmed)) return Number(trimmed)
+  }
+  return null
+}
+
+function parseExecNotification(text: string): ExecNotification | null {
+  const trimmed = text.trim()
+  if (!/^Exec completed\b/i.test(trimmed)) return null
+
+  let name = ''
+  let exitCode: number | null = null
+  let ok: boolean | null = null
+
+  const jsonMatch = trimmed.match(/\{[\s\S]*\}$/)
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[0]) as Record<string, unknown>
+      const rawName =
+        parsed.name ??
+        parsed.command ??
+        parsed.cmd ??
+        parsed.title ??
+        parsed.label ??
+        parsed.task
+      if (typeof rawName === 'string') name = rawName.trim()
+
+      const rawExit =
+        parsed.exit_code ??
+        parsed.exitCode ??
+        parsed.code ??
+        parsed.status_code ??
+        parsed.statusCode ??
+        parsed.exitStatus ??
+        parsed.status
+      exitCode = coerceExitCode(rawExit)
+
+      const rawOk = parsed.ok ?? parsed.success
+      if (typeof rawOk === 'boolean') ok = rawOk
+
+      if (exitCode === null && typeof rawExit === 'string') {
+        const normalized = rawExit.toLowerCase()
+        if (normalized.includes('success') || normalized.includes('ok')) ok = true
+        if (normalized.includes('fail') || normalized.includes('error')) ok = false
+      }
+    } catch {
+      // Fall through to regex parsing.
+    }
+  }
+
+  if (!name) {
+    const withoutPrefix = trimmed.replace(/^Exec completed[:\s-]*/i, '').trim()
+    const nameMatch = withoutPrefix.match(/^([^\(\{\[]+?)(?:\s*\(|\s*$)/)
+    if (nameMatch) name = nameMatch[1].trim()
+  }
+
+  if (exitCode === null) {
+    const exitMatch =
+      trimmed.match(/exit(?:_|\s)?code\s*[:=]?\s*(-?\d+)/i) ??
+      trimmed.match(/\bcode\s*[:=]?\s*(-?\d+)/i)
+    if (exitMatch) exitCode = coerceExitCode(exitMatch[1])
+  }
+
+  if (ok === null && exitCode !== null) ok = exitCode === 0
+
+  return {
+    name: name || 'Exec',
+    exitCode,
+    ok,
+  }
+}
+
 export function useChatHistory({
   activeFriendlyId,
   activeSessionKey,
@@ -133,6 +214,14 @@ export function useChatHistory({
       // Always show user messages (unless system events)
       if (msg.role === 'user') {
         const text = textFromMessage(msg)
+        const execNotification = parseExecNotification(text)
+        if (execNotification) {
+          ;(msg as any).__execNotification = execNotification
+          return true
+        }
+        if ((msg as any).__execNotification) {
+          delete (msg as any).__execNotification
+        }
         // Filter out system event forwards (subagent task announcements etc)
         if (text.startsWith('A subagent task')) return false
         if (text.startsWith('[Queued announce messages')) return false
