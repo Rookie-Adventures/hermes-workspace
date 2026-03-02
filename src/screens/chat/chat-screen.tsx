@@ -601,6 +601,15 @@ export function ChatScreen({
       return deduped
     }
 
+    // Seamless ThinkingBubble → streaming text transition (Bug fix):
+    // Only inject the streaming placeholder when there is actual text to show.
+    // While realtimeStreamingText is still empty (SSE connected but no chunk
+    // yet), the ThinkingBubble stays visible via the `streamingButEmpty`
+    // condition in showTypingIndicator. The moment the first text chunk
+    // arrives, we inject the placeholder and the ThinkingBubble hides — zero
+    // blank-box flash, zero white-space gap.
+    const hasStreamingText = realtimeStreamingText.trim().length > 0
+
     const nextMessages = [...deduped]
     const streamToolCalls = activeToolCalls.map((toolCall) => ({
       ...toolCall,
@@ -622,10 +631,22 @@ export function ChatScreen({
     )
 
     if (existingStreamIdx >= 0) {
-      nextMessages[existingStreamIdx] = {
-        ...nextMessages[existingStreamIdx],
-        ...streamingMsg,
+      if (hasStreamingText) {
+        // Update the existing placeholder with latest text
+        nextMessages[existingStreamIdx] = {
+          ...nextMessages[existingStreamIdx],
+          ...streamingMsg,
+        }
+      } else {
+        // No text yet — remove the placeholder so ThinkingBubble stays visible
+        nextMessages.splice(existingStreamIdx, 1)
       }
+      return nextMessages
+    }
+
+    // Only inject a new placeholder once text has arrived — prevents the
+    // blank empty-box that appeared between ThinkingBubble and first text.
+    if (!hasStreamingText) {
       return nextMessages
     }
 
