@@ -15,6 +15,13 @@ import {
   ScrollAreaViewport,
 } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
+import {
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogRoot,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
@@ -39,6 +46,18 @@ type FileReadResponse = {
   type: 'text' | 'image'
   path: string
   content: string
+}
+
+type PromptState = {
+  mode: 'rename' | 'new-folder'
+  targetPath: string
+  defaultValue?: string
+}
+
+type ContextMenuState = {
+  x: number
+  y: number
+  entry: FileEntry
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -113,6 +132,12 @@ function formatDate(iso: string): string {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+function getParentPath(pathValue: string): string {
+  const parts = pathValue.replace(/\\/g, '/').split('/').filter(Boolean)
+  if (parts.length <= 1) return ''
+  return parts.slice(0, -1).join('/')
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -255,6 +280,7 @@ type TreeNodeProps = {
   selectedPath: string | null
   onToggle: (path: string) => void
   onSelect: (entry: FileEntry) => void
+  onContextMenu: (e: React.MouseEvent, entry: FileEntry) => void
 }
 
 function TreeNode({
@@ -264,6 +290,7 @@ function TreeNode({
   selectedPath,
   onToggle,
   onSelect,
+  onContextMenu,
 }: TreeNodeProps) {
   const isExpanded = expanded.has(entry.path)
   const isSelected = selectedPath === entry.path
@@ -283,6 +310,7 @@ function TreeNode({
       <button
         type="button"
         onClick={handleClick}
+        onContextMenu={(e) => onContextMenu(e, entry)}
         className={cn(
           'flex w-full items-center gap-1.5 rounded-md py-1 pr-2 text-left text-sm transition-colors',
           isSelected
@@ -320,6 +348,7 @@ function TreeNode({
                 selectedPath={selectedPath}
                 onToggle={onToggle}
                 onSelect={onSelect}
+                onContextMenu={onContextMenu}
               />
             ))}
         </div>
@@ -666,6 +695,12 @@ export function FilesScreen() {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
   const [selectedEntry, setSelectedEntry] = useState<FileEntry | null>(null)
 
+  // CRUD state
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
+  const [promptState, setPromptState] = useState<PromptState | null>(null)
+  const [promptValue, setPromptValue] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState<FileEntry | null>(null)
+
   const loadTree = useCallback(async () => {
     setTreeLoading(true)
     setTreeError(null)
@@ -685,6 +720,23 @@ export function FilesScreen() {
     void loadTree()
   }, [loadTree])
 
+  // Close context menu on outside click / escape
+  useEffect(() => {
+    if (!contextMenu) return
+    const handleClick = () => setContextMenu(null)
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setContextMenu(null)
+    }
+    window.addEventListener('click', handleClick)
+    window.addEventListener('contextmenu', handleClick)
+    window.addEventListener('keydown', handleEscape)
+    return () => {
+      window.removeEventListener('click', handleClick)
+      window.removeEventListener('contextmenu', handleClick)
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [contextMenu])
+
   const handleToggle = useCallback((path: string) => {
     setExpanded((prev) => {
       const next = new Set(prev)
@@ -697,6 +749,88 @@ export function FilesScreen() {
   const handleSelect = useCallback((entry: FileEntry) => {
     setSelectedEntry(entry)
   }, [])
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent, entry: FileEntry) => {
+      e.preventDefault()
+      setContextMenu({ x: e.clientX, y: e.clientY, entry })
+    },
+    [],
+  )
+
+  // ── CRUD actions ────────────────────────────────────────────────────────────
+
+  const handleDeleteConfirmed = useCallback(async () => {
+    if (!deleteConfirm) return
+    await fetch('/api/files', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', path: deleteConfirm.path }),
+    })
+    if (selectedEntry?.path === deleteConfirm.path) {
+      setSelectedEntry(null)
+    }
+    setDeleteConfirm(null)
+    await loadTree()
+  }, [deleteConfirm, selectedEntry, loadTree])
+
+  const handleDownload = useCallback(async (entry: FileEntry) => {
+    const res = await fetch(
+      `/api/files?action=download&path=${encodeURIComponent(entry.path)}`,
+    )
+    if (!res.ok) return
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = entry.name
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }, [])
+
+  const openRenamePrompt = useCallback((entry: FileEntry) => {
+    setPromptState({ mode: 'rename', targetPath: entry.path, defaultValue: entry.name })
+    setPromptValue(entry.name)
+  }, [])
+
+  const openNewFolderPrompt = useCallback(() => {
+    setPromptState({ mode: 'new-folder', targetPath: '' })
+    setPromptValue('')
+  }, [])
+
+  const handlePromptSubmit = useCallback(async () => {
+    if (!promptState) return
+    const value = promptValue.trim()
+    if (!value) return
+
+    if (promptState.mode === 'rename') {
+      const parent = getParentPath(promptState.targetPath)
+      const nextPath = parent ? `${parent}/${value}` : value
+      await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'rename',
+          from: promptState.targetPath,
+          to: nextPath,
+        }),
+      })
+    } else {
+      // new-folder
+      const nextPath = promptState.targetPath
+        ? `${promptState.targetPath}/${value}`
+        : value
+      await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'mkdir', path: nextPath }),
+      })
+    }
+
+    setPromptState(null)
+    setPromptValue('')
+    await loadTree()
+  }, [promptState, promptValue, loadTree])
 
   const selectedPath = selectedEntry?.path ?? null
 
@@ -714,14 +848,24 @@ export function FilesScreen() {
         {/* Tree header */}
         <div className="flex h-11 shrink-0 items-center justify-between border-b border-primary-200 dark:border-neutral-800 px-3">
           <Breadcrumb path={selectedEntry?.path ?? ''} />
-          <button
-            type="button"
-            onClick={() => void loadTree()}
-            title="Refresh"
-            className="ml-2 shrink-0 rounded p-1 text-lg text-primary-400 hover:bg-primary-200 dark:hover:bg-neutral-800 hover:text-primary-600 dark:hover:text-neutral-300 transition-colors leading-none"
-          >
-            ↺
-          </button>
+          <div className="flex shrink-0 items-center gap-0.5 ml-2">
+            <button
+              type="button"
+              onClick={openNewFolderPrompt}
+              title="New folder"
+              className="rounded p-1 text-sm text-primary-400 hover:bg-primary-200 dark:hover:bg-neutral-800 hover:text-primary-600 dark:hover:text-neutral-300 transition-colors leading-none"
+            >
+              📁+
+            </button>
+            <button
+              type="button"
+              onClick={() => void loadTree()}
+              title="Refresh"
+              className="rounded p-1 text-lg text-primary-400 hover:bg-primary-200 dark:hover:bg-neutral-800 hover:text-primary-600 dark:hover:text-neutral-300 transition-colors leading-none"
+            >
+              ↺
+            </button>
+          </div>
         </div>
 
         {/* Tree body */}
@@ -749,6 +893,7 @@ export function FilesScreen() {
                     selectedPath={selectedPath}
                     onToggle={handleToggle}
                     onSelect={handleSelect}
+                    onContextMenu={handleContextMenu}
                   />
                 ))
             )}
@@ -771,6 +916,119 @@ export function FilesScreen() {
       >
         <FilePanel selectedEntry={selectedEntry} />
       </main>
+
+      {/* ── Context menu ──────────────────────────────────────────────────── */}
+      {contextMenu ? (
+        <div
+          className="fixed z-50 min-w-[160px] rounded-lg bg-primary-50 dark:bg-neutral-900 p-1 text-sm text-primary-900 dark:text-neutral-100 shadow-lg outline outline-primary-900/10 dark:outline-neutral-700"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-primary-100 dark:hover:bg-neutral-800"
+            onClick={() => {
+              openRenamePrompt(contextMenu.entry)
+              setContextMenu(null)
+            }}
+          >
+            ✏️ Rename
+          </button>
+          {contextMenu.entry.type === 'folder' ? (
+            <button
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-primary-100 dark:hover:bg-neutral-800"
+              onClick={() => {
+                setPromptState({ mode: 'new-folder', targetPath: contextMenu.entry.path })
+                setPromptValue('')
+                setContextMenu(null)
+              }}
+            >
+              📁 New folder inside
+            </button>
+          ) : (
+            <button
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-primary-100 dark:hover:bg-neutral-800"
+              onClick={() => {
+                void handleDownload(contextMenu.entry)
+                setContextMenu(null)
+              }}
+            >
+              ⬇️ Download
+            </button>
+          )}
+          <button
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+            onClick={() => {
+              setDeleteConfirm(contextMenu.entry)
+              setContextMenu(null)
+            }}
+          >
+            🗑️ Delete
+          </button>
+        </div>
+      ) : null}
+
+      {/* ── Rename / New-folder prompt dialog ─────────────────────────────── */}
+      <DialogRoot
+        open={Boolean(promptState)}
+        onOpenChange={(open) => {
+          if (!open) setPromptState(null)
+        }}
+      >
+        <DialogContent>
+          <div className="p-5 space-y-3">
+            <DialogTitle>
+              {promptState?.mode === 'rename' ? 'Rename' : 'New Folder'}
+            </DialogTitle>
+            <DialogDescription>
+              {promptState?.mode === 'rename'
+                ? 'Enter a new name.'
+                : 'Enter a folder name to create.'}
+            </DialogDescription>
+            <input
+              value={promptValue}
+              onChange={(e) => setPromptValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void handlePromptSubmit()
+              }}
+              className="w-full rounded-md border border-primary-200 dark:border-neutral-700 bg-primary-50 dark:bg-neutral-900 px-3 py-2 text-sm text-primary-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2 pt-2">
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button onClick={() => void handlePromptSubmit()}>Save</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </DialogRoot>
+
+      {/* ── Delete confirm dialog ──────────────────────────────────────────── */}
+      <DialogRoot
+        open={Boolean(deleteConfirm)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteConfirm(null)
+        }}
+      >
+        <DialogContent>
+          <div className="p-5 space-y-3">
+            <DialogTitle>Delete {deleteConfirm?.type === 'folder' ? 'Folder' : 'File'}</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{' '}
+              <strong>{deleteConfirm?.name}</strong>?
+              {deleteConfirm?.type === 'folder' && ' This will delete all contents inside.'}
+              {' '}This action cannot be undone.
+            </DialogDescription>
+            <div className="flex justify-end gap-2 pt-2">
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button
+                variant="destructive"
+                onClick={() => void handleDeleteConfirmed()}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </DialogRoot>
     </div>
   )
 }
