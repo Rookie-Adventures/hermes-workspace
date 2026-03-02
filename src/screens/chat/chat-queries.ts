@@ -233,6 +233,31 @@ export function appendHistoryMessage(
         }
       }
 
+      // Insert in timestamp order so that late-arriving SSE echoes (e.g. a
+      // user message whose echo arrives after the assistant reply is already
+      // displayed) appear in the correct chronological position rather than
+      // being appended to the bottom of the list.
+      const incomingTs =
+        typeof (message as Record<string, unknown>).timestamp === 'number'
+          ? (message as Record<string, unknown>).timestamp as number
+          : null
+
+      if (incomingTs !== null) {
+        // Find the first existing message whose timestamp is strictly greater
+        // than the incoming message — insert before it.
+        const insertIdx = messages.findIndex((m) => {
+          const ts = typeof (m as Record<string, unknown>).timestamp === 'number'
+            ? (m as Record<string, unknown>).timestamp as number
+            : null
+          return ts !== null && ts > incomingTs
+        })
+        if (insertIdx >= 0) {
+          const next = [...messages]
+          next.splice(insertIdx, 0, message)
+          return next
+        }
+      }
+
       return [...messages, message]
     },
   )
