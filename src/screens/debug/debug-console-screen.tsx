@@ -3,6 +3,7 @@ import {
   Copy01Icon,
   Download04Icon,
   Github01Icon,
+  HeartCheckIcon,
   Link01Icon,
   Notification03Icon,
   PackageIcon,
@@ -123,6 +124,99 @@ const FALLBACK_CONNECTION_STATUS: DebugConnectionStatus = {
   lastDisconnectedAtMs: null,
   nowMs: Date.now(),
 }
+
+// ── Gateway Health ────────────────────────────────────────────────────────────
+
+type GatewayHealthStatus = 'healthy' | 'degraded' | 'starting' | 'unreachable'
+
+type GatewayHealthData = {
+  status: GatewayHealthStatus
+  uptime?: number
+  version?: string
+  memory?: {
+    rss?: number
+    heapUsed?: number
+    heapTotal?: number
+    external?: number
+  }
+  raw: Record<string, unknown>
+}
+
+const GATEWAY_HEALTH_URL = 'http://127.0.0.1:18789/health'
+
+function normalizeHealthStatus(value: unknown): GatewayHealthStatus {
+  if (typeof value !== 'string') return 'starting'
+  const lower = value.toLowerCase()
+  if (lower === 'healthy' || lower === 'ok' || lower === 'up') return 'healthy'
+  if (lower === 'degraded') return 'degraded'
+  if (lower === 'starting') return 'starting'
+  return 'healthy'
+}
+
+async function fetchGatewayHealth(): Promise<GatewayHealthData> {
+  try {
+    const controller = new AbortController()
+    const timeout = globalThis.setTimeout(() => controller.abort(), 5000)
+    let response: Response
+    try {
+      response = await fetch(GATEWAY_HEALTH_URL, { signal: controller.signal })
+    } finally {
+      globalThis.clearTimeout(timeout)
+    }
+    const raw = (await response.json().catch(() => ({}))) as Record<string, unknown>
+    const status = normalizeHealthStatus(raw.status ?? raw.health ?? raw.state)
+    return {
+      status,
+      uptime: typeof raw.uptime === 'number' ? raw.uptime : undefined,
+      version: typeof raw.version === 'string' ? raw.version : undefined,
+      memory: (raw.memory && typeof raw.memory === 'object' && !Array.isArray(raw.memory))
+        ? (raw.memory as GatewayHealthData['memory'])
+        : undefined,
+      raw,
+    }
+  } catch {
+    return { status: 'unreachable', raw: {} }
+  }
+}
+
+function getHealthBadgeClass(status: GatewayHealthStatus): string {
+  if (status === 'healthy') return 'border-emerald-200 bg-emerald-100/70 text-emerald-700'
+  if (status === 'degraded') return 'border-amber-200 bg-amber-100/70 text-amber-700'
+  if (status === 'unreachable') return 'border-red-200 bg-red-100/70 text-red-700'
+  return 'border-amber-200 bg-amber-100/70 text-amber-700'
+}
+
+function getHealthDotClass(status: GatewayHealthStatus): string {
+  if (status === 'healthy') return 'bg-emerald-500'
+  if (status === 'degraded') return 'bg-amber-500'
+  if (status === 'unreachable') return 'bg-red-500'
+  return 'bg-amber-400'
+}
+
+function getHealthLabel(status: GatewayHealthStatus): string {
+  if (status === 'healthy') return 'Healthy'
+  if (status === 'degraded') return 'Degraded'
+  if (status === 'unreachable') return 'Unreachable'
+  return 'Starting'
+}
+
+function formatUptimeDuration(seconds: number): string {
+  const d = Math.floor(seconds / 86_400)
+  const h = Math.floor((seconds % 86_400) / 3_600)
+  const m = Math.floor((seconds % 3_600) / 60)
+  const s = Math.floor(seconds % 60)
+  if (d > 0) return `${d}d ${h}h ${m}m`
+  if (h > 0) return `${h}h ${m}m`
+  if (m > 0) return `${m}m ${s}s`
+  return `${s}s`
+}
+
+function formatMemoryBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+// ── End Gateway Health ────────────────────────────────────────────────────────
 
 function readErrorMessage(value: unknown): string {
   if (value instanceof Error) return value.message
@@ -399,6 +493,15 @@ export function DebugConsoleScreen() {
     },
   })
 
+  const gatewayHealthQuery = useQuery({
+    queryKey: ['debug', 'gateway-health'],
+    queryFn: fetchGatewayHealth,
+    retry: false,
+    refetchInterval: 30_000,
+  })
+
+  const [healthRawExpanded, setHealthRawExpanded] = useState(false)
+
   const {
     events,
     isConnected: isActivityConnected,
@@ -669,6 +772,103 @@ export function DebugConsoleScreen() {
               </span>
             ) : null}
           </div>
+        </DashboardGlassCard>
+
+        {/* ── Gateway Health ──────────────────────────────────────────────── */}
+        <DashboardGlassCard
+          title="Gateway Health"
+          description="Live health metrics from the OpenClaw Gateway /health endpoint. Polls every 30s."
+          icon={HeartCheckIcon}
+        >
+          {gatewayHealthQuery.isLoading ? (
+            <div className="rounded-xl border border-primary-200 bg-primary-100/50 px-3 py-3 text-sm text-primary-500">
+              Loading health data…
+            </div>
+          ) : (() => {
+            const health = gatewayHealthQuery.data ?? { status: 'unreachable' as GatewayHealthStatus, raw: {} }
+            return (
+              <div className="space-y-2.5 text-sm">
+                {/* Status badge row */}
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary-200 bg-primary-100/50 px-3 py-2.5">
+                  <span className="text-primary-700">Status</span>
+                  <span
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium tabular-nums',
+                      getHealthBadgeClass(health.status),
+                    )}
+                  >
+                    <span className={cn('size-1.5 rounded-full', getHealthDotClass(health.status))} />
+                    {getHealthLabel(health.status)}
+                  </span>
+                </div>
+
+                {/* Uptime */}
+                {health.uptime !== undefined ? (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary-200 bg-primary-100/50 px-3 py-2.5">
+                    <span className="text-primary-700">Uptime</span>
+                    <span className="font-medium text-ink tabular-nums">
+                      {formatUptimeDuration(health.uptime)}
+                    </span>
+                  </div>
+                ) : null}
+
+                {/* Version */}
+                {health.version ? (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary-200 bg-primary-100/50 px-3 py-2.5">
+                    <span className="text-primary-700">Version</span>
+                    <code className="rounded-md border border-primary-200 bg-primary-50 px-2 py-1 font-mono text-xs text-primary-900 tabular-nums">
+                      {health.version}
+                    </code>
+                  </div>
+                ) : null}
+
+                {/* Memory */}
+                {health.memory ? (
+                  <div className="rounded-xl border border-primary-200 bg-primary-100/50 px-3 py-2.5 space-y-1">
+                    <span className="text-primary-700 block mb-1.5">Memory Usage</span>
+                    {health.memory.rss !== undefined ? (
+                      <div className="flex items-center justify-between text-xs tabular-nums">
+                        <span className="text-primary-500">RSS</span>
+                        <span className="text-ink font-medium">{formatMemoryBytes(health.memory.rss!)}</span>
+                      </div>
+                    ) : null}
+                    {health.memory.heapUsed !== undefined && health.memory.heapTotal !== undefined ? (
+                      <div className="flex items-center justify-between text-xs tabular-nums">
+                        <span className="text-primary-500">Heap</span>
+                        <span className="text-ink font-medium">
+                          {formatMemoryBytes(health.memory.heapUsed!)} / {formatMemoryBytes(health.memory.heapTotal!)}
+                        </span>
+                      </div>
+                    ) : null}
+                    {health.memory.external !== undefined ? (
+                      <div className="flex items-center justify-between text-xs tabular-nums">
+                        <span className="text-primary-500">External</span>
+                        <span className="text-ink font-medium">{formatMemoryBytes(health.memory.external!)}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {/* Raw JSON toggle */}
+                <div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-2 text-xs tabular-nums"
+                    onClick={() => setHealthRawExpanded((v) => !v)}
+                    aria-expanded={healthRawExpanded}
+                  >
+                    {healthRawExpanded ? 'Hide raw JSON' : 'Show raw JSON'}
+                  </Button>
+                  {healthRawExpanded ? (
+                    <pre className="mt-2 overflow-x-auto rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 font-mono text-[11px] leading-relaxed text-primary-800 dark:bg-neutral-900 dark:text-neutral-300 dark:border-neutral-700">
+                      {JSON.stringify(health.raw, null, 2)}
+                    </pre>
+                  ) : null}
+                </div>
+              </div>
+            )
+          })()}
         </DashboardGlassCard>
 
         <DashboardGlassCard

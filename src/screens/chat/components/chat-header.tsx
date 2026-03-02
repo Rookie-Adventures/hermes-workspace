@@ -65,6 +65,8 @@ function formatMobileSessionTitle(rawTitle: string): string {
 }
 
 
+type ThinkingLevel = 'off' | 'low' | 'adaptive'
+
 type ChatHeaderProps = {
   activeTitle: string
   onRenameTitle?: (nextTitle: string) => Promise<void> | void
@@ -78,6 +80,8 @@ type ChatHeaderProps = {
   dataUpdatedAt?: number
   /** Callback to manually refresh history */
   onRefresh?: () => void
+  /** Current thinking level for this session */
+  thinkingLevel?: ThinkingLevel
   /** Current model id/name for compact mobile status */
   agentModel?: string
   /** Whether agent connection is healthy */
@@ -107,6 +111,7 @@ function ChatHeaderComponent({
   pullOffset = 0,
   statusMode = 'idle',
   activeToolName,
+  thinkingLevel = 'low',
 }: ChatHeaderProps) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -126,6 +131,7 @@ function ChatHeaderComponent({
   const isStale = dataUpdatedAt > 0 && Date.now() - dataUpdatedAt > 15000
   const mobileTitle = formatMobileSessionTitle(activeTitle)
   void _agentModel; void agentConnected; void statusMode; void activeToolName // kept for prop compat
+  const showThinkingIndicator = thinkingLevel === 'adaptive'
 
   const handleRefresh = useCallback(() => {
     if (!onRefresh) return
@@ -316,6 +322,27 @@ function ChatHeaderComponent({
           className="mr-1 inline-flex size-3 animate-spin rounded-full border border-primary-300 border-t-primary-700"
           aria-label="Saving session name"
         />
+      ) : null}
+      {showThinkingIndicator ? (
+        <TooltipProvider>
+          <TooltipRoot>
+            <TooltipTrigger
+              render={
+                <span
+                  className="mr-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                  aria-label="Thinking: Adaptive"
+                  role="status"
+                  style={{ boxShadow: '0 0 6px 1px rgba(251,191,36,0.4)' }}
+                >
+                  🧠
+                </span>
+              }
+            />
+            <TooltipContent side="bottom">
+              Thinking: Adaptive — Claude reasons before responding
+            </TooltipContent>
+          </TooltipRoot>
+        </TooltipProvider>
       ) : null}
         {dataUpdatedAt > 0 ? (
           <TooltipProvider>

@@ -215,6 +215,61 @@ function markdownToHtml(md: string): string {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+// Line-by-line diff (no external lib)
+// ──────────────────────────────────────────────────────────────────────────────
+
+type DiffLineKind = 'unchanged' | 'added' | 'removed'
+
+type DiffLine = {
+  kind: DiffLineKind
+  text: string
+  leftNum: number | null   // original line number
+  rightNum: number | null  // new line number
+}
+
+/**
+ * Very simple LCS-based diff. Produces a list of DiffLine entries that can be
+ * rendered in a split/unified view.
+ */
+function computeDiff(original: string, updated: string): Array<DiffLine> {
+  const aLines = original.split('\n')
+  const bLines = updated.split('\n')
+  const m = aLines.length
+  const n = bLines.length
+
+  // Build LCS table
+  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0))
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (aLines[i - 1] === bLines[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+      }
+    }
+  }
+
+  // Backtrack
+  const result: Array<DiffLine> = []
+  let i = m
+  let j = n
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && aLines[i - 1] === bLines[j - 1]) {
+      result.push({ kind: 'unchanged', text: aLines[i - 1], leftNum: i, rightNum: j })
+      i--
+      j--
+    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+      result.push({ kind: 'added', text: bLines[j - 1], leftNum: null, rightNum: j })
+      j--
+    } else {
+      result.push({ kind: 'removed', text: aLines[i - 1], leftNum: i, rightNum: null })
+      i--
+    }
+  }
+  return result.reverse()
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 // Basic syntax highlighting (CSS-class only, no library)
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -267,6 +322,156 @@ function highlightCode(code: string, ext: string): string {
   )
 
   return out
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Diff Modal
+// ──────────────────────────────────────────────────────────────────────────────
+
+type DiffModalProps = {
+  open: boolean
+  fileName: string
+  original: string
+  updated: string
+  onSave: () => void
+  onCancel: () => void
+}
+
+function DiffModal({ open, fileName, original, updated, onSave, onCancel }: DiffModalProps) {
+  const diffLines = useMemo(
+    () => (open ? computeDiff(original, updated) : []),
+    [open, original, updated],
+  )
+
+  const addedCount = diffLines.filter((l) => l.kind === 'added').length
+  const removedCount = diffLines.filter((l) => l.kind === 'removed').length
+
+  // Separate left (original) and right (new) columns for split view
+  const leftLines = diffLines.filter((l) => l.kind !== 'added')
+  const rightLines = diffLines.filter((l) => l.kind !== 'removed')
+
+  if (!open) return null
+
+  return (
+    <DialogRoot open={open} onOpenChange={(isOpen) => { if (!isOpen) onCancel() }}>
+      <DialogContent className="max-w-5xl w-full">
+        <div className="flex flex-col max-h-[85vh]">
+          {/* Header */}
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-primary-200 dark:border-neutral-800 px-5 py-3">
+            <div className="min-w-0">
+              <DialogTitle className="text-sm font-semibold text-primary-900 dark:text-neutral-100 truncate">
+                Review changes — {fileName}
+              </DialogTitle>
+              <DialogDescription className="mt-0.5 text-xs text-primary-500 dark:text-neutral-400">
+                <span className="text-emerald-600 font-medium">+{addedCount} added</span>
+                {' · '}
+                <span className="text-red-600 font-medium">−{removedCount} removed</span>
+              </DialogDescription>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button variant="outline" size="sm" onClick={onCancel}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={onSave}>
+                Save anyway
+              </Button>
+            </div>
+          </div>
+
+          {/* Split diff view */}
+          <div className="flex flex-1 min-h-0 overflow-hidden divide-x divide-primary-200 dark:divide-neutral-800">
+            {/* Left — original */}
+            <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+              <div className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-primary-500 dark:text-neutral-400 bg-primary-100/60 dark:bg-neutral-900/60 border-b border-primary-200 dark:border-neutral-800 uppercase tracking-wide">
+                Original
+              </div>
+              <div className="flex-1 overflow-auto">
+                <div className="font-mono text-[11px] leading-relaxed">
+                  {leftLines.map((line, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        'flex items-start gap-0',
+                        line.kind === 'removed'
+                          ? 'bg-red-50 dark:bg-red-950/25'
+                          : '',
+                      )}
+                    >
+                      <span className="shrink-0 w-10 select-none px-2 text-right text-primary-300 dark:text-neutral-600 text-[10px] leading-relaxed border-r border-primary-200 dark:border-neutral-800">
+                        {line.leftNum ?? ''}
+                      </span>
+                      <span
+                        className={cn(
+                          'shrink-0 w-5 select-none text-center leading-relaxed',
+                          line.kind === 'removed' ? 'text-red-500' : 'text-transparent',
+                        )}
+                      >
+                        {line.kind === 'removed' ? '−' : ' '}
+                      </span>
+                      <span
+                        className={cn(
+                          'flex-1 whitespace-pre-wrap break-all px-1',
+                          line.kind === 'removed'
+                            ? 'text-red-800 dark:text-red-300'
+                            : 'text-primary-800 dark:text-neutral-300',
+                        )}
+                      >
+                        {line.text || ' '}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right — new */}
+            <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+              <div className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-primary-500 dark:text-neutral-400 bg-primary-100/60 dark:bg-neutral-900/60 border-b border-primary-200 dark:border-neutral-800 uppercase tracking-wide">
+                New
+              </div>
+              <div className="flex-1 overflow-auto">
+                <div className="font-mono text-[11px] leading-relaxed">
+                  {rightLines.map((line, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        'flex items-start gap-0',
+                        line.kind === 'added'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/25'
+                          : '',
+                      )}
+                    >
+                      <span className="shrink-0 w-10 select-none px-2 text-right text-primary-300 dark:text-neutral-600 text-[10px] leading-relaxed border-r border-primary-200 dark:border-neutral-800">
+                        {line.rightNum ?? ''}
+                      </span>
+                      <span
+                        className={cn(
+                          'shrink-0 w-5 select-none text-center leading-relaxed',
+                          line.kind === 'added' ? 'text-emerald-600' : 'text-transparent',
+                        )}
+                      >
+                        {line.kind === 'added' ? '+' : ' '}
+                      </span>
+                      <span
+                        className={cn(
+                          'flex-1 whitespace-pre-wrap break-all px-1',
+                          line.kind === 'added'
+                            ? 'text-emerald-800 dark:text-emerald-300'
+                            : 'text-primary-800 dark:text-neutral-300',
+                        )}
+                      >
+                        {line.text || ' '}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </DialogRoot>
+  )
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -404,6 +609,7 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
   const [saving, setSaving] = useState(false)
   const [savedOk, setSavedOk] = useState(false)
   const [rawMode, setRawMode] = useState(false)
+  const [showDiff, setShowDiff] = useState(false)
   const prevPathRef = useRef<string | null>(null)
 
   // Derive file type info (safe regardless of selectedEntry nullity)
@@ -458,21 +664,18 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
     void loadFile(selectedEntry.path)
   }, [selectedEntry, loadFile])
 
-  const handleSave = useCallback(async () => {
-    if (!selectedEntry || !dirty) return
+  /** Actually write to disk (called after diff confirmation or if nothing changed) */
+  const commitSave = useCallback(async (path: string, value: string) => {
     setSaving(true)
+    setShowDiff(false)
     try {
       const res = await fetch('/api/files', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          action: 'write',
-          path: selectedEntry.path,
-          content: editValue,
-        }),
+        body: JSON.stringify({ action: 'write', path, content: value }),
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      setContent(editValue)
+      setContent(value)
       setDirty(false)
       setSavedOk(true)
       setTimeout(() => setSavedOk(false), 2000)
@@ -481,30 +684,62 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
     } finally {
       setSaving(false)
     }
-  }, [selectedEntry, dirty, editValue])
+  }, [])
+
+  /** Save button handler — shows diff modal when content has changed */
+  const handleSave = useCallback(() => {
+    if (!selectedEntry || !dirty) return
+    if (editValue !== content) {
+      // Show diff first
+      setShowDiff(true)
+    } else {
+      void commitSave(selectedEntry.path, editValue)
+    }
+  }, [selectedEntry, dirty, editValue, content, commitSave])
+
+  // ── Diff Modal (always rendered so hooks stay consistent) ─────────────────
+
+  const diffModal = (
+    <DiffModal
+      open={showDiff}
+      fileName={selectedEntry?.name ?? ''}
+      original={content}
+      updated={editValue}
+      onSave={() => {
+        if (selectedEntry) void commitSave(selectedEntry.path, editValue)
+      }}
+      onCancel={() => setShowDiff(false)}
+    />
+  )
 
   // ── Empty / folder states ──────────────────────────────────────────────────
 
   if (!selectedEntry) {
     return (
-      <div className="flex h-full items-center justify-center text-center text-primary-400 dark:text-neutral-600">
-        <div>
-          <div className="text-5xl mb-3 opacity-40">📂</div>
-          <p className="text-sm">Select a file to preview or edit</p>
+      <>
+        {diffModal}
+        <div className="flex h-full items-center justify-center text-center text-primary-400 dark:text-neutral-600">
+          <div>
+            <div className="text-5xl mb-3 opacity-40">📂</div>
+            <p className="text-sm">Select a file to preview or edit</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   if (selectedEntry.type === 'folder') {
     return (
-      <div className="flex h-full items-center justify-center text-center text-primary-400 dark:text-neutral-600">
-        <div>
-          <div className="text-5xl mb-3 opacity-40">📁</div>
-          <p className="text-sm font-medium">{selectedEntry.name}</p>
-          <p className="text-xs mt-1 opacity-70">Select a file inside to preview</p>
+      <>
+        {diffModal}
+        <div className="flex h-full items-center justify-center text-center text-primary-400 dark:text-neutral-600">
+          <div>
+            <div className="text-5xl mb-3 opacity-40">📁</div>
+            <p className="text-sm font-medium">{selectedEntry.name}</p>
+            <p className="text-xs mt-1 opacity-70">Select a file inside to preview</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
@@ -533,7 +768,7 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
             size="sm"
             variant={savedOk ? 'outline' : 'default'}
             disabled={!dirty || saving}
-            onClick={() => void handleSave()}
+            onClick={handleSave}
           >
             {saving ? 'Saving…' : savedOk ? '✓ Saved' : 'Save'}
           </Button>
@@ -560,25 +795,31 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
 
   if (loadingFile) {
     return (
-      <div className="flex h-full flex-col">
-        {header}
-        <div className="flex flex-1 items-center justify-center text-sm text-primary-400 dark:text-neutral-500">
-          Loading…
+      <>
+        {diffModal}
+        <div className="flex h-full flex-col">
+          {header}
+          <div className="flex flex-1 items-center justify-center text-sm text-primary-400 dark:text-neutral-500">
+            Loading…
+          </div>
+          {footer}
         </div>
-        {footer}
-      </div>
+      </>
     )
   }
 
   if (fileError) {
     return (
-      <div className="flex h-full flex-col">
-        {header}
-        <div className="flex flex-1 items-center justify-center p-4 text-sm text-red-600 dark:text-red-400">
-          {fileError}
+      <>
+        {diffModal}
+        <div className="flex h-full flex-col">
+          {header}
+          <div className="flex flex-1 items-center justify-center p-4 text-sm text-red-600 dark:text-red-400">
+            {fileError}
+          </div>
+          {footer}
         </div>
-        {footer}
-      </div>
+      </>
     )
   }
 
@@ -586,21 +827,24 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
 
   if (isImage) {
     return (
-      <div className="flex h-full flex-col">
-        {header}
-        <div className="flex flex-1 min-h-0 items-center justify-center overflow-auto p-6">
-          {dataUrl ? (
-            <img
-              src={dataUrl}
-              alt={selectedEntry.name}
-              className="max-h-full max-w-full rounded-lg border border-primary-200 dark:border-neutral-800 shadow-sm object-contain"
-            />
-          ) : (
-            <div className="text-sm text-primary-400">No preview</div>
-          )}
+      <>
+        {diffModal}
+        <div className="flex h-full flex-col">
+          {header}
+          <div className="flex flex-1 min-h-0 items-center justify-center overflow-auto p-6">
+            {dataUrl ? (
+              <img
+                src={dataUrl}
+                alt={selectedEntry.name}
+                className="max-h-full max-w-full rounded-lg border border-primary-200 dark:border-neutral-800 shadow-sm object-contain"
+              />
+            ) : (
+              <div className="text-sm text-primary-400">No preview</div>
+            )}
+          </div>
+          {footer}
         </div>
-        {footer}
-      </div>
+      </>
     )
   }
 
@@ -608,23 +852,26 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
 
   if (isMd && !rawMode) {
     return (
-      <div className="flex h-full flex-col">
-        {header}
-        <ScrollAreaRoot className="flex-1 min-h-0">
-          <ScrollAreaViewport>
-            {/* eslint-disable-next-line react/no-danger */}
-            <div
-              className="markdown-preview px-6 py-5 text-sm text-primary-900 dark:text-neutral-200"
-              dangerouslySetInnerHTML={{ __html: mdHtml }}
-            />
-          </ScrollAreaViewport>
-          <ScrollAreaScrollbar orientation="vertical">
-            <ScrollAreaThumb />
-          </ScrollAreaScrollbar>
-          <ScrollAreaCorner />
-        </ScrollAreaRoot>
-        {footer}
-      </div>
+      <>
+        {diffModal}
+        <div className="flex h-full flex-col">
+          {header}
+          <ScrollAreaRoot className="flex-1 min-h-0">
+            <ScrollAreaViewport>
+              {/* eslint-disable-next-line react/no-danger */}
+              <div
+                className="markdown-preview px-6 py-5 text-sm text-primary-900 dark:text-neutral-200"
+                dangerouslySetInnerHTML={{ __html: mdHtml }}
+              />
+            </ScrollAreaViewport>
+            <ScrollAreaScrollbar orientation="vertical">
+              <ScrollAreaThumb />
+            </ScrollAreaScrollbar>
+            <ScrollAreaCorner />
+          </ScrollAreaRoot>
+          {footer}
+        </div>
+      </>
     )
   }
 
@@ -633,52 +880,58 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
   if (isCode) {
     const displayHtml = isMd ? highlightCode(content, 'md') : highlighted
     return (
-      <div className="flex h-full flex-col">
-        {header}
-        <ScrollAreaRoot className="flex-1 min-h-0">
-          <ScrollAreaViewport>
-            <pre
-              className="code-viewer px-4 py-4 text-xs font-mono leading-relaxed text-primary-800 dark:text-neutral-300"
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: displayHtml }}
-            />
-          </ScrollAreaViewport>
-          <ScrollAreaScrollbar orientation="vertical">
-            <ScrollAreaThumb />
-          </ScrollAreaScrollbar>
-          <ScrollAreaScrollbar orientation="horizontal">
-            <ScrollAreaThumb />
-          </ScrollAreaScrollbar>
-          <ScrollAreaCorner />
-        </ScrollAreaRoot>
-        {footer}
-      </div>
+      <>
+        {diffModal}
+        <div className="flex h-full flex-col">
+          {header}
+          <ScrollAreaRoot className="flex-1 min-h-0">
+            <ScrollAreaViewport>
+              <pre
+                className="code-viewer px-4 py-4 text-xs font-mono leading-relaxed text-primary-800 dark:text-neutral-300"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: displayHtml }}
+              />
+            </ScrollAreaViewport>
+            <ScrollAreaScrollbar orientation="vertical">
+              <ScrollAreaThumb />
+            </ScrollAreaScrollbar>
+            <ScrollAreaScrollbar orientation="horizontal">
+              <ScrollAreaThumb />
+            </ScrollAreaScrollbar>
+            <ScrollAreaCorner />
+          </ScrollAreaRoot>
+          {footer}
+        </div>
+      </>
     )
   }
 
   // ── Editable textarea (plain text, raw md, etc.) ───────────────────────────
 
   return (
-    <div className="flex h-full flex-col">
-      {header}
-      <div className="flex-1 min-h-0 p-3">
-        <textarea
-          className={cn(
-            'h-full w-full resize-none rounded-lg border border-primary-200 dark:border-neutral-800',
-            'bg-white dark:bg-neutral-900 px-3 py-2 font-mono text-xs leading-relaxed',
-            'text-primary-900 dark:text-neutral-200 placeholder:text-primary-300',
-            'focus:outline-none focus:ring-2 focus:ring-accent-500/30',
-          )}
-          value={editValue}
-          onChange={(e) => {
-            setEditValue(e.target.value)
-            setDirty(e.target.value !== content)
-          }}
-          spellCheck={false}
-        />
+    <>
+      {diffModal}
+      <div className="flex h-full flex-col">
+        {header}
+        <div className="flex-1 min-h-0 p-3">
+          <textarea
+            className={cn(
+              'h-full w-full resize-none rounded-lg border border-primary-200 dark:border-neutral-800',
+              'bg-white dark:bg-neutral-900 px-3 py-2 font-mono text-xs leading-relaxed',
+              'text-primary-900 dark:text-neutral-200 placeholder:text-primary-300',
+              'focus:outline-none focus:ring-2 focus:ring-accent-500/30',
+            )}
+            value={editValue}
+            onChange={(e) => {
+              setEditValue(e.target.value)
+              setDirty(e.target.value !== content)
+            }}
+            spellCheck={false}
+          />
+        </div>
+        {footer}
       </div>
-      {footer}
-    </div>
+    </>
   )
 }
 
