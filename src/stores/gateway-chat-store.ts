@@ -504,29 +504,13 @@ export const useGatewayChatStore = create<GatewayChatState>((set, get) => ({
           }
         }
 
-        // Clear streaming state after a brief grace period so fast tool runs
-        // (< one render frame) still paint their pills before being wiped.
-        // 1500ms matches the thinking indicator grace period.
+        // Clear streaming state immediately — tool calls are preserved via
+        // __streamToolCalls embedded on completeMessage above, so pills survive
+        // in the history message without needing streaming state alive.
+        // DO NOT keep a stub here — it keeps isRealtimeStreaming=true which
+        // injects an invisible streaming placeholder that causes a blank gap.
         streamingMap.delete(sessionKey)
         set({ streamingState: streamingMap, lastEventAt: now })
-
-        if (streaming?.toolCalls?.length) {
-          // Keep a stub in streaming state for 1.5s so pills stay visible
-          const stub = new Map(get().streamingState)
-          stub.set(sessionKey, {
-            ...streaming,
-            text: '',
-            thinking: '',
-            toolCalls: streaming.toolCalls.map((tc) => ({ ...tc, phase: 'done' as const })),
-            runId: streaming.runId,
-          })
-          set({ streamingState: stub })
-          setTimeout(() => {
-            const current = new Map(get().streamingState)
-            current.delete(sessionKey)
-            set({ streamingState: current })
-          }, 1500)
-        }
         break
       }
     }
