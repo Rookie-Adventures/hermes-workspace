@@ -249,6 +249,24 @@ export const useGatewayChatStore = create<GatewayChatState>((set, get) => ({
     switch (event.type) {
       case 'message':
       case 'user_message': {
+        // Filter internal system event messages that should never appear in chat.
+        // These are pre-compaction flushes, heartbeat prompts, and similar
+        // gateway-injected control messages — mirror the filter in use-chat-history.ts.
+        if (event.message.role === 'user') {
+          const rawText = extractMessageText(event.message)
+          if (
+            rawText.startsWith('Pre-compaction memory flush') ||
+            rawText.includes('Store durable memories now') ||
+            rawText.includes('APPEND new content only and do not overwrite') ||
+            rawText.startsWith('A subagent task') ||
+            rawText.startsWith('[Queued announce messages') ||
+            rawText.includes('Summarize this naturally for the user') ||
+            (rawText.includes('Stats: runtime') && rawText.includes('sessionKey agent:'))
+          ) {
+            break
+          }
+        }
+
         const messages = new Map(state.realtimeMessages)
         const sessionMessages = [...(messages.get(sessionKey) ?? [])]
 
