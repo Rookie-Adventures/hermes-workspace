@@ -599,12 +599,23 @@ function ChatMessageListComponent({
   // Bug 2 fix: also show during grace period (thinkingGrace) so there's no
   // blank-space flash between waitingForResponse clearing and the response
   // message actually rendering.
+  // Tool-gap fix: also show when streaming is active but no text has arrived
+  // yet — this covers the gap between tool call results arriving and the
+  // assistant text stream starting (tool calls in progress or just completed).
   const showTypingIndicator = (() => {
     // sending covers the instant the HTTP request fires before waitingForResponse
     // is confirmed by the gateway (they're typically batched but this is belt+suspenders)
     const effectivelyWaiting = waitingForResponse || thinkingGrace || sending
-    if (!effectivelyWaiting) return false
-    // If streaming has visible text, hide indicator
+    // Tool-gap condition: streaming is active (tool calls in flight or result
+    // just arrived) but no text chunk has been received yet. Keep the indicator
+    // visible so there's no blank space between tool completion and text stream
+    // start, even if waitingForResponse already cleared.
+    const toolGapActive =
+      isStreaming &&
+      (!streamingText || streamingText.length === 0) &&
+      activeToolCalls.length > 0
+    if (!effectivelyWaiting && !toolGapActive) return false
+    // If streaming has visible text, hide indicator — response is rendering
     if (isStreaming && streamingText && streamingText.length > 0) return false
     const lastMessage = displayMessages[displayMessages.length - 1]
     if (lastMessage && lastMessage.role === 'assistant') {
