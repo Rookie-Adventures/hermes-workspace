@@ -267,6 +267,52 @@ export function MemoryBrowserScreen() {
             </span>
           </button>
 
+          {searchEnabled ? (
+            <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+              <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-primary-400 dark:text-neutral-500">
+                Search Results
+              </div>
+              <div className="space-y-1">
+                {searchQuery.isLoading ? (
+                  <div className="rounded-lg border border-primary-200 bg-primary-50/80 px-3 py-2 text-xs text-primary-400 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-500">
+                    Searching...
+                  </div>
+                ) : searchResults.length === 0 ? (
+                  <div className="rounded-lg border border-primary-200 bg-primary-50/80 px-3 py-2 text-xs text-primary-400 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-500">
+                    No matches
+                  </div>
+                ) : (
+                  searchResults.map((result, index) => (
+                    <button
+                      key={`${result.path}:${result.line}:${index}`}
+                      type="button"
+                      onClick={() => {
+                        if (trySelectFile(result.path, result.line)) {
+                          setMobileFilesOpen(false)
+                        }
+                      }}
+                      className="w-full rounded-lg border border-primary-200 bg-primary-50/80 px-2.5 py-2 text-left hover:border-primary-300 hover:bg-primary-100 dark:border-neutral-800 dark:bg-neutral-900/60 dark:hover:border-neutral-700 dark:hover:bg-neutral-900"
+                    >
+                      <div className="truncate text-[11px] text-primary-500 dark:text-neutral-400">
+                        {result.path}:{result.line}
+                      </div>
+                      <div className="mt-0.5 line-clamp-2 text-xs text-primary-700 dark:text-neutral-200">
+                        {highlightMatch(result.text, searchInput).map((part, partIndex) => (
+                          <span
+                            key={partIndex}
+                            className={part.hit ? 'rounded bg-yellow-300/30 px-0.5 text-yellow-200' : undefined}
+                          >
+                            {part.text || ' '}
+                          </span>
+                        ))}
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : null}
+
           <div className={cn('min-h-0 flex-1 px-2 pb-2', !mobileFilesOpen && 'hidden md:block', searchEnabled && 'hidden')}>
             <div className="max-h-72 space-y-1 overflow-y-auto pr-1 md:max-h-none md:h-full">
               {rootMemory ? (
