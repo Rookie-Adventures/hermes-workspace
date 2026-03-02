@@ -303,8 +303,23 @@ export function useGatewayChatStream(
       }
     })
 
-    eventSource.addEventListener('state', () => {
-      // State changes (started, thinking) - used for UI indicators
+    eventSource.addEventListener('state', (event) => {
+      // P6: on 'started', kick off streaming state immediately so the thinking
+      // indicator appears before the first chunk arrives (eliminates blank gap).
+      if (!mountedRef.current) return
+      try {
+        const data = JSON.parse(event.data) as {
+          state: string
+          runId?: string
+          sessionKey: string
+        }
+        if (data.state === 'started' && data.sessionKey && data.runId) {
+          processEvent({ type: 'chunk', text: '', runId: data.runId, sessionKey: data.sessionKey })
+          touchStreamTimeout(data.sessionKey)
+        }
+      } catch {
+        // ignore parse errors
+      }
     })
 
     eventSource.addEventListener('approval_request', (event) => {

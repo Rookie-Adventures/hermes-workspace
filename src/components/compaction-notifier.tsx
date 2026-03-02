@@ -41,7 +41,7 @@ export function CompactionNotifier() {
             startToastIdRef.current = false
             toast('✅ Context compacted — session history summarized', {
               type: 'success',
-              duration: 8_000,
+              duration: 5_000, // matches gateway's Wp=5000 auto-clear
             })
           }
         } catch {

@@ -95,14 +95,27 @@ export const Route = createFileRoute('/api/chat-events')({
                     sendEvent('thinking', { text: data.text, runId, sessionKey: targetSessionKey })
                   } else if (stream === 'tool') {
                     sendEvent('tool', {
-                      // Default phase to 'calling' when the gateway omits it —
-                      // the upstream agent emits tool events without an explicit
-                      // phase when a tool starts, so we treat missing phase as
-                      // 'calling' so the thinking indicator can show the tool name.
                       phase: data?.phase ?? 'calling',
                       name: data?.name, toolCallId: data?.toolCallId,
-                      args: data?.args, runId, sessionKey: targetSessionKey,
+                      args: data?.args,
+                      // P2: forward partial/final tool output so live pills can show results
+                      result: data?.result ?? data?.partialResult ?? undefined,
+                      runId, sessionKey: targetSessionKey,
                     })
+                  } else if (stream === 'fallback' || stream === 'lifecycle') {
+                    // P1: model fallback notification — gateway switches primary→fallback model
+                    const phase = data?.phase as string | undefined
+                    if (stream === 'fallback' || phase === 'fallback' || phase === 'fallback_cleared') {
+                      sendEvent('fallback', {
+                        phase: stream === 'fallback' ? (phase ?? 'fallback') : phase,
+                        selectedModel: data?.selectedModel,
+                        activeModel: data?.activeModel,
+                        previousModel: data?.previousModel,
+                        reason: data?.reasonSummary ?? data?.reason,
+                        attempts: data?.attemptSummaries ?? data?.attempts,
+                        sessionKey: targetSessionKey,
+                      })
+                    }
                   } else if (stream === 'compaction') {
                     // Gateway emits phase:"start" when auto-compaction begins,
                     // phase:"end" when it completes. Forward both so the UI can
@@ -146,6 +159,22 @@ export const Route = createFileRoute('/api/chat-events')({
                   if (state === 'started' || state === 'thinking') {
                     sendEvent('state', { state, runId, sessionKey: targetSessionKey })
                   }
+                  return
+                }
+
+                // P8: Exec approval events — forward so ExecApprovalToast can be event-driven
+                if (eventName === 'exec.approval.requested') {
+                  sendEvent('approval_request', { ...rawPayload, sessionKey: targetSessionKey })
+                  return
+                }
+                if (eventName === 'exec.approval.resolved') {
+                  sendEvent('approval_resolved', { ...rawPayload, sessionKey: targetSessionKey })
+                  return
+                }
+
+                // P9: Update available notification
+                if (eventName === 'update.available') {
+                  sendEvent('update_available', { ...rawPayload })
                   return
                 }
 

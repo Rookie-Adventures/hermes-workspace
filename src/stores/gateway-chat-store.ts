@@ -112,7 +112,33 @@ function normalizeString(value: unknown): string {
  */
 function stripFinalTags(text: string): string {
   // <final>…</final>  — strip outer wrapper (case-insensitive, allows whitespace)
-  return text.replace(/^\s*<final>\s*([\s\S]*?)\s*<\/final>\s*$/i, '$1').trim()
+  let result = text.replace(/^\s*<final>\s*([\s\S]*?)\s*<\/final>\s*$/i, '$1').trim()
+  // P7: strip internal model tags that should never appear in rendered output.
+  // Matches gateway control UI's rg/ig/ag stripping functions.
+  // Respects code blocks — only strip tags outside of ``` fences.
+  result = stripInternalTags(result)
+  return result
+}
+
+/**
+ * Strip internal model tags (<thinking>, <antThinking>, <thought>,
+ * <parameter name="newText">, <relevant_memories>) that can leak into
+ * displayed text. Only strips outside code blocks to avoid breaking code samples.
+ * Mirrors the gateway control UI's tag-stripping pipeline.
+ */
+function stripInternalTags(text: string): string {
+  // Split on code blocks to avoid stripping inside them
+  const parts = text.split(/(```[\s\S]*?```)/g)
+  return parts.map((part, i) => {
+    if (i % 2 === 1) return part // inside code block — leave untouched
+    return part
+      .replace(/<thinking>[\s\S]*?<\/thinking>/gi, '')
+      .replace(/<antThinking>[\s\S]*?<\/antThinking>/gi, '')
+      .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+      .replace(/<parameter name="newText">[\s\S]*?<\/antml:parameter>/gi, '')
+      .replace(/<relevant_memories>[\s\S]*?<\/relevant_memories>/gi, '')
+      .trim()
+  }).join('')
 }
 
 /**
