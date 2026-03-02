@@ -601,14 +601,24 @@ export function ChatScreen({
       return deduped
     }
 
-    // Seamless ThinkingBubble → streaming text transition (Bug fix):
-    // Only inject the streaming placeholder when there is actual text to show.
-    // While realtimeStreamingText is still empty (SSE connected but no chunk
-    // yet), the ThinkingBubble stays visible via the `streamingButEmpty`
-    // condition in showTypingIndicator. The moment the first text chunk
-    // arrives, we inject the placeholder and the ThinkingBubble hides — zero
-    // blank-box flash, zero white-space gap.
-    const hasStreamingText = realtimeStreamingText.trim().length > 0
+    // Always inject the streaming placeholder as soon as isRealtimeStreaming is
+    // true — do NOT gate on realtimeStreamingText.trim().length > 0.
+    //
+    // Gating on text content breaks word-by-word streaming because:
+    //   1. React batches state updates, so multiple chunks arrive before the
+    //      placeholder even mounts.
+    //   2. Each mount/unmount resets MessageItem's internal reveal timer,
+    //      causing all accumulated text to display at once instead of
+    //      streaming word by word.
+    //
+    // Visual blank-box problem is solved differently:
+    //   • The placeholder is always mounted (DOM node stays alive, timer persists).
+    //   • When text is empty the chat-message-list wraps it with opacity:0 so
+    //     nothing is visually shown.
+    //   • ThinkingBubble stays visible via the `streamingButEmpty` condition in
+    //     showTypingIndicator (isStreaming && !streamingText).
+    //   • First chunk arrives → opacity:1 → text streams word-by-word.
+    //   • ThinkingBubble hides once streamingText has content.
 
     const nextMessages = [...deduped]
     const streamToolCalls = activeToolCalls.map((toolCall) => ({
@@ -631,22 +641,12 @@ export function ChatScreen({
     )
 
     if (existingStreamIdx >= 0) {
-      if (hasStreamingText) {
-        // Update the existing placeholder with latest text
-        nextMessages[existingStreamIdx] = {
-          ...nextMessages[existingStreamIdx],
-          ...streamingMsg,
-        }
-      } else {
-        // No text yet — remove the placeholder so ThinkingBubble stays visible
-        nextMessages.splice(existingStreamIdx, 1)
+      // Always update the existing placeholder — never remove it while streaming.
+      // Removing it resets the reveal timer and causes batched/all-at-once display.
+      nextMessages[existingStreamIdx] = {
+        ...nextMessages[existingStreamIdx],
+        ...streamingMsg,
       }
-      return nextMessages
-    }
-
-    // Only inject a new placeholder once text has arrived — prevents the
-    // blank empty-box that appeared between ThinkingBubble and first text.
-    if (!hasStreamingText) {
       return nextMessages
     }
 

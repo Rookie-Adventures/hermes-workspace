@@ -785,6 +785,49 @@ function ChatMessageListComponent({
     const isActiveMatch =
       isSearchMatch && searchMatchIndex === activeSearchMatchIndex
 
+    // For the live streaming placeholder: wrap in a stable div whose key never
+    // changes for the lifetime of the stream. The div's opacity toggles between
+    // 0 (no text yet) and 1 (text flowing) without unmounting the inner
+    // MessageItem — preserving its reveal-timer state so text streams word-by-word.
+    // ThinkingBubble stays visible via `streamingButEmpty` in showTypingIndicator
+    // while this wrapper is invisible.
+    if (messageIsStreaming) {
+      const isEmptyPlaceholder = !streamingText || streamingText.trim().length === 0
+      return (
+        <div
+          key={stableId}
+          style={{
+            opacity: isEmptyPlaceholder ? 0 : 1,
+            pointerEvents: isEmptyPlaceholder ? 'none' : undefined,
+            transition: 'opacity 150ms ease',
+          }}
+          aria-hidden={isEmptyPlaceholder ? true : undefined}
+        >
+          <MessageItem
+            message={chatMessage}
+            onRetryMessage={onRetryMessage}
+            toolResultsByCallId={hasToolCalls ? toolResultsByCallId : undefined}
+            forceActionsVisible={forceActionsVisible}
+            wrapperClassName={spacingClass}
+            wrapperDataMessageId={stableId}
+            bubbleClassName={
+              isActiveMatch
+                ? 'ring-2 ring-amber-400 bg-amber-50/50'
+                : isSearchMatch
+                  ? 'bg-amber-50/30'
+                  : undefined
+            }
+            isStreaming={messageIsStreaming}
+            streamingText={streamingText}
+            streamingThinking={messageIsStreaming ? streamingThinking : undefined}
+            simulateStreaming={simulateStreaming}
+            streamingKey={signature}
+            expandAllToolSections={expandAllToolSections}
+          />
+        </div>
+      )
+    }
+
     return (
       <MessageItem
         key={stableId}
