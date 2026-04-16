@@ -10,6 +10,7 @@ import { TaskCard } from './task-card'
 import { TaskDialog } from './task-dialog'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n'
 import {
   fetchTasks,
   fetchAssignees,
@@ -109,26 +110,26 @@ export function TasksScreen() {
 
   const createMutation = useMutation({
     mutationFn: createTask,
-    onSuccess: () => { invalidate(); toast('Task created'); setShowCreate(false) },
-    onError: (e) => toast(e instanceof Error ? e.message : 'Failed to create task', { type: 'error' }),
+    onSuccess: () => { invalidate(); toast('任务已创建'); setShowCreate(false) },
+    onError: (e) => toast(e instanceof Error ? e.message : '创建任务失败', { type: 'error' }),
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, input }: { id: string; input: CreateTaskInput }) => updateTask(id, input),
-    onSuccess: () => { invalidate(); toast('Task updated'); setEditingTask(null) },
-    onError: (e) => toast(e instanceof Error ? e.message : 'Failed to update task', { type: 'error' }),
+    onSuccess: () => { invalidate(); toast('任务已更新'); setEditingTask(null) },
+    onError: (e) => toast(e instanceof Error ? e.message : '更新任务失败', { type: 'error' }),
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteTask,
-    onSuccess: () => { invalidate(); toast('Task deleted') },
-    onError: (e) => toast(e instanceof Error ? e.message : 'Failed to delete task', { type: 'error' }),
+    onSuccess: () => { invalidate(); toast('任务已删除') },
+    onError: (e) => toast(e instanceof Error ? e.message : '删除任务失败', { type: 'error' }),
   })
 
   const moveMutation = useMutation({
     mutationFn: ({ id, column }: { id: string; column: TaskColumn }) => moveTask(id, column, 'user'),
     onSuccess: () => invalidate(),
-    onError: (e) => toast(e instanceof Error ? e.message : 'Failed to move task', { type: 'error' }),
+    onError: (e) => toast(e instanceof Error ? e.message : '移动任务失败', { type: 'error' }),
   })
 
   function handleDragStart(e: React.DragEvent, taskId: string) {
@@ -178,32 +179,32 @@ export function TasksScreen() {
       <header className="rounded-2xl border border-primary-200 bg-primary-50/85 p-4 backdrop-blur-xl">
         <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0">
-          <h1 className="text-2xl font-medium text-ink">Tasks</h1>
+          <h1 className="text-2xl font-medium text-ink">任务</h1>
           {assigneeFilter && (
             <div className="flex items-center gap-2 text-xs text-[var(--theme-muted)]">
-              <span>Filtered by: <span className="capitalize" style={{ color: '#f59e0b' }}>{assigneeFilter}</span></span>
+              <span>筛选：<span className="capitalize" style={{ color: '#f59e0b' }}>{assigneeFilter}</span></span>
               <button
                 type="button"
                 onClick={() => setAssigneeFilter(null)}
                 className="text-[var(--theme-muted)] hover:text-[var(--theme-text)] transition-colors"
               >
-                ✕ Clear
+                ✕ 清除
               </button>
             </div>
           )}
           {/* Stats */}
           <div className="flex items-center gap-2 text-xs text-[var(--theme-muted)] flex-wrap">
-            <span>{stats.total} total</span>
+            <span>{stats.total} 总计</span>
             <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">{stats.inProgress} in progress</span>
+            <span className="hidden sm:inline">{stats.inProgress} 进行中</span>
             {stats.overdue > 0 && (
               <>
                 <span>·</span>
-                <span className="text-red-400">{stats.overdue} overdue</span>
+                <span className="text-red-400">{stats.overdue} 已逾期</span>
               </>
             )}
             <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">{stats.completion}% done</span>
+            <span className="hidden sm:inline">{stats.completion}% 完成</span>
           </div>
         </div>
 
@@ -217,12 +218,12 @@ export function TasksScreen() {
                 : 'border-[var(--theme-border)] text-[var(--theme-muted)] hover:text-[var(--theme-text)] hover:border-[var(--theme-accent)]',
             )}
           >
-            {showDone ? 'Hide Done' : 'Show Done'}
+            {showDone ? '隐藏已完成' : '显示已完成'}
           </button>
           <button
             onClick={invalidate}
             className="rounded-lg p-1.5 transition-colors hover:bg-[var(--theme-hover)]"
-            title="Refresh"
+            title="刷新"
           >
             <HugeiconsIcon icon={RefreshIcon} size={16} className="text-[var(--theme-muted)]" />
           </button>
@@ -232,7 +233,7 @@ export function TasksScreen() {
             style={{ background: 'var(--theme-accent)' }}
           >
             <HugeiconsIcon icon={Add01Icon} size={14} />
-            New Task
+            新建任务
           </button>
         </div>
       </div>
@@ -279,7 +280,7 @@ export function TasksScreen() {
                 <button
                   onClick={() => { setCreateColumn(col); setShowCreate(true) }}
                   className="rounded p-0.5 hover:bg-[var(--theme-hover)] transition-colors"
-                  title={`Add to ${COLUMN_LABELS[col]}`}
+                  title={`添加到 ${COLUMN_LABELS[col]}`}
                 >
                   <HugeiconsIcon icon={Add01Icon} size={14} className="text-[var(--theme-muted)]" />
                 </button>
@@ -294,12 +295,12 @@ export function TasksScreen() {
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center justify-center py-8 gap-2 text-red-400"
                   >
-                    <p className="text-xs font-medium">Failed to load tasks</p>
+                    <p className="text-xs font-medium">加载任务失败</p>
                     <button
                       onClick={() => tasksQuery.refetch()}
                       className="text-xs text-[var(--theme-accent)] hover:underline"
                     >
-                      Retry
+                      重试
                     </button>
                   </motion.div>
                 ) : tasksQuery.isLoading ? (
@@ -319,8 +320,8 @@ export function TasksScreen() {
                         className="flex flex-col items-center justify-center py-8 gap-2 text-[var(--theme-muted)] opacity-60"
                       >
                         <HugeiconsIcon icon={CheckListIcon} size={22} />
-                        <p className="text-xs font-medium">No tasks</p>
-                        <p className="text-[10px]">Drop here or click + to add</p>
+                        <p className="text-xs font-medium">暂无任务</p>
+                        <p className="text-[10px]">拖放到这里或点击 + 添加</p>
                       </motion.div>
                     ) : (
                       colTasks.map(task => (

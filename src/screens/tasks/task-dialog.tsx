@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { HermesTask, CreateTaskInput, TaskColumn, TaskPriority, TaskAssignee } from '@/lib/tasks-api'
 import { COLUMN_LABELS, COLUMN_ORDER } from '@/lib/tasks-api'
+import { t } from '@/lib/i18n'
 
 type Props = {
   open: boolean
@@ -82,39 +83,39 @@ export function TaskDialog({ open, onOpenChange, task, defaultColumn, assignees,
 
         <div className="p-5">
           <DialogTitle className="text-base font-semibold text-[var(--theme-text)] mb-1">
-            {isEdit ? 'Edit Task' : 'New Task'}
+            {isEdit ? '编辑任务' : '新建任务'}
           </DialogTitle>
           <DialogDescription className="text-xs text-[var(--theme-muted)] mb-4">
-            {isEdit ? 'Update the task details below.' : 'Fill in the details for your new task.'}
+            {isEdit ? '更新任务详情' : '填写新任务详情'}
           </DialogDescription>
 
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className={labelClass}>Title *</label>
+              <label className={labelClass}>标题 *</label>
               <input
                 className={inputClass}
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                placeholder="What needs to be done?"
+                placeholder="需要完成什么？"
                 required
                 autoFocus
               />
             </div>
 
             <div>
-              <label className={labelClass}>Description</label>
+              <label className={labelClass}>描述</label>
               <textarea
                 className={cn(inputClass, 'resize-none')}
                 rows={3}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                placeholder="Optional details..."
+                placeholder="可选详情..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Column</label>
+                <label className={labelClass}>列</label>
                 <select
                   className={inputClass}
                   style={{ colorScheme: 'dark' }}
@@ -127,37 +128,37 @@ export function TaskDialog({ open, onOpenChange, task, defaultColumn, assignees,
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Priority</label>
+                <label className={labelClass}>优先级</label>
                 <select
                   className={inputClass}
                   style={{ colorScheme: 'dark' }}
                   value={priority}
                   onChange={e => setPriority(e.target.value as TaskPriority)}
                 >
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
+                  <option value="high">高</option>
+                  <option value="medium">中</option>
+                  <option value="low">低</option>
                 </select>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Assignee</label>
+                <label className={labelClass}>负责人</label>
                 <select
                   className={inputClass}
                   style={{ colorScheme: 'dark' }}
                   value={assignee}
                   onChange={e => setAssignee(e.target.value)}
                 >
-                  <option value="">Unassigned</option>
+                  <option value="">未分配</option>
                   {assignees.map(({ id, label }) => (
                     <option key={id} value={id}>{label}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Due Date</label>
+                <label className={labelClass}>截止日期</label>
                 <input
                   type="date"
                   className={inputClass}
@@ -169,17 +170,17 @@ export function TaskDialog({ open, onOpenChange, task, defaultColumn, assignees,
             </div>
 
             <div>
-              <label className={labelClass}>Tags (comma-separated)</label>
+              <label className={labelClass}>标签（逗号分隔）</label>
               <input
                 className={inputClass}
                 value={tags}
                 onChange={e => setTags(e.target.value)}
-                placeholder="frontend, bug, research"
+                placeholder="前端, bug, 研究"
               />
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <p className="text-[10px] text-[var(--theme-muted)]">Press Esc to cancel</p>
+              <p className="text-[10px] text-[var(--theme-muted)]">按 Esc 取消</p>
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -188,7 +189,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultColumn, assignees,
                   onClick={() => onOpenChange(false)}
                   disabled={isSubmitting}
                 >
-                  Cancel
+                  取消
                 </Button>
                 <Button
                   type="submit"
@@ -196,7 +197,7 @@ export function TaskDialog({ open, onOpenChange, task, defaultColumn, assignees,
                   disabled={isSubmitting || !title.trim()}
                   style={{ background: 'var(--theme-accent)', color: 'white' }}
                 >
-                  {isSubmitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Task'}
+                  {isSubmitting ? '保存中...' : isEdit ? '保存更改' : '创建任务'}
                 </Button>
               </div>
             </div>

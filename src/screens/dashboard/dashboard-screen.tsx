@@ -16,6 +16,7 @@ import { chatQueryKeys } from '@/screens/chat/chat-queries'
 import { getUnavailableReason } from '@/lib/feature-gates'
 import { useFeatureAvailable } from '@/hooks/use-feature-available'
 import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n'
 import { openHamburgerMenu } from '@/components/mobile-hamburger-menu'
 import { applyTheme, useSettingsStore } from '@/hooks/use-settings'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -25,10 +26,10 @@ import { Moon02Icon, Sun02Icon } from '@hugeicons/core-free-icons'
 
 function timeAgo(ts: number): string {
   const diff = Date.now() / 1000 - ts
-  if (diff < 60) return 'just now'
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  return `${Math.floor(diff / 86400)}d ago`
+  if (diff < 60) return '刚刚'
+  if (diff < 3600) return `${Math.floor(diff / 60)}分钟前`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}小时前`
+  return `${Math.floor(diff / 86400)}天前`
 }
 
 function formatNumber(n: number): string {
@@ -89,7 +90,7 @@ function GlassCard({
   )
 }
 
-function EnhancedBadge({ label = 'Enhanced API' }: { label?: string }) {
+function EnhancedBadge({ label = '增强 API' }: { label?: string }) {
   return (
     <span className="inline-flex items-center rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700">
       {label}
@@ -386,7 +387,7 @@ function ModelCard() {
               connected ? 'bg-emerald-500' : 'bg-red-500',
             )}
           />
-          {connected ? 'Online' : 'Offline'}
+          {connected ? '在线' : '离线'}
         </span>
       }
       accentColor={connected ? '#22c55e' : '#ef4444'}

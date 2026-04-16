@@ -21,6 +21,7 @@ import { EditJobDialog } from './edit-job-dialog'
 import type { HermesJob } from '@/lib/jobs-api'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n'
 import {
   createJob,
   deleteJob,
@@ -40,10 +41,10 @@ function formatNextRun(nextRun?: string | null): string {
     const d = new Date(nextRun)
     const now = new Date()
     const diffMs = d.getTime() - now.getTime()
-    if (diffMs < 0) return 'overdue'
-    if (diffMs < 60_000) return 'in < 1m'
-    if (diffMs < 3_600_000) return `in ${Math.round(diffMs / 60_000)}m`
-    if (diffMs < 86_400_000) return `in ${Math.round(diffMs / 3_600_000)}h`
+    if (diffMs < 0) return '已逾期'
+    if (diffMs < 60_000) return '< 1分钟后'
+    if (diffMs < 3_600_000) return `${Math.round(diffMs / 60_000)}分钟后`
+    if (diffMs < 86_400_000) return `${Math.round(diffMs / 3_600_000)}小时后`
     return d.toLocaleDateString()
   } catch {
     return nextRun
@@ -51,7 +52,7 @@ function formatNextRun(nextRun?: string | null): string {
 }
 
 function formatRunTimestamp(value?: string | null): string {
-  if (!value) return 'Never run'
+  if (!value) return '从未运行'
   try {
     return new Date(value).toLocaleString()
   } catch {
@@ -71,24 +72,24 @@ function getLastRunStatus(job: HermesJob): {
 } {
   if (!job.last_run_at) {
     return {
-      label: 'Never run',
+      label: '从未运行',
       color: 'var(--theme-muted)',
     }
   }
   if (job.last_run_success === true) {
     return {
-      label: 'Last run succeeded',
+      label: '上次运行成功',
       color: 'var(--theme-success)',
     }
   }
   if (job.last_run_success === false) {
     return {
-      label: 'Last run failed',
+      label: '上次运行失败',
       color: 'var(--theme-danger)',
     }
   }
   return {
-    label: 'Last run unknown',
+    label: '上次运行状态未知',
     color: 'var(--theme-muted)',
   }
 }
@@ -152,16 +153,16 @@ function JobCard({
             {job.prompt}
           </p>
           <div className="mb-2 flex flex-wrap items-center gap-3 text-[10px] text-[var(--theme-muted)]">
-            <span>{job.schedule_display || 'custom'}</span>
+            <span>{job.schedule_display || '自定义'}</span>
             <span>·</span>
-            <span>Next: {formatNextRun(job.next_run_at)}</span>
+            <span>下次: {formatNextRun(job.next_run_at)}</span>
             <span>·</span>
-            <span>Last: {formatRunTimestamp(job.last_run_at)}</span>
+            <span>上次: {formatRunTimestamp(job.last_run_at)}</span>
             {job.skills && job.skills.length > 0 && (
               <>
                 <span>·</span>
                 <span>
-                  {job.skills.length} skill{job.skills.length !== 1 ? 's' : ''}
+                  {job.skills.length} 个技能
                 </span>
               </>
             )}
@@ -178,7 +179,7 @@ function JobCard({
           <button
             onClick={() => onTrigger(job.id)}
             className="rounded-lg p-1.5 transition-colors hover:bg-[var(--theme-hover)]"
-            title="Run now"
+            title="立即运行"
           >
             <HugeiconsIcon
               icon={PlayIcon}
@@ -189,7 +190,7 @@ function JobCard({
           <button
             onClick={() => (isPaused ? onResume(job.id) : onPause(job.id))}
             className="rounded-lg p-1.5 transition-colors hover:bg-[var(--theme-hover)]"
-            title={isPaused ? 'Resume' : 'Pause'}
+            title={isPaused ? '继续' : '暂停'}
           >
             <HugeiconsIcon
               icon={isPaused ? PlayIcon : PauseIcon}
@@ -200,7 +201,7 @@ function JobCard({
           <button
             onClick={() => onEdit(job)}
             className="rounded-lg p-1.5 transition-colors hover:bg-[var(--theme-hover)]"
-            title="Edit"
+            title="编辑"
           >
             <HugeiconsIcon
               icon={PencilEdit02Icon}
@@ -211,7 +212,7 @@ function JobCard({
           <button
             onClick={() => setExpanded((current) => !current)}
             className="rounded-lg p-1.5 transition-colors hover:bg-[var(--theme-hover)]"
-            title={expanded ? 'Hide run history' : 'Show run history'}
+            title={expanded ? '隐藏运行历史' : '显示运行历史'}
           >
             <HugeiconsIcon
               icon={expanded ? ArrowUp01Icon : ArrowDown01Icon}
@@ -222,7 +223,7 @@ function JobCard({
           <button
             onClick={() => onDelete(job.id)}
             className="rounded-lg p-1.5 transition-colors hover:bg-[var(--theme-hover)]"
-            title="Delete"
+            title="删除"
           >
             <HugeiconsIcon
               icon={Delete01Icon}

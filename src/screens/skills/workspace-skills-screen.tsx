@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { Markdown } from '@/components/prompt-kit/markdown'
+import { t } from '@/lib/i18n'
 
 function SkillMarkdown({ content }: { content: string }) {
   return <Markdown>{content}</Markdown>
@@ -49,9 +50,9 @@ type SkillContentResponse = {
 }
 
 const MEMORY_FILTERS: Array<MemoryFilter> = [
-  'All',
-  'Workspace',
-  'Project',
+  '全部',
+  '工作区',
+  '项目',
   'Agent',
 ]
 
@@ -91,29 +92,29 @@ async function apiRequest(input: string, init?: RequestInit): Promise<unknown> {
 }
 
 function sectionLabel(section: MemorySection): string {
-  if (section === 'workspace') return 'Workspace Memory'
-  if (section === 'project') return 'Daily Logs'
-  return 'Agent Memory'
+  if (section === 'workspace') return '工作区记忆'
+  if (section === 'project') return '每日日志'
+  return 'Agent 记忆'
 }
 
 function matchesFilter(section: MemorySection, filter: MemoryFilter): boolean {
-  if (filter === 'All') return true
-  if (filter === 'Workspace') return section === 'workspace'
-  if (filter === 'Project') return section === 'project'
+  if (filter === '全部') return true
+  if (filter === '工作区') return section === 'workspace'
+  if (filter === '项目') return section === 'project'
   return section === 'agent'
 }
 
 function EmptyMemorySection({ label }: { label: string }) {
   return (
     <div className="rounded-xl border border-dashed border-primary-200 bg-primary-50/70 px-3 py-4 text-xs text-primary-500">
-      No files found in {label.toLowerCase()}.
+      {label} 中未找到文件。
     </div>
   )
 }
 
 export function WorkspaceSkillsScreen() {
   const [selectedSkillId, setSelectedSkillId] = useState<string>('')
-  const [memoryFilter, setMemoryFilter] = useState<MemoryFilter>('All')
+  const [memoryFilter, setMemoryFilter] = useState<MemoryFilter>('全部')
   const [memorySearch, setMemorySearch] = useState('')
   const deferredSearch = useDeferredValue(memorySearch)
   const [selectedMemoryPath, setSelectedMemoryPath] = useState<string | null>(
@@ -215,18 +216,18 @@ export function WorkspaceSkillsScreen() {
   }, [memoryQuery.data?.files, selectedMemoryPath])
 
   function handleComingSoon() {
-    toast('Coming soon', { type: 'info' })
+    toast('即将推出', { type: 'info' })
   }
 
   function handleClearAll() {
-    toast('Are you sure?', { type: 'warning' })
+    toast('确定吗？', { type: 'warning' })
     const confirmed =
       typeof window === 'undefined'
         ? true
-        : window.confirm('Are you sure you want to clear all memory?')
+        : window.confirm('确定要清除所有记忆吗？')
 
     if (!confirmed) return
-    toast('Cleared', { type: 'success' })
+    toast('已清除', { type: 'success' })
   }
 
   return (
@@ -239,10 +240,10 @@ export function WorkspaceSkillsScreen() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-primary-900">
-                Skills
+                技能
               </h1>
               <p className="mt-1 text-sm text-primary-500">
-                Installed skills and workspace memory sources
+                已安装的技能和工作区记忆来源
               </p>
             </div>
           </div>
@@ -254,7 +255,7 @@ export function WorkspaceSkillsScreen() {
               <div className="flex flex-col gap-3 border-b border-primary-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-[15px] font-semibold text-primary-900">
-                    Skills
+                    技能
                   </h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
