@@ -138,3 +138,11 @@ __pycache__/
 .env.bak
 .runtime/
 workspace-final-markdown-review.md
+
+# Sensitive config (keys, secrets)
+config/secrets.env
+config/*.env
+!config/.env.example
+
+# WorkBuddy (personal workspace data)
+.workbuddy/
