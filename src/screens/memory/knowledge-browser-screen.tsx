@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n'
 
 type WikiPageMeta = {
   path: string
@@ -458,7 +459,7 @@ export function KnowledgeBrowserScreen() {
             }}
           >
             <HugeiconsIcon icon={Link01Icon} size={16} strokeWidth={1.7} />
-            Graph view
+            {t('knowledge.graphView')}
           </button>
 
           <DialogRoot open={settingsOpen} onOpenChange={setSettingsOpen}>
@@ -471,10 +472,10 @@ export function KnowledgeBrowserScreen() {
                   backgroundColor: 'var(--theme-card)',
                   color: 'var(--theme-text)',
                 }}
-                title="Knowledge base settings"
+                title={t('knowledge.baseSettings')}
               >
                 <HugeiconsIcon icon={Settings01Icon} size={16} strokeWidth={1.7} />
-                <span className="hidden sm:inline">Settings</span>
+                <span className="hidden sm:inline">{t('knowledge.settings')}</span>
               </button>
             </DialogTrigger>
             <DialogContent
@@ -488,15 +489,15 @@ export function KnowledgeBrowserScreen() {
               <div className="space-y-4">
                 <div>
                   <DialogTitle className="text-base font-semibold">
-                    Knowledge Base Settings
+                    {t('knowledge.baseSettings')}
                   </DialogTitle>
                   <DialogDescription className="mt-1 text-sm" style={{ color: 'var(--theme-muted)' }}>
-                    Choose where your knowledge base is located. Changes take effect immediately.
+                    {t('knowledge.chooseLocation')}
                   </DialogDescription>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Source type</label>
+                  <label className="text-sm font-medium">{t('knowledge.sourceType')}</label>
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -520,7 +521,7 @@ export function KnowledgeBrowserScreen() {
                       }}
                     >
                       <HugeiconsIcon icon={Folder01Icon} size={16} strokeWidth={1.7} />
-                      Local folder
+                      {t('knowledge.localFolder')}
                     </button>
                     <button
                       type="button"
@@ -546,7 +547,7 @@ export function KnowledgeBrowserScreen() {
                       }}
                     >
                       <HugeiconsIcon icon={CodeIcon} size={16} strokeWidth={1.7} />
-                      GitHub repo
+                      {t('knowledge.gitRepo')}
                     </button>
                   </div>
                 </div>
@@ -554,7 +555,7 @@ export function KnowledgeBrowserScreen() {
                 {settingsSource?.type === 'local' && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium" htmlFor="kb-local-path">
-                      Folder path
+                      {t('knowledge.folderPath')}
                     </label>
                     <input
                       id="kb-local-path"
@@ -582,7 +583,7 @@ export function KnowledgeBrowserScreen() {
                   <div className="space-y-3">
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium" htmlFor="kb-gh-repo">
-                        Repository
+                        {t('knowledge.repository')}
                       </label>
                       <input
                         id="kb-gh-repo"
@@ -607,7 +608,7 @@ export function KnowledgeBrowserScreen() {
                     <div className="flex gap-3">
                       <div className="flex-1 space-y-1.5">
                         <label className="text-sm font-medium" htmlFor="kb-gh-branch">
-                          Branch
+                          {t('knowledge.gitBranch')}
                         </label>
                         <input
                           id="kb-gh-branch"
@@ -631,7 +632,7 @@ export function KnowledgeBrowserScreen() {
                       </div>
                       <div className="flex-1 space-y-1.5">
                         <label className="text-sm font-medium" htmlFor="kb-gh-path">
-                          Sub-folder
+                          {t('knowledge.subFolder')}
                         </label>
                         <input
                           id="kb-gh-path"
@@ -700,7 +701,7 @@ export function KnowledgeBrowserScreen() {
                         color: 'var(--theme-text)',
                       }}
                     >
-                      {syncing ? 'Syncing…' : 'Sync now'}
+                      {syncing ? t('knowledge.syncing') : t('knowledge.syncNow')}
                     </button>
                   )}
                   <button
@@ -726,7 +727,7 @@ export function KnowledgeBrowserScreen() {
                     }}
                     className="inline-flex items-center gap-2 rounded-xl bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
                   >
-                    Save
+                    {t('common.save')}
                   </button>
                 </div>
               </div>
@@ -743,7 +744,7 @@ export function KnowledgeBrowserScreen() {
             onClick={() => setMobileTreeOpen((value) => !value)}
           >
             <span className="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-neutral-400">
-              Knowledge Pages ({filteredPages.length})
+              {t('knowledge.pagesCount', { count: filteredPages.length })}
             </span>
             <span className="text-primary-500 dark:text-neutral-400 md:hidden">
               <HugeiconsIcon
@@ -761,13 +762,13 @@ export function KnowledgeBrowserScreen() {
           ) : searchTerm ? (
             <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
               <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-primary-400 dark:text-neutral-500">
-                Search Results
+                {t('knowledge.searchResults')}
               </div>
               <div className="space-y-1">
                 {searchQuery.isLoading ? (
-                  <StateBox label="Searching knowledge..." />
+                  <StateBox label={t('knowledge.searching')} />
                 ) : searchResults.length === 0 ? (
-                  <StateBox label="No matches found" />
+                  <StateBox label={t('knowledge.noMatches')} />
                 ) : (
                   searchResults.map((result, index) => (
                     <button
@@ -812,11 +813,11 @@ export function KnowledgeBrowserScreen() {
               <div className="space-y-3 overflow-y-auto pr-1 md:h-full">
                 <section className="rounded-xl border border-primary-200 bg-primary-50/80 p-2 dark:border-neutral-800 dark:bg-neutral-900/60">
                   <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-primary-400 dark:text-neutral-500">
-                    Tags
+                    {t('knowledge.tags')}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     <TagPill
-                      label="All"
+                      label={t('knowledge.all')}
                       count={pages.length}
                       active={selectedTag == null}
                       onClick={() => setSelectedTag(null)}
@@ -835,15 +836,15 @@ export function KnowledgeBrowserScreen() {
 
                 <section className="rounded-xl border border-primary-200 bg-primary-50/80 p-1 dark:border-neutral-800 dark:bg-neutral-900/60">
                   {listQuery.isLoading ? (
-                    <StateBox label="Loading knowledge pages..." />
+                    <StateBox label={t('knowledge.loadingPages')} />
                   ) : listQuery.error instanceof Error ? (
                     <StateBox label={listQuery.error.message} error />
                   ) : filteredPages.length === 0 ? (
                     <StateBox
                       label={
                         selectedTag
-                          ? 'No pages match this tag'
-                          : 'No markdown pages found'
+                          ? t('knowledge.noTagMatch')
+                          : t('knowledge.noMarkdown')
                       }
                     />
                   ) : (
@@ -882,26 +883,26 @@ export function KnowledgeBrowserScreen() {
                   size={14}
                   strokeWidth={1.7}
                 />
-                Ask agent about this
+                {t('knowledge.askAgent')}
               </a>
             ) : null}
           </div>
 
           <div className="h-full overflow-auto p-2 md:p-3">
             {listQuery.isLoading ? (
-              <StateBox label="Loading knowledge base..." />
+              <StateBox label={t('common.loading')} />
             ) : listQuery.error instanceof Error ? (
               <StateBox label={listQuery.error.message} error />
             ) : !knowledgeExists ? (
               <EmptyKnowledgeState knowledgeRoot={knowledgeRoot} />
             ) : !selectedPath ? (
-              <StateBox label="Select a page to start browsing" />
+              <StateBox label={t('knowledge.selectPage')} />
             ) : readQuery.isLoading ? (
-              <StateBox label="Loading page..." />
+              <StateBox label={t('knowledge.loadingPage')} />
             ) : readQuery.error instanceof Error ? (
               <StateBox label={readQuery.error.message} error />
             ) : !page ? (
-              <StateBox label="Page not found" error />
+              <StateBox label={t('knowledge.pageNotFound')} error />
             ) : (
               <div
                 className="rounded-xl"
@@ -915,7 +916,7 @@ export function KnowledgeBrowserScreen() {
                     {focusedResult && focusedResult.path === page.path ? (
                       <div className="rounded-xl border border-yellow-300/40 bg-yellow-300/10 px-3 py-2 text-sm text-primary-900 dark:text-yellow-50">
                         <div className="font-medium">
-                          Search hit at line {focusLine}
+                          {t('knowledge.searchHit', { line: focusLine || 0 })}
                         </div>
                         <div className="mt-1 text-xs opacity-80">
                           {focusedResult.text}
@@ -979,11 +980,11 @@ export function KnowledgeBrowserScreen() {
                           size={16}
                           strokeWidth={1.7}
                         />
-                        Backlinks
+                        {t('knowledge.backlinks')}
                       </div>
                       {backlinks.length === 0 ? (
                         <div className="text-sm text-primary-500 dark:text-neutral-400">
-                          No pages link here yet.
+                          {t('knowledge.noBacklinks')}
                         </div>
                       ) : (
                         <div className="flex flex-wrap gap-2">
@@ -1007,26 +1008,26 @@ export function KnowledgeBrowserScreen() {
                   </div>
 
                   <aside className="space-y-3">
-                    <MetadataCard label="Type" value={page.type} />
-                    <MetadataCard label="Domain" value={page.domain} />
-                    <MetadataCard label="Status" value={page.status} />
+                    <MetadataCard label={t('knowledge.type')} value={page.type} />
+                    <MetadataCard label={t('knowledge.domain')} value={page.domain} />
+                    <MetadataCard label={t('knowledge.status')} value={page.status} />
                     <MetadataCard
-                      label="Created"
+                      label={t('knowledge.created')}
                       value={formatDate(page.created)}
                     />
                     <MetadataCard
-                      label="Updated"
+                      label={t('knowledge.updated')}
                       value={formatDate(page.updated || page.modified)}
                     />
-                    <MetadataCard label="Size" value={formatBytes(page.size)} />
+                    <MetadataCard label={t('knowledge.size')} value={formatBytes(page.size)} />
                     <div className="rounded-xl border border-primary-200 bg-primary-50/70 p-3 dark:border-neutral-800 dark:bg-neutral-900/60">
                       <div className="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-neutral-400">
-                        Tags
+                        {t('knowledge.tags')}
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {page.tags.length === 0 ? (
                           <span className="text-sm text-primary-500 dark:text-neutral-400">
-                            No tags
+                            {t('knowledge.noTags')}
                           </span>
                         ) : (
                           page.tags.map((tag) => (
@@ -1049,11 +1050,11 @@ export function KnowledgeBrowserScreen() {
                           size={14}
                           strokeWidth={1.7}
                         />
-                        Wikilinks
+                        {t('knowledge.wikilinks')}
                       </div>
                       {page.wikilinks.length === 0 ? (
                         <div className="text-sm text-primary-500 dark:text-neutral-400">
-                          No outbound links
+                          {t('knowledge.noOutbound')}
                         </div>
                       ) : (
                         <div className="flex flex-wrap gap-2">
@@ -1084,19 +1085,18 @@ export function KnowledgeBrowserScreen() {
       <DialogRoot open={graphOpen} onOpenChange={setGraphOpen}>
         <DialogContent className="w-[min(980px,94vw)] max-w-none p-0">
           <div className="border-b border-primary-200 px-5 py-4 dark:border-neutral-800">
-            <DialogTitle>Knowledge graph</DialogTitle>
+            <DialogTitle>{t('knowledge.graph')}</DialogTitle>
             <DialogDescription>
-              Page relationships from wiki links. Click any node to open that
-              page.
+              {t('knowledge.graphDesc')}
             </DialogDescription>
           </div>
           <div className="p-5">
             {graphQuery.isLoading ? (
-              <StateBox label="Loading graph..." />
+              <StateBox label={t('knowledge.loadingGraph')} />
             ) : graphQuery.error instanceof Error ? (
               <StateBox label={graphQuery.error.message} error />
             ) : (graphQuery.data?.nodes?.length ?? 0) === 0 ? (
-              <StateBox label="No graph data yet" />
+              <StateBox label={t('knowledge.noGraphData')} />
             ) : (
               <GraphCanvas
                 nodes={graphQuery.data?.nodes ?? []}
@@ -1243,10 +1243,10 @@ function EmptyKnowledgeState({ knowledgeRoot }: { knowledgeRoot: string }) {
   return (
     <div className="flex min-h-32 flex-col justify-center rounded-xl border border-primary-200 bg-primary-50 px-4 py-5 text-sm text-primary-600 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300">
       <div className="text-base font-semibold text-primary-900 dark:text-neutral-100">
-        No knowledge base found
+        {t('knowledge.noBaseFound')}
       </div>
       <p className="mt-2 text-pretty">
-        Create markdown files in <code>{knowledgeRoot}</code> to get started.
+        {t('knowledge.createMarkdown', { path: knowledgeRoot })}
       </p>
       <a
         href="https://karpathy.ai/"
@@ -1255,7 +1255,7 @@ function EmptyKnowledgeState({ knowledgeRoot }: { knowledgeRoot: string }) {
         className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary-900 underline decoration-primary-300 underline-offset-4 hover:decoration-primary-500 dark:text-neutral-100"
       >
         <HugeiconsIcon icon={Link01Icon} size={14} strokeWidth={1.7} />
-        See the Karpathy LLM wiki pattern
+        {t('knowledge.seePattern')}
       </a>
     </div>
   )

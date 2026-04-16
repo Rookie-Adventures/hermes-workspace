@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Cancel01Icon } from '@hugeicons/core-free-icons'
 import type { HermesJob } from '@/lib/jobs-api'
+import { t } from '@/lib/i18n'
 
 const SCHEDULE_PRESETS = [
   { label: 'Every 15m', value: 'every 15m' },
@@ -183,12 +184,12 @@ export function EditJobDialog({
               style={{ borderColor: 'var(--theme-border)' }}
             >
               <div>
-                <h2 className="text-lg font-semibold">Edit Job</h2>
+                <h2 className="text-lg font-semibold">{t('jobs.editTitle')}</h2>
                 <p
                   className="mt-1 text-sm"
                   style={{ color: 'var(--theme-muted)' }}
                 >
-                  Update the schedule, prompt, and routing for this Hermes task.
+                  {t('jobs.updateScheduled')}
                 </p>
               </div>
               <button
@@ -196,7 +197,7 @@ export function EditJobDialog({
                 onClick={() => onOpenChange(false)}
                 className="rounded-lg p-2 transition-colors"
                 style={{ color: 'var(--theme-muted)' }}
-                aria-label="Close edit job dialog"
+                aria-label={t('common.close')}
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={18} />
               </button>
@@ -204,7 +205,7 @@ export function EditJobDialog({
 
             <div className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
               <section className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
+                <label className="text-sm font-medium">{t('jobs.name')}</label>
                 <input
                   value={form.name}
                   onChange={(event) =>
@@ -213,7 +214,7 @@ export function EditJobDialog({
                       name: event.target.value,
                     }))
                   }
-                  placeholder="Daily research summary"
+                  placeholder={t('jobs.name')}
                   required
                   className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-1"
                   style={{
@@ -227,12 +228,12 @@ export function EditJobDialog({
 
               <section className="space-y-3">
                 <div>
-                  <h3 className="text-sm font-medium">Schedule</h3>
+                  <h3 className="text-sm font-medium">{t('jobs.schedule')}</h3>
                   <p
                     className="mt-1 text-xs"
                     style={{ color: 'var(--theme-muted)' }}
                   >
-                    Choose a preset or enter a custom schedule string below.
+                    {t('jobs.scheduleHint')}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -265,7 +266,7 @@ export function EditJobDialog({
                   })}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Custom schedule</label>
+                  <label className="text-sm font-medium">{t('jobs.customSchedule')}</label>
                   <input
                     value={form.schedule}
                     onChange={(event) =>
@@ -287,7 +288,7 @@ export function EditJobDialog({
               </section>
 
               <section className="space-y-2">
-                <label className="text-sm font-medium">Prompt</label>
+                <label className="text-sm font-medium">{t('jobs.prompt')}</label>
                 <textarea
                   value={form.prompt}
                   onChange={(event) =>
@@ -296,7 +297,7 @@ export function EditJobDialog({
                       prompt: event.target.value,
                     }))
                   }
-                  placeholder="What should Hermes do?"
+                  placeholder={t('jobs.whatShouldDo')}
                   required
                   rows={5}
                   className="w-full resize-none rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-1"
@@ -310,17 +311,17 @@ export function EditJobDialog({
 
               <section className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium">Options</h3>
+                  <h3 className="text-sm font-medium">{t('jobs.options')}</h3>
                   <p
                     className="mt-1 text-xs"
                     style={{ color: 'var(--theme-muted)' }}
                   >
-                    Optional routing and repeat controls.
+                    {t('jobs.optionalRouting')}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Skills</label>
+                  <label className="text-sm font-medium">{t('jobs.skills')}</label>
                   <input
                     value={form.skillsInput}
                     onChange={(event) =>
@@ -329,7 +330,7 @@ export function EditJobDialog({
                         skillsInput: event.target.value,
                       }))
                     }
-                    placeholder="research, writing, synthesis"
+                    placeholder={t('jobs.skillsPlaceholder')}
                     className="w-full rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-1"
                     style={{
                       background: 'var(--theme-input)',
@@ -340,7 +341,7 @@ export function EditJobDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Deliver to</label>
+                  <label className="text-sm font-medium">{t('jobs.deliverTo')}</label>
                   <div className="flex flex-wrap gap-2">
                     {DELIVERY_OPTIONS.map((option) => {
                       const isActive = form.deliver.includes(option)
@@ -353,7 +354,7 @@ export function EditJobDialog({
                           onClick={() => toggleDelivery(option)}
                           title={
                             needsGateway
-                              ? `Requires Hermes Gateway with ${option} configured`
+                              ? t('jobs.requiresGateway', { platform: option })
                               : undefined
                           }
                           className="rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-colors"
@@ -379,7 +380,7 @@ export function EditJobDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Repeat</label>
+                  <label className="text-sm font-medium">{t('jobs.repeat')}</label>
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
@@ -405,7 +406,7 @@ export function EditJobDialog({
                             : 'var(--theme-text)',
                       }}
                     >
-                      Unlimited
+                      {t('jobs.unlimited')}
                     </button>
                     <button
                       type="button"
@@ -431,7 +432,7 @@ export function EditJobDialog({
                             : 'var(--theme-text)',
                       }}
                     >
-                      Set count
+                      {t('jobs.setCount')}
                     </button>
                   </div>
                   {form.repeatMode === 'limited' ? (
@@ -471,7 +472,7 @@ export function EditJobDialog({
                   color: 'var(--theme-muted)',
                 }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
@@ -484,7 +485,7 @@ export function EditJobDialog({
                 className="rounded-xl px-4 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-50"
                 style={{ background: 'var(--theme-accent)' }}
               >
-                {isSubmitting ? 'Saving...' : 'Save changes'}
+                {isSubmitting ? t('jobs.saving') : t('jobs.saveChanges')}
               </button>
             </div>
           </motion.form>

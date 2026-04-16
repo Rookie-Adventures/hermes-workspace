@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import type { HermesTask } from '@/lib/tasks-api'
 import { PRIORITY_COLORS, isOverdue } from '@/lib/tasks-api'
+import { t } from '@/lib/i18n'
 
 type Props = {
   task: HermesTask
@@ -36,7 +37,7 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
       <span
         className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full shrink-0"
         style={{ background: priorityColor }}
-        title={`Priority: ${task.priority}`}
+        title={`${t('tasks.priority')}: ${task.priority}`}
       />
 
       <p className="text-sm font-medium text-[var(--theme-text)] leading-snug mb-1 line-clamp-2 pr-4">
@@ -66,7 +67,7 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
           ))}
           {extraTagCount > 0 && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--theme-hover)] text-[var(--theme-muted)]">
-              +{extraTagCount} more
+              +{extraTagCount} {t('tasks.more')}
             </span>
           )}
         </div>
@@ -76,7 +77,7 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
             {overdue && (
               <>
                 <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
-                <span className="text-red-400 font-semibold">Overdue</span>
+                <span className="text-red-400 font-semibold">{t('tasks.overdue')}</span>
                 <span className="text-[var(--theme-muted)] mx-0.5">·</span>
               </>
             )}
