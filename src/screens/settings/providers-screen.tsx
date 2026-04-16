@@ -235,15 +235,15 @@ async function fetchModels(): Promise<{
 }
 
 const TAB_ORDER: Array<{ id: SettingsTabId; label: string }> = [
-  { id: 'providers', label: 'Providers' },
-  { id: 'models', label: 'Models' },
-  { id: 'agents', label: 'AI & Agents' },
-  { id: 'session', label: 'Session' },
-  { id: 'memory', label: 'Memory' },
+  { id: 'providers', label: '供应商' },
+  { id: 'models', label: '模型' },
+  { id: 'agents', label: 'AI 与 Agent' },
+  { id: 'session', label: '会话' },
+  { id: 'memory', label: '记忆' },
 ]
 
 const MEMORY_PROVIDER_OPTIONS: Array<SelectOption> = [
-  { label: 'Local', value: 'local' },
+  { label: '本地', value: 'local' },
   { label: 'OpenAI', value: 'openai' },
   { label: 'Gemini', value: 'gemini' },
   { label: 'Voyage', value: 'voyage' },
@@ -252,7 +252,7 @@ const MEMORY_PROVIDER_OPTIONS: Array<SelectOption> = [
 ]
 
 const MEMORY_FALLBACK_OPTIONS: Array<SelectOption> = [
-  { label: 'None', value: 'none' },
+  { label: '无', value: 'none' },
   ...MEMORY_PROVIDER_OPTIONS,
 ]
 
@@ -261,9 +261,9 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'primary-model',
     tab: 'models',
     path: 'agents.defaults.model.primary',
-    label: 'Default model',
+    label: '默认模型',
     description:
-      'Primary model used for new agents unless a specific agent overrides it.',
+      '新 Agent 使用的默认模型，除非特定 Agent 有单独配置。',
     kind: 'text',
     placeholder: 'provider/model',
   },
@@ -271,9 +271,9 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'fallback-chain',
     tab: 'models',
     path: 'agents.defaults.model.fallbacks',
-    label: 'Fallback chain',
+    label: '备用模型链',
     description:
-      'Ordered fallback models. Use one per line or separate with commas.',
+      '按顺序排列的备用模型。每行一个或用逗号分隔。',
     kind: 'multiline',
     rows: 3,
     placeholder: 'anthropic-oauth/claude-sonnet-4-6',
@@ -284,9 +284,9 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'context-tokens-models',
     tab: 'models',
     path: 'agents.defaults.contextTokens',
-    label: 'Context tokens',
+    label: '上下文 Token',
     description:
-      'Default token budget applied to agents when no narrower override is present.',
+      'Agent 默认的 Token 预算上限。',
     kind: 'number',
     min: 1,
     step: 1000,
@@ -298,9 +298,9 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'context-tokens-session',
     tab: 'session',
     path: 'agents.defaults.contextTokens',
-    label: 'Session context tokens',
+    label: '会话上下文 Token',
     description:
-      'Same agent default context budget surfaced here for session setup workflows.',
+      '会话设置时使用的默认上下文预算。',
     kind: 'number',
     min: 1,
     step: 1000,
@@ -309,8 +309,8 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'memory-provider',
     tab: 'memory',
     path: 'agents.defaults.memorySearch.provider',
-    label: 'Memory search provider',
-    description: 'Embedding provider used for memory lookup and consolidation.',
+    label: '记忆搜索供应商',
+    description: '用于记忆查找和整合的 Embedding 供应商。',
     kind: 'select',
     options: MEMORY_PROVIDER_OPTIONS,
   },
@@ -318,9 +318,9 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'memory-fallback',
     tab: 'memory',
     path: 'agents.defaults.memorySearch.fallback',
-    label: 'Memory fallback provider',
+    label: '记忆备用供应商',
     description:
-      'Fallback provider when the primary memory search provider is unavailable.',
+      '主记忆搜索供应商不可用时的备用选项。',
     kind: 'select',
     options: MEMORY_FALLBACK_OPTIONS,
   },
@@ -328,24 +328,24 @@ const SETTINGS: Array<SettingDefinition> = [
     id: 'memory-sync-on-session-start',
     tab: 'memory',
     path: 'agents.defaults.memorySearch.sync.onSessionStart',
-    label: 'Sync on session start',
-    description: 'Refresh indexed memory paths when a new session starts.',
+    label: '会话开始时同步',
+    description: '新会话开始时刷新已索引的记忆路径。',
     kind: 'boolean',
   },
   {
     id: 'memory-sync-on-search',
     tab: 'memory',
     path: 'agents.defaults.memorySearch.sync.onSearch',
-    label: 'Sync on search',
-    description: 'Run a sync before memory search queries.',
+    label: '搜索时同步',
+    description: '记忆搜索前运行同步。',
     kind: 'boolean',
   },
   {
     id: 'memory-sync-interval',
     tab: 'memory',
     path: 'agents.defaults.memorySearch.sync.intervalMinutes',
-    label: 'Consolidation interval',
-    description: 'Background memory consolidation cadence, in minutes.',
+    label: '整合间隔',
+    description: '后台记忆整合频率（分钟）。',
     kind: 'number',
     min: 0,
     step: 5,
@@ -409,7 +409,7 @@ function buildProviderSummaries(payload: {
       name: getProviderDisplayName(providerId),
       description:
         metadata?.description ||
-        'Configured provider in your local Hermes setup.',
+        '本地 Hermes 配置的供应商。',
       modelCount,
       status: modelCount > 0 ? 'active' : 'configured',
     })
@@ -539,7 +539,7 @@ function ProviderStatusBadge({ status }: { status: ProviderStatus }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-primary-300 bg-white px-2 py-0.5 text-xs font-medium text-primary-700">
       <HugeiconsIcon icon={CheckmarkCircle02Icon} size={20} strokeWidth={1.5} />
-      {status === 'active' ? 'Active' : 'Configured'}
+      {status === 'active' ? '活跃' : '已配置'}
     </span>
   )
 }
@@ -577,7 +577,7 @@ function SettingCard(props: {
     if (setting.kind === 'number') {
       nextValue = parseNumberValue(rawValue)
       if (nextValue === null) {
-        toast(`Enter a valid number for ${setting.label}`, { type: 'error' })
+        toast(`请为 ${setting.label} 输入有效数字`, { type: 'error' })
         return
       }
     } else if (setting.kind === 'multiline' || setting.kind === 'text') {
@@ -618,12 +618,12 @@ function SettingCard(props: {
             </h3>
             {setting.unsupported ? (
               <span className="rounded-full border border-primary-300 bg-primary-100 px-2 py-0.5 text-[11px] font-medium text-primary-700">
-                Not available
+                不可用
               </span>
             ) : null}
             {isActiveSave ? (
               <span className="rounded-full border border-primary-300 bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-700">
-                Saving...
+                保存中...
               </span>
             ) : null}
           </div>
@@ -666,7 +666,7 @@ function SettingCard(props: {
                 })
               }}
             >
-              <option value="">Select…</option>
+              <option value="">请选择…</option>
               {(setting.options ?? []).map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -781,7 +781,7 @@ type PerformanceDraft = {
 }
 
 const MODEL_PROVIDER_OPTIONS: Array<SelectOption> = [
-  { label: 'Custom', value: 'custom' },
+  { label: '自定义', value: 'custom' },
   { label: 'OpenRouter', value: 'openrouter' },
   { label: 'Anthropic', value: 'anthropic' },
   { label: 'OpenAI', value: 'openai' },
@@ -911,7 +911,7 @@ function ModelConfigSection(props: {
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <label className="space-y-1.5">
           <span className="text-xs font-medium uppercase tracking-[0.12em] text-primary-600">
-            Provider
+            供应商
           </span>
           <select
             className="h-10 w-full rounded-lg border border-[var(--theme-border)] bg-[var(--theme-card)] px-3 text-sm text-primary-900 outline-none"
@@ -933,7 +933,7 @@ function ModelConfigSection(props: {
 
         <label className="space-y-1.5">
           <span className="text-xs font-medium uppercase tracking-[0.12em] text-primary-600">
-            Model Name
+            模型名称
           </span>
           <Input
             value={value.model}
@@ -1075,13 +1075,13 @@ function ActiveModelCard({
         queryClient.invalidateQueries({ queryKey: ['hermes', 'config'] }),
         queryClient.invalidateQueries({ queryKey: ['hermes-config'] }),
       ])
-      toast('Model config saved — takes effect on next message', {
+      toast('模型配置已保存 — 下条消息生效', {
         type: 'success',
       })
     },
     onError: (error) => {
       toast(
-        error instanceof Error ? error.message : 'Failed to save model config',
+        error instanceof Error ? error.message : '保存模型配置失败',
         { type: 'error' },
       )
     },
@@ -1099,12 +1099,11 @@ function ActiveModelCard({
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="space-y-1">
           <h3 className="text-base font-medium text-primary-900">
-            Model Configuration
+            模型配置
           </h3>
           <p className="text-sm text-primary-600">
-            Update the primary model, optional fallback, and stream timeout
-            settings saved in{' '}
-            <code className="font-mono">~/.hermes/config.yaml</code>.
+            更新主模型、备用模型和流超时设置，保存至{' '}
+            <code className="font-mono">~/.hermes/config.yaml</code>。
           </p>
         </div>
         <Button
@@ -1112,23 +1111,23 @@ function ActiveModelCard({
           onClick={() => void saveMutation.mutateAsync()}
           disabled={configQuery.isPending || saveMutation.isPending}
         >
-          {saveMutation.isPending ? 'Saving...' : 'Save'}
+          {saveMutation.isPending ? '保存中...' : '保存'}
         </Button>
       </div>
 
       {configQuery.isPending ? (
         <p className="mt-4 text-sm text-primary-500">
-          Loading configuration...
+          正在加载配置...
         </p>
       ) : configQuery.error ? (
         <p className="mt-4 text-sm text-red-500">
-          Could not load config — is Hermes Agent running?
+          无法加载配置 — Hermes Agent 是否正在运行？
         </p>
       ) : (
         <div className="mt-5 space-y-4">
           <ModelConfigSection
-            title="Primary Model"
-            description="Default provider, model, and base URL used for new Hermes requests."
+            title="主模型"
+            description="新 Hermes 请求使用的默认供应商、模型和 Base URL。"
             value={primaryConfig}
             onChange={setPrimaryConfig}
             modelOptions={modelOptions}
@@ -1140,11 +1139,10 @@ function ActiveModelCard({
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-primary-900">
-                  Fallback Model
+                  备用模型
                 </h3>
                 <p className="text-sm text-primary-600">
-                  Optional secondary model Hermes can use if the primary path
-                  fails.
+                  可选的备用模型，当主模型路径失败时使用。
                 </p>
               </div>
               <Button
@@ -1156,15 +1154,15 @@ function ActiveModelCard({
                   setShowFallback((current) => !current)
                 }}
               >
-                {showFallback ? 'Hide Fallback' : 'Show Fallback'}
+                {showFallback ? '隐藏备用' : '显示备用'}
               </Button>
             </div>
 
             {showFallback ? (
               <div className="mt-4">
                 <ModelConfigSection
-                  title="Fallback Settings"
-                  description="Keep these fields empty if you do not want a fallback model configured."
+                  title="备用设置"
+                  description="如不需要备用模型，请将这些字段留空。"
                   value={fallbackConfig}
                   onChange={setFallbackConfig}
                   modelOptions={modelOptions}
@@ -1177,18 +1175,17 @@ function ActiveModelCard({
           <section className="rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-card)] p-4 shadow-sm">
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-primary-900">
-                Performance
+                性能
               </h3>
               <p className="text-sm text-primary-600">
-                Increase these timeouts for slower local models or larger
-                prompts that stream output more gradually.
+                对于较慢的本地模型或流式输出较慢的大提示词，可增加超时时间。
               </p>
             </div>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <label className="space-y-1.5">
                 <span className="text-xs font-medium uppercase tracking-[0.12em] text-primary-600">
-                  Stream Stale Timeout
+                  流过期超时
                 </span>
                 <Input
                   type="number"
@@ -1202,12 +1199,12 @@ function ActiveModelCard({
                     }))
                   }}
                 />
-                <p className="text-xs text-primary-500">Default: 90s</p>
+                <p className="text-xs text-primary-500">默认值: 90秒</p>
               </label>
 
               <label className="space-y-1.5">
                 <span className="text-xs font-medium uppercase tracking-[0.12em] text-primary-600">
-                  Stream Read Timeout
+                  流读取超时
                 </span>
                 <Input
                   type="number"
@@ -1221,13 +1218,12 @@ function ActiveModelCard({
                     }))
                   }}
                 />
-                <p className="text-xs text-primary-500">Default: 60s</p>
+                <p className="text-xs text-primary-500">默认值: 60秒</p>
               </label>
             </div>
 
             <p className="mt-4 rounded-xl border border-[var(--theme-border)] bg-[var(--theme-card2)] px-3 py-2 text-sm text-primary-600">
-              Slow local runners such as Ollama and `llama-server` often need
-              more headroom before Hermes decides a stream has stalled.
+              Ollama 和 `llama-server` 等慢速本地运行器通常需要更多缓冲时间，以防止 Hermes 过早判定流已停滞。
             </p>
           </section>
         </div>
@@ -1266,16 +1262,15 @@ function ProviderManagementSection(props: {
       <header className="flex flex-col gap-4 rounded-xl border border-primary-200 bg-primary-50/80 px-5 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="space-y-1.5">
           <h2 className="text-base font-semibold text-primary-900">
-            Provider Setup
+            供应商设置
           </h2>
           <p className="text-sm text-primary-600">
-            View configured providers and walk through safe setup instructions
-            for new providers.
+            查看已配置的供应商，并获取新供应商的安全设置说明。
           </p>
         </div>
         <Button size="sm" onClick={onAddProvider}>
           <HugeiconsIcon icon={Add01Icon} size={20} strokeWidth={1.5} />
-          Add Provider
+          添加供应商
         </Button>
       </header>
 
@@ -1283,16 +1278,14 @@ function ProviderManagementSection(props: {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 className="text-base font-medium text-primary-900">
-              Configured Providers
+              已配置的供应商
             </h3>
             <p className="mt-1 text-xs text-primary-600">
-              API keys stay in your local Hermes config and are never sent to
-              Studio.
+              API 密钥保留在本地 Hermes 配置中，不会发送到 Studio。
             </p>
           </div>
           <p className="text-xs text-primary-600 tabular-nums">
-            {providerSummaries.length} provider
-            {providerSummaries.length === 1 ? '' : 's'}
+            {providerSummaries.length} 个供应商
           </p>
         </div>
 
@@ -1305,14 +1298,14 @@ function ProviderManagementSection(props: {
         {modelsQuery.error ? (
           <div className="rounded-xl border border-primary-200 bg-white px-4 py-3">
             <p className="mb-2 text-sm text-primary-700">
-              Unable to load providers right now. Check your Hermes connection.
+              目前无法加载供应商。请检查 Hermes 连接。
             </p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => modelsQuery.refetch()}
             >
-              Retry
+              重试
             </Button>
           </div>
         ) : null}
@@ -1322,8 +1315,7 @@ function ProviderManagementSection(props: {
         providerSummaries.length === 0 ? (
           <div className="rounded-xl border border-primary-200 bg-white px-4 py-4">
             <p className="text-sm text-primary-700">
-              No providers are configured yet. Use Add Provider to open setup
-              instructions.
+              尚未配置任何供应商。点击"添加供应商"打开设置说明。
             </p>
           </div>
         ) : null}
@@ -1357,7 +1349,7 @@ function ProviderManagementSection(props: {
 
                   <div className="mt-3 flex items-center justify-between rounded-xl border border-primary-200 bg-primary-50 px-2.5 py-2">
                     <span className="text-xs text-primary-600">
-                      Available models
+                      可用模型
                     </span>
                     <span className="text-sm font-medium text-primary-900 tabular-nums">
                       {provider.modelCount}
@@ -1373,14 +1365,14 @@ function ProviderManagementSection(props: {
                         onEdit(provider)
                       }}
                       disabled={isDeleting}
-                      aria-label={`Edit ${provider.name}`}
+                      aria-label={`编辑 ${provider.name}`}
                     >
                       <HugeiconsIcon
                         icon={Edit01Icon}
                         size={14}
                         strokeWidth={1.5}
                       />
-                      Edit
+                      编辑
                     </Button>
                     <Button
                       variant="outline"
@@ -1390,14 +1382,14 @@ function ProviderManagementSection(props: {
                         onDelete(provider)
                       }}
                       disabled={isDeleting}
-                      aria-label={`Delete ${provider.name}`}
+                      aria-label={`删除 ${provider.name}`}
                     >
                       <HugeiconsIcon
                         icon={Delete02Icon}
                         size={14}
                         strokeWidth={1.5}
                       />
-                      {isDeleting ? 'Removing…' : 'Delete'}
+                      {isDeleting ? '删除中…' : '删除'}
                     </Button>
                   </div>
                 </article>
@@ -1461,10 +1453,10 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
     },
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['hermes', 'config'] })
-      toast(`${variables.label} saved`, { type: 'success' })
+      toast(`${variables.label} 已保存`, { type: 'success' })
     },
     onError: (error) => {
-      toast(error instanceof Error ? error.message : 'Failed to save setting', {
+      toast(error instanceof Error ? error.message : '保存设置失败', {
         type: 'error',
       })
     },
@@ -1535,7 +1527,7 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
 
   async function handleDelete(provider: ProviderSummary) {
     const confirmed = window.confirm(
-      `Remove provider "${provider.name}"? This will delete the API key from your local config.`,
+      `确定要移除供应商"${provider.name}"吗？这将从本地配置中删除 API 密钥。`,
     )
     if (!confirmed) return
 
@@ -1551,17 +1543,17 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
       })
       const data = (await res.json()) as { ok: boolean; error?: string }
       if (!data.ok) {
-        toast(`Failed to remove provider: ${data.error ?? 'Unknown error'}`, {
+        toast(`移除供应商失败: ${data.error ?? '未知错误'}`, {
           type: 'error',
         })
       } else {
         await queryClient.invalidateQueries({
           queryKey: ['hermes', 'providers', 'models'],
         })
-        toast(`Provider "${provider.name}" removed`, { type: 'success' })
+        toast(`供应商 "${provider.name}" 已移除`, { type: 'success' })
       }
     } catch {
-      toast('Network error — could not remove provider.', { type: 'error' })
+      toast('网络错误 — 无法移除供应商。', { type: 'error' })
     } finally {
       setDeletingId(null)
     }
@@ -1611,10 +1603,10 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
           <header className="flex flex-col gap-4 rounded-xl border border-primary-200 bg-primary-50/80 px-5 py-4 shadow-sm">
             <div className="space-y-1">
               <h1 className="hidden md:block text-lg font-semibold text-primary-900">
-                Settings
+                设置
               </h1>
               <p className="text-sm text-primary-600">
-                Configure providers plus Hermes agent defaults in one place.
+                在一处配置供应商和 Hermes Agent 默认设置。
               </p>
             </div>
 
@@ -1630,7 +1622,7 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
                 <Input
                   value={search}
                   type="search"
-                  placeholder="Search settings, paths, or descriptions"
+                  placeholder="搜索设置、路径或描述"
                   className="pl-10"
                   onChange={(event) => {
                     setSearch(event.target.value)
@@ -1640,8 +1632,8 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
 
               <div className="text-sm text-primary-600">
                 {searchQuery
-                  ? `${totalSearchMatches} matching setting${totalSearchMatches === 1 ? '' : 's'}`
-                  : `${SETTINGS.length} configurable defaults`}
+                  ? `${totalSearchMatches} 个匹配项`
+                  : `${SETTINGS.length} 个可配置项`}
               </div>
             </div>
           </header>
@@ -1698,14 +1690,14 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
                 <TabsContent key={tab.id} value={tab.id} className="space-y-4">
                   {configQuery.isPending ? (
                     <div className="rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-600">
-                      Loading current configuration...
+                      正在加载当前配置...
                     </div>
                   ) : null}
 
                   {configQuery.error ? (
                     <div className="rounded-xl border border-primary-200 bg-white px-4 py-3">
                       <p className="text-sm text-primary-700">
-                        Unable to load configuration right now.
+                        目前无法加载配置。
                       </p>
                       <Button
                         variant="outline"
@@ -1713,7 +1705,7 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
                         className="mt-3"
                         onClick={() => configQuery.refetch()}
                       >
-                        Retry
+                        重试
                       </Button>
                     </div>
                   ) : null}
@@ -1722,7 +1714,7 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
                   !configQuery.error &&
                   items.length === 0 ? (
                     <div className="rounded-xl border border-primary-200 bg-primary-50 px-4 py-4 text-sm text-primary-600">
-                      No settings in this tab match your current search.
+                      此标签页中没有匹配当前搜索的设置。
                     </div>
                   ) : null}
 

@@ -116,7 +116,7 @@ export function HermesReconnectBanner({
             wasDisconnectedRef.current = true
             setBannerState('disconnected')
             setMessage(
-              error instanceof Error ? error.message : 'Connection failed',
+              error instanceof Error ? error.message : '连接失败',
             )
           }
           return false
@@ -170,17 +170,17 @@ export function HermesReconnectBanner({
       }
 
       if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || 'Failed to start Hermes agent')
+        throw new Error(payload.error || '启动 Hermes Agent 失败')
       }
 
       setMessage(
         payload.message === 'already running'
-          ? 'Hermes agent is already running'
-          : 'Starting Hermes agent…',
+          ? 'Hermes Agent 已在运行'
+          : '正在启动 Hermes Agent…',
       )
     } catch (error) {
       setMessage(
-        error instanceof Error ? error.message : 'Failed to start Hermes agent',
+        error instanceof Error ? error.message : '启动 Hermes Agent 失败',
       )
     } finally {
       setIsStarting(false)
@@ -220,7 +220,7 @@ export function HermesReconnectBanner({
           />
           <div className="min-w-0">
             <p className="text-sm font-semibold">
-              {isDisconnected ? 'Hermes agent not connected' : 'Connected'}
+              {isDisconnected ? 'Hermes Agent 未连接' : '已连接'}
             </p>
             {message ? (
               <p className="truncate text-xs opacity-80">{message}</p>
@@ -241,7 +241,7 @@ export function HermesReconnectBanner({
                 color: 'inherit',
               }}
             >
-              {isChecking ? 'Retrying…' : 'Retry'}
+              {isChecking ? '重试中…' : '重试'}
             </button>
             <button
               type="button"
@@ -252,7 +252,7 @@ export function HermesReconnectBanner({
                 background: 'var(--theme-danger)',
               }}
             >
-              {isStarting ? 'Starting…' : 'Start Agent'}
+              {isStarting ? '启动中…' : '启动 Agent'}
             </button>
           </div>
         ) : null}

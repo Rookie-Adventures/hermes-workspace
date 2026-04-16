@@ -181,7 +181,7 @@ function WorkspaceThemePicker() {
               <span className="text-xs font-semibold">{t.label}</span>
               {isActive && (
                 <span className="ml-auto text-[9px] font-bold uppercase tracking-wide text-[var(--theme-accent)]">
-                  Active
+                    当前使用
                 </span>
               )}
             </div>
@@ -264,16 +264,16 @@ type SettingsNavItem = {
 }
 
 const SETTINGS_NAV_ITEMS: Array<SettingsNavItem> = [
-  { id: 'hermes', label: 'Model & Provider' },
-  { id: 'agent', label: 'Agent Behavior' },
-  { id: 'routing', label: 'Smart Routing' },
-  { id: 'voice', label: 'Voice' },
-  { id: 'display', label: 'Display' },
-  { id: 'appearance', label: 'Appearance' },
-  { id: 'chat', label: 'Chat' },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'mcp', label: 'MCP Servers', to: '/settings/mcp' },
-  { id: 'language' as SettingsSectionId, label: 'Language' },
+  { id: 'hermes', label: '模型与供应商' },
+  { id: 'agent', label: 'Agent 行为' },
+  { id: 'routing', label: '智能路由' },
+  { id: 'voice', label: '语音' },
+  { id: 'display', label: '显示' },
+  { id: 'appearance', label: '外观' },
+  { id: 'chat', label: '聊天' },
+  { id: 'notifications', label: '通知' },
+  { id: 'mcp', label: 'MCP 服务', to: '/settings/mcp' },
+  { id: 'language' as SettingsSectionId, label: '语言' },
 ]
 
 function SettingsRoute() {
@@ -323,7 +323,7 @@ function SettingsRoute() {
         <nav className="hidden w-48 shrink-0 md:block">
           <div className="sticky top-8">
             <h1 className="mb-4 text-lg font-semibold text-primary-900 px-3">
-              Settings
+              设置
             </h1>
             <div className="flex flex-col gap-0.5">
               {SETTINGS_NAV_ITEMS.map((item) =>
@@ -411,13 +411,13 @@ function SettingsRoute() {
           {activeSection === 'appearance' && (
             <>
               <SettingsSection
-                title="Appearance"
-                description="Choose a workspace theme and accent color."
+                title="外观"
+                description="选择工作区主题和强调色。"
                 icon={PaintBoardIcon}
               >
                 <SettingsRow
-                  label="Theme"
-                  description="All workspace themes are dark. Pick the palette you want to use."
+                  label="主题"
+                  description="选择你喜欢的工作区主题配色。"
                 >
                   <div className="w-full">
                     <WorkspaceThemePicker />
@@ -436,13 +436,13 @@ function SettingsRoute() {
           {/* ── Editor ──────────────────────────────────────────── */}
           {activeSection === ('editor' as SettingsSectionId) && (
             <SettingsSection
-              title="Editor"
-              description="Configure Monaco defaults for the files workspace."
+              title="编辑器"
+              description="配置文件工作区的 Monaco 编辑器默认设置。"
               icon={SourceCodeSquareIcon}
             >
               <SettingsRow
-                label="Font size"
-                description="Adjust editor font size between 12 and 20."
+                label="字体大小"
+                description="调整编辑器字体大小（12-20）。"
               >
                 <div className="flex w-full items-center gap-2 md:max-w-xs">
                   <input
@@ -465,8 +465,8 @@ function SettingsRoute() {
                 </div>
               </SettingsRow>
               <SettingsRow
-                label="Word wrap"
-                description="Wrap long lines in the editor by default."
+                label="自动换行"
+                description="编辑器中长行自动换行。"
               >
                 <Switch
                   checked={settings.editorWordWrap}
@@ -478,7 +478,7 @@ function SettingsRoute() {
               </SettingsRow>
               <SettingsRow
                 label="Minimap"
-                description="Show minimap preview in Monaco editor."
+                description="在 Monaco 编辑器中显示代码预览图。"
               >
                 <Switch
                   checked={settings.editorMinimap}
@@ -494,13 +494,13 @@ function SettingsRoute() {
           {/* ── Notifications ───────────────────────────────────── */}
           {activeSection === ('language' as SettingsSectionId) && (
             <SettingsSection
-              title="Language"
-              description="Choose the display language for the workspace UI."
+              title="语言"
+              description="选择工作区界面显示语言。"
               icon={Settings02Icon}
             >
               <SettingsRow
-                label="Interface Language"
-                description="Translates navigation, labels, and buttons. Content from the agent remains in the agent's language."
+                label="界面语言"
+                description="翻译导航栏、标签和按钮。Agent 返回的内容保持原语言。"
               >
                 <select
                   value={getLocale()}
@@ -521,13 +521,13 @@ function SettingsRoute() {
           {activeSection === 'notifications' && (
             <>
               <SettingsSection
-                title="Notifications"
-                description="Control alert delivery and usage warning threshold."
+                title="通知"
+                description="控制提醒推送和使用量警告阈值。"
                 icon={Notification03Icon}
               >
                 <SettingsRow
-                  label="Enable alerts"
-                  description="Show usage and system alert notifications."
+                  label="启用提醒"
+                  description="显示使用量和系统提醒通知。"
                 >
                   <Switch
                     checked={settings.notificationsEnabled}
@@ -538,8 +538,8 @@ function SettingsRoute() {
                   />
                 </SettingsRow>
                 <SettingsRow
-                  label="Usage threshold"
-                  description="Set usage warning trigger between 50% and 100%."
+                  label="使用量阈值"
+                  description="设置使用量警告触发百分比（50%-100%）。"
                 >
                   <div className="flex w-full items-center gap-2 md:max-w-xs">
                     <input
@@ -567,13 +567,13 @@ function SettingsRoute() {
               </SettingsSection>
 
               <SettingsSection
-                title="Smart Suggestions"
-                description="Get proactive model suggestions to optimize cost and quality."
+                title="智能建议"
+                description="获取主动的模型建议，以优化成本和质量。"
                 icon={Settings02Icon}
               >
                 <SettingsRow
-                  label="Enable smart suggestions"
-                  description="Suggest cheaper models for simple tasks or better models for complex work."
+                  label="启用智能建议"
+                  description="为简单任务推荐更便宜的模型，为复杂任务推荐更好的模型。"
                 >
                   <Switch
                     checked={settings.smartSuggestionsEnabled}
@@ -584,8 +584,8 @@ function SettingsRoute() {
                   />
                 </SettingsRow>
                 <SettingsRow
-                  label="Preferred budget model"
-                  description="Default model for cheaper suggestions (leave empty for auto-detect)."
+                  label="首选预算模型"
+                  description="便宜建议的默认模型（留空则自动检测）。"
                 >
                   <select
                     value={settings.preferredBudgetModel}
@@ -607,8 +607,8 @@ function SettingsRoute() {
                   </select>
                 </SettingsRow>
                 <SettingsRow
-                  label="Preferred premium model"
-                  description="Default model for upgrade suggestions (leave empty for auto-detect)."
+                  label="首选高级模型"
+                  description="升级建议的默认模型（留空则自动检测）。"
                 >
                   <select
                     value={settings.preferredPremiumModel}
@@ -618,9 +618,9 @@ function SettingsRoute() {
                     className="h-9 w-full rounded-lg border border-primary-200 dark:border-gray-600 bg-primary-50 dark:bg-gray-800 px-3 text-sm text-primary-900 dark:text-gray-100 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary-400 dark:focus-visible:ring-primary-500 md:max-w-xs"
                     aria-label="Preferred premium model"
                   >
-                    <option value="">Auto-detect</option>
+                    <option value="">自动检测</option>
                     {modelsError && (
-                      <option disabled>Failed to load models</option>
+                      <option disabled>模型加载失败</option>
                     )}
                     {availableModels.map((model) => (
                       <option key={model.id} value={model.id}>
@@ -630,8 +630,8 @@ function SettingsRoute() {
                   </select>
                 </SettingsRow>
                 <SettingsRow
-                  label="Only suggest cheaper models"
-                  description="Never suggest upgrades, only suggest cheaper alternatives."
+                  label="只推荐便宜模型"
+                  description="从不推荐升级，只推荐更便宜的替代方案。"
                 >
                   <Switch
                     checked={settings.onlySuggestCheaper}
@@ -653,7 +653,7 @@ function SettingsRoute() {
                 strokeWidth={1.5}
               />
               <span className="text-pretty">
-                Changes are saved automatically to local storage.
+                更改会自动保存到本地存储。
               </span>
             </div>
           </footer>
@@ -678,7 +678,7 @@ function _ProfileSection() {
 
   function handleNameChange(value: string) {
     if (value.length > 50) {
-      setNameError('Display name too long (max 50 characters)')
+      setNameError('显示名称过长（最多50个字符）')
       return
     }
     setNameError(null)
@@ -692,11 +692,11 @@ function _ProfileSection() {
     event.target.value = ''
     if (!file) return
     if (!file.type.startsWith('image/')) {
-      setProfileError('Unsupported file type.')
+      setProfileError('不支持的文件类型。')
       return
     }
     if (file.size > PROFILE_IMAGE_MAX_FILE_SIZE) {
-      setProfileError('Image too large (max 10MB).')
+      setProfileError('图片过大（最大 10MB）。')
       return
     }
     setProfileError(null)
@@ -723,7 +723,7 @@ function _ProfileSection() {
       const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
       updateChatSettings({ avatarDataUrl: canvas.toDataURL(outputType, 0.82) })
     } catch {
-      setProfileError('Failed to process image.')
+      setProfileError('图片处理失败。')
     } finally {
       setProfileProcessing(false)
     }
@@ -731,8 +731,8 @@ function _ProfileSection() {
 
   return (
     <SettingsSection
-      title="Profile"
-      description="Your display name and avatar for chat."
+      title="个人资料"
+      description="聊天中的显示名称和头像。"
       icon={UserIcon}
     >
       <div className="flex items-center gap-4">
@@ -744,11 +744,11 @@ function _ProfileSection() {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-primary-900">{displayName}</p>
           <p className="text-xs text-primary-500">
-            Shown in the sidebar and chat messages.
+            显示在侧边栏和聊天消息中。
           </p>
         </div>
       </div>
-      <SettingsRow label="Display name" description="Leave blank for default.">
+      <SettingsRow label="显示名称" description="留空则使用默认值。">
         <div className="w-full md:max-w-xs">
           <Input
             value={chatSettings.displayName}
@@ -772,8 +772,8 @@ function _ProfileSection() {
         </div>
       </SettingsRow>
       <SettingsRow
-        label="Profile picture"
-        description="Resized to 128×128, stored locally."
+        label="头像"
+        description="缩放至 128×128，本地存储。"
       >
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
@@ -793,7 +793,7 @@ function _ProfileSection() {
               onClick={() => updateChatSettings({ avatarDataUrl: null })}
               disabled={!chatSettings.avatarDataUrl || profileProcessing}
             >
-              Remove
+              移除
             </Button>
           </div>
           {profileError && (
@@ -817,13 +817,13 @@ function ChatDisplaySection() {
   return (
     <>
       <SettingsSection
-        title="Chat Display"
-        description="Control what's visible in chat messages."
+        title="聊天显示"
+        description="控制聊天消息中的可见内容。"
         icon={MessageMultiple01Icon}
       >
         <SettingsRow
-          label="Show tool messages"
-          description="Display tool call details when the agent uses tools."
+          label="显示工具消息"
+          description="当 Agent 使用工具时显示工具调用详情。"
         >
           <Switch
             checked={chatSettings.showToolMessages}
@@ -834,8 +834,8 @@ function ChatDisplaySection() {
           />
         </SettingsRow>
         <SettingsRow
-          label="Show reasoning blocks"
-          description="Display model thinking and reasoning process."
+          label="显示推理过程"
+          description="显示模型的思考和推理过程。"
         >
           <Switch
             checked={chatSettings.showReasoningBlocks}
@@ -856,13 +856,13 @@ function ChatDisplaySection() {
 type LoaderStyleOption = { value: LoaderStyle; label: string }
 
 const LOADER_STYLES: Array<LoaderStyleOption> = [
-  { value: 'dots', label: 'Dots' },
+  { value: 'dots', label: '点状' },
   { value: 'braille-hermes', label: 'Hermes' },
-  { value: 'braille-orbit', label: 'Orbit' },
-  { value: 'braille-breathe', label: 'Breathe' },
-  { value: 'braille-pulse', label: 'Pulse' },
-  { value: 'braille-wave', label: 'Wave' },
-  { value: 'lobster', label: 'Lobster' },
+  { value: 'braille-orbit', label: '轨道' },
+  { value: 'braille-breathe', label: '呼吸' },
+  { value: 'braille-pulse', label: '脉冲' },
+  { value: 'braille-wave', label: '波浪' },
+  { value: 'lobster', label: '龙虾' },
   { value: 'logo', label: 'Logo' },
 ]
 
@@ -901,8 +901,8 @@ function _LoaderStyleSection() {
 
   return (
     <SettingsSection
-      title="Loading Animation"
-      description="Choose the animation while the assistant is streaming."
+      title="加载动画"
+      description="助手流式响应时显示的加载动画。"
       icon={Settings02Icon}
     >
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -1044,14 +1044,14 @@ function HermesConfigSection({
         body: JSON.stringify(updates),
       })
       const result = (await res.json()) as { message?: string }
-      setSaveMessage(result.message || 'Saved')
+      setSaveMessage(result.message || '已保存')
       const refreshData = await fetchConfig()
       if (refreshData.activeProvider) {
         void fetchModelsForProvider(refreshData.activeProvider)
       }
       setTimeout(() => setSaveMessage(null), 3000)
     } catch {
-      setSaveMessage('Failed to save')
+      setSaveMessage('保存失败')
     }
     setSaving(false)
   }
@@ -1086,7 +1086,7 @@ function HermesConfigSection({
     return (
       <SettingsSection
         title="Hermes Agent"
-        description="Loading configuration..."
+        description="正在加载配置..."
         icon={Settings02Icon}
       >
         <div
@@ -1101,11 +1101,11 @@ function HermesConfigSection({
     return (
       <SettingsSection
         title="Hermes Agent"
-        description="Could not load Hermes configuration."
+        description="无法加载 Hermes 配置。"
         icon={Settings02Icon}
       >
         <p className="text-sm" style={{ color: 'var(--theme-muted)' }}>
-          Make sure Hermes Agent is running on localhost:8642
+          请确保 Hermes Agent 正在 localhost:8642 运行
         </p>
       </SettingsSection>
     )
@@ -1133,13 +1133,13 @@ function HermesConfigSection({
   const renderHermesOverview = () => (
     <>
       <SettingsSection
-        title="Model & Provider"
-        description="Configure the default AI model for Hermes Agent."
+        title="模型与供应商"
+        description="配置 Hermes Agent 的默认 AI 模型。"
         icon={SourceCodeSquareIcon}
       >
         <SettingsRow
-          label="Provider"
-          description="Select the inference provider."
+          label="供应商"
+          description="选择推理服务商。"
         >
           <div className="flex w-full max-w-sm gap-2">
             {availableProviders.length > 0 ? (
@@ -1173,8 +1173,8 @@ function HermesConfigSection({
           </div>
         </SettingsRow>
         <SettingsRow
-          label="Model"
-          description="The model Hermes uses for conversations."
+          label="模型"
+          description="Hermes 用于对话的模型。"
         >
           <div className="flex w-full max-w-sm gap-2">
             {availableModels.length > 0 ? (
@@ -1185,7 +1185,7 @@ function HermesConfigSection({
               >
                 {!availableModels.some((m) => m.id === modelInput) &&
                   modelInput && (
-                    <option value={modelInput}>{modelInput} (current)</option>
+                    <option value={modelInput}>{modelInput} (当前)</option>
                   )}
                 {availableModels.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -1201,7 +1201,7 @@ function HermesConfigSection({
                   setModelInput(e.target.value)
                 }
                 placeholder={
-                  loadingModels ? 'Loading models...' : 'e.g. qwen3.5:35b'
+                  loadingModels ? '加载模型中...' : '例如 qwen3.5:35b'
                 }
                 className="flex-1 font-mono"
               />
@@ -1210,7 +1210,7 @@ function HermesConfigSection({
         </SettingsRow>
         <SettingsRow
           label="Base URL"
-          description="For local providers (Ollama, LM Studio, MLX). Leave blank for cloud."
+          description="用于本地供应商（Ollama、LM Studio、MLX），云端留空。"
         >
           <div className="flex w-full max-w-sm gap-2">
             <Input
@@ -1236,14 +1236,14 @@ function HermesConfigSection({
               void saveConfig({ config: configUpdate })
             }}
           >
-            {saving ? 'Saving...' : 'Save Model'}
+            {saving ? '保存中...' : '保存模型'}
           </Button>
         </div>
       </SettingsSection>
 
       <SettingsSection
-        title="API Keys"
-        description="Manage provider API keys stored in ~/.hermes/.env"
+        title="API 密钥"
+        description="管理存储在 ~/.hermes/.env 中的供应商 API 密钥。"
         icon={CloudIcon}
       >
         {data.providers
@@ -1253,7 +1253,7 @@ function HermesConfigSection({
               key={provider.id}
               label={provider.name}
               description={
-                provider.configured ? '✅ Configured' : '❌ Not configured'
+                provider.configured ? '✅ 已配置' : '❌ 未配置'
               }
             >
               <div className="flex w-full max-w-sm items-center gap-2">
@@ -1267,7 +1267,7 @@ function HermesConfigSection({
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setKeyInput(e.target.value)
                           }
-                          placeholder={`Enter ${envKey}`}
+                          placeholder={`输入 ${envKey}`}
                           className="flex-1"
                         />
                         <Button
@@ -1278,7 +1278,7 @@ function HermesConfigSection({
                             setKeyInput('')
                           }}
                         >
-                          Save
+                          保存
                         </Button>
                         <Button
                           size="sm"
@@ -1297,7 +1297,7 @@ function HermesConfigSection({
                           className="text-xs font-mono"
                           style={{ color: 'var(--theme-muted)' }}
                         >
-                          {provider.maskedKeys[envKey] || 'Not set'}
+                          {provider.maskedKeys[envKey] || '未设置'}
                         </span>
                         <Button
                           size="sm"
@@ -1307,7 +1307,7 @@ function HermesConfigSection({
                             setKeyInput('')
                           }}
                         >
-                          {provider.configured ? 'Change' : 'Add'}
+                          {provider.configured ? '修改' : '添加'}
                         </Button>
                       </div>
                     )}
@@ -1319,13 +1319,13 @@ function HermesConfigSection({
       </SettingsSection>
 
       <SettingsSection
-        title="Memory"
-        description="Configure Hermes Agent memory and user profiles."
+        title="记忆"
+        description="配置 Hermes Agent 记忆和用户档案。"
         icon={UserIcon}
       >
         <SettingsRow
-          label="Memory enabled"
-          description="Store and recall memories across sessions."
+          label="启用记忆"
+          description="跨会话存储和召回记忆。"
         >
           <Switch
             checked={memoryConfig.memory_enabled !== false}
@@ -1337,8 +1337,8 @@ function HermesConfigSection({
           />
         </SettingsRow>
         <SettingsRow
-          label="User profile"
-          description="Remember user preferences and context."
+          label="用户档案"
+          description="记住用户偏好和上下文。"
         >
           <Switch
             checked={memoryConfig.user_profile_enabled !== false}
@@ -1352,11 +1352,11 @@ function HermesConfigSection({
       </SettingsSection>
 
       <SettingsSection
-        title="Terminal"
-        description="Shell execution settings."
+        title="终端"
+        description="Shell 执行设置。"
         icon={SourceCodeSquareIcon}
       >
-        <SettingsRow label="Backend" description="Terminal execution backend.">
+        <SettingsRow label="后端" description="终端执行后端。">
           <span
             className="text-sm font-mono"
             style={{ color: 'var(--theme-muted)' }}
@@ -1365,8 +1365,8 @@ function HermesConfigSection({
           </span>
         </SettingsRow>
         <SettingsRow
-          label="Timeout"
-          description="Max seconds for terminal commands."
+          label="超时时间"
+          description="终端命令最大执行秒数。"
         >
           <Input
             type="number"
@@ -1381,14 +1381,14 @@ function HermesConfigSection({
       </SettingsSection>
 
       <SettingsSection
-        title="Custom Providers"
-        description="Read-only provider details loaded from config.yaml."
+        title="自定义供应商"
+        description="从 config.yaml 加载的只读供应商详情。"
         icon={CloudIcon}
       >
         <div className="space-y-3">
           {customProviders.length === 0 ? (
             <div className="rounded-xl border border-primary-200 bg-primary-100/40 p-3 text-sm text-primary-600">
-              No custom providers configured.
+              未配置自定义供应商。
             </div>
           ) : (
             customProviders.map((provider, index) => (
@@ -1399,10 +1399,10 @@ function HermesConfigSection({
                 <div className="grid gap-2 text-sm md:grid-cols-3">
                   <div>
                     <p className="text-xs uppercase tracking-wide text-primary-500">
-                      Name
+                      名称
                     </p>
                     <p className="font-medium text-primary-900">
-                      {String(provider.name || 'Unnamed')}
+                      {String(provider.name || '未命名')}
                     </p>
                   </div>
                   <div>
@@ -1410,15 +1410,15 @@ function HermesConfigSection({
                       Base URL
                     </p>
                     <p className="font-mono text-xs text-primary-700 break-all">
-                      {String(provider.base_url || 'Not set')}
+                      {String(provider.base_url || '未设置')}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs uppercase tracking-wide text-primary-500">
-                      Type
+                      类型
                     </p>
                     <p className="text-primary-700">
-                      {String(provider.type || provider.auth_type || 'Unknown')}
+                      {String(provider.type || provider.auth_type || '未知')}
                     </p>
                   </div>
                 </div>
@@ -1427,7 +1427,7 @@ function HermesConfigSection({
           )}
           <div className="flex flex-col gap-3 rounded-xl border border-primary-200 bg-primary-100/40 p-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-primary-600">
-              Edit custom providers in config.yaml for security.
+              出于安全考虑，请在 config.yaml 中编辑自定义供应商。
             </p>
             <Button
               size="sm"
@@ -1436,20 +1436,20 @@ function HermesConfigSection({
                 void navigator.clipboard?.writeText(data.hermesHome)
               }
             >
-              Copy config path
+              复制配置路径
             </Button>
           </div>
         </div>
       </SettingsSection>
 
       <SettingsSection
-        title="About"
-        description="Hermes Agent runtime information."
+        title="关于"
+        description="Hermes Agent 运行时信息。"
         icon={Notification03Icon}
       >
         <SettingsRow
-          label="Config location"
-          description="Where Hermes stores its configuration."
+          label="配置位置"
+          description="Hermes 存储配置的位置。"
         >
           <span
             className="text-xs font-mono"
@@ -1459,8 +1459,8 @@ function HermesConfigSection({
           </span>
         </SettingsRow>
         <SettingsRow
-          label="Active provider"
-          description="Current inference provider."
+          label="当前供应商"
+          description="当前使用的推理服务商。"
         >
           <span
             className="text-sm font-medium"
@@ -1476,13 +1476,13 @@ function HermesConfigSection({
 
   const renderAgentBehavior = () => (
     <SettingsSection
-      title="Agent Behavior"
-      description="Control agent execution limits and tool access."
+      title="Agent 行为"
+      description="控制 Agent 执行限制和工具访问。"
       icon={Settings02Icon}
     >
       <SettingsRow
-        label="Max turns"
-        description="Maximum agent turns per request (1-100)."
+        label="最大轮次"
+        description="每次请求的 Agent 最大轮数（1-100）。"
       >
         <Input
           type="number"
@@ -1496,8 +1496,8 @@ function HermesConfigSection({
         />
       </SettingsRow>
       <SettingsRow
-        label="Gateway timeout"
-        description="Seconds before gateway times out a request."
+        label="网关超时"
+        description="网关请求超时秒数。"
       >
         <Input
           type="number"
@@ -1511,8 +1511,8 @@ function HermesConfigSection({
         />
       </SettingsRow>
       <SettingsRow
-        label="Tool use enforcement"
-        description="Whether the agent must use tools when available."
+        label="工具使用强制"
+        description="Agent 是否必须在有可用工具时使用工具。"
       >
         <select
           value={(agentConfig.tool_use_enforcement as string) || 'auto'}
@@ -1523,9 +1523,9 @@ function HermesConfigSection({
           }
           className={selectClassName}
         >
-          <option value="auto">auto</option>
-          <option value="required">required</option>
-          <option value="none">none</option>
+          <option value="auto">自动</option>
+          <option value="required">必须使用</option>
+          <option value="none">不强制</option>
         </select>
       </SettingsRow>
     </SettingsSection>
@@ -1533,13 +1533,13 @@ function HermesConfigSection({
 
   const renderSmartRouting = () => (
     <SettingsSection
-      title="Smart Model Routing"
-      description="Automatically route simple queries to cheaper models."
+      title="智能模型路由"
+      description="自动将简单查询路由到更便宜的模型。"
       icon={SparklesIcon}
     >
       <SettingsRow
-        label="Enable smart routing"
-        description="Route simple queries to a cheaper model automatically."
+        label="启用智能路由"
+        description="自动将简单查询路由到更便宜的模型。"
       >
         <Switch
           checked={readBoolean(smartRouting.enabled, false)}
@@ -1551,8 +1551,8 @@ function HermesConfigSection({
         />
       </SettingsRow>
       <SettingsRow
-        label="Cheap model"
-        description="Model to use for simple queries."
+        label="便宜模型"
+        description="用于简单查询的模型。"
       >
         <select
           value={(smartRouting.cheap_model as string) || ''}
@@ -1563,7 +1563,7 @@ function HermesConfigSection({
           }
           className={selectClassName}
         >
-          <option value="">Select model</option>
+          <option value="">选择模型</option>
           {availableModels.map((model) => (
             <option key={model.id} value={model.id}>
               {model.id}
@@ -1572,8 +1572,8 @@ function HermesConfigSection({
         </select>
       </SettingsRow>
       <SettingsRow
-        label="Max simple chars"
-        description="Messages shorter than this use the cheap model."
+        label="最大简单字符数"
+        description="短于此长度的消息使用便宜模型。"
       >
         <Input
           type="number"
@@ -1591,8 +1591,8 @@ function HermesConfigSection({
         />
       </SettingsRow>
       <SettingsRow
-        label="Max simple words"
-        description="Messages with fewer words use the cheap model."
+        label="最大简单词数"
+        description="少于此词数的消息使用便宜模型。"
       >
         <Input
           type="number"
@@ -1615,13 +1615,13 @@ function HermesConfigSection({
   const renderVoice = () => (
     <div className="space-y-4">
       <SettingsSection
-        title="Text-to-Speech"
-        description="Configure voice output for agent responses."
+        title="文字转语音"
+        description="配置 Agent 回复的语音输出。"
         icon={VolumeHighIcon}
       >
         <SettingsRow
-          label="TTS provider"
-          description="Which TTS engine to use."
+          label="TTS 引擎"
+          description="选择使用的 TTS 引擎。"
         >
           <select
             value={ttsProvider}
@@ -1630,7 +1630,7 @@ function HermesConfigSection({
             }
             className={selectClassName}
           >
-            <option value="edge">Edge TTS (free)</option>
+            <option value="edge">Edge TTS（免费）</option>
             <option value="elevenlabs">ElevenLabs</option>
             <option value="openai">OpenAI TTS</option>
             <option value="neutts">NeuTTS</option>
@@ -1638,7 +1638,7 @@ function HermesConfigSection({
         </SettingsRow>
 
         {ttsProvider === 'edge' && (
-          <SettingsRow label="Voice" description="Edge voice name.">
+          <SettingsRow label="语音" description="Edge 语音名称。">
             <Input
               value={(ttsEdge.voice as string) || ''}
               onChange={(e) =>
@@ -1654,7 +1654,7 @@ function HermesConfigSection({
 
         {ttsProvider === 'elevenlabs' && (
           <>
-            <SettingsRow label="Voice ID" description="ElevenLabs voice_id.">
+            <SettingsRow label="语音 ID" description="ElevenLabs voice_id。">
               <Input
                 value={(ttsElevenLabs.voice_id as string) || ''}
                 onChange={(e) =>
@@ -1667,7 +1667,7 @@ function HermesConfigSection({
                 className="md:w-64"
               />
             </SettingsRow>
-            <SettingsRow label="Model" description="ElevenLabs model name.">
+            <SettingsRow label="模型" description="ElevenLabs 模型名称。">
               <Input
                 value={(ttsElevenLabs.model as string) || ''}
                 onChange={(e) =>
@@ -1684,8 +1684,8 @@ function HermesConfigSection({
         {ttsProvider === 'openai' && (
           <>
             <SettingsRow
-              label="Voice"
-              description="alloy, echo, fable, onyx, nova, shimmer"
+              label="语音"
+              description="可选: alloy, echo, fable, onyx, nova, shimmer"
             >
               <select
                 value={(ttsOpenAi.voice as string) || 'alloy'}
@@ -1705,7 +1705,7 @@ function HermesConfigSection({
                 )}
               </select>
             </SettingsRow>
-            <SettingsRow label="Model" description="OpenAI TTS model.">
+            <SettingsRow label="模型" description="OpenAI TTS 模型。">
               <Input
                 value={(ttsOpenAi.model as string) || ''}
                 onChange={(e) =>
@@ -1722,11 +1722,11 @@ function HermesConfigSection({
       </SettingsSection>
 
       <SettingsSection
-        title="Speech-to-Text"
-        description="Configure voice input recognition."
+        title="语音转文字"
+        description="配置语音输入识别。"
         icon={Mic01Icon}
       >
-        <SettingsRow label="Enable STT" description="Turn on voice input.">
+        <SettingsRow label="启用 STT" description="开启语音输入。">
           <Switch
             checked={readBoolean(sttConfig.enabled, false)}
             onCheckedChange={(checked) =>
@@ -1735,8 +1735,8 @@ function HermesConfigSection({
           />
         </SettingsRow>
         <SettingsRow
-          label="STT provider"
-          description="Which speech engine to use."
+          label="STT 引擎"
+          description="选择使用的语音引擎。"
         >
           <select
             value={sttProvider}
@@ -1745,14 +1745,14 @@ function HermesConfigSection({
             }
             className={selectClassName}
           >
-            <option value="local">Local (Whisper)</option>
+            <option value="local">本地（Whisper）</option>
             <option value="openai">OpenAI Whisper API</option>
           </select>
         </SettingsRow>
         {sttProvider === 'local' && (
           <SettingsRow
-            label="Model size"
-            description="tiny, base, small, medium, large"
+            label="模型大小"
+            description="可选: tiny, base, small, medium, large"
           >
             <select
               value={(sttLocal.model_size as string) || 'base'}
@@ -1777,11 +1777,11 @@ function HermesConfigSection({
 
   const renderDisplay = () => (
     <SettingsSection
-      title="Display"
-      description="CLI display preferences reflected in the agent UI."
+      title="显示"
+      description="CLI 显示偏好，会反映到 Agent 界面。"
       icon={PaintBoardIcon}
     >
-      <SettingsRow label="Personality" description="Agent response style.">
+      <SettingsRow label="性格" description="Agent 回复风格。">
         <select
           value={(displayConfig.personality as string) || 'default'}
           onChange={(e) =>
@@ -1793,14 +1793,14 @@ function HermesConfigSection({
         >
           {['default', 'concise', 'verbose', 'creative'].map((value) => (
             <option key={value} value={value}>
-              {value}
+              {value === 'default' ? '默认' : value === 'concise' ? '简洁' : value === 'verbose' ? '详细' : '创意'}
             </option>
           ))}
         </select>
       </SettingsRow>
       <SettingsRow
-        label="Streaming"
-        description="Stream tokens as they arrive."
+        label="流式输出"
+        description="实时流式显示 token。"
       >
         <Switch
           checked={readBoolean(displayConfig.streaming, true)}
@@ -1810,8 +1810,8 @@ function HermesConfigSection({
         />
       </SettingsRow>
       <SettingsRow
-        label="Show reasoning"
-        description="Expose model reasoning blocks in the UI."
+        label="显示推理"
+        description="在界面中展示模型推理块。"
       >
         <Switch
           checked={readBoolean(displayConfig.show_reasoning, false)}
@@ -1822,7 +1822,7 @@ function HermesConfigSection({
           }
         />
       </SettingsRow>
-      <SettingsRow label="Show cost" description="Display usage cost metadata.">
+      <SettingsRow label="显示费用" description="显示使用量费用元数据。">
         <Switch
           checked={readBoolean(displayConfig.show_cost, false)}
           onCheckedChange={(checked) =>
@@ -1830,7 +1830,7 @@ function HermesConfigSection({
           }
         />
       </SettingsRow>
-      <SettingsRow label="Compact" description="Use a denser display layout.">
+      <SettingsRow label="紧凑模式" description="使用更紧凑的显示布局。">
         <Switch
           checked={readBoolean(displayConfig.compact, false)}
           onCheckedChange={(checked) =>
@@ -1838,7 +1838,7 @@ function HermesConfigSection({
           }
         />
       </SettingsRow>
-      <SettingsRow label="Skin" description="CLI theme skin.">
+      <SettingsRow label="皮肤" description="CLI 主题皮肤。">
         <span
           className="text-sm font-mono"
           style={{ color: 'var(--theme-muted)' }}

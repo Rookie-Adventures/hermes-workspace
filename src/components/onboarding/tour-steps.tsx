@@ -5,7 +5,7 @@ export const tourSteps: Array<Step> = [
   {
     target: 'body',
     placement: 'center',
-    title: 'Welcome to Hermes Workspace! ⚕',
+    title: '欢迎使用 Hermes Workspace！⚕',
     content: (
       <div
         style={{
@@ -21,8 +21,8 @@ export const tourSteps: Array<Step> = [
           style={{ width: 48, height: 48, borderRadius: 12 }}
         />
         <p style={{ textAlign: 'center', margin: 0 }}>
-          Your AI-powered command center for managing agents, chats, files, and
-          more. Let&apos;s take a quick tour!
+          你的 AI 驱动指挥中心，用于管理 Agent、聊天、文件等。
+          让我们快速了解一下！
         </p>
       </div>
     ),
@@ -32,72 +32,72 @@ export const tourSteps: Array<Step> = [
   {
     target: '[data-tour="sidebar-container"]',
     placement: 'right',
-    title: 'Sidebar Navigation',
+    title: '侧边栏导航',
     content:
-      'Navigate between all your tools here. Collapse/expand sections to customize your workspace.',
+      '在这里导航到所有工具。折叠/展开分区来自定义你的工作区。',
   },
   // Step 3: New Session
   {
     target: '[data-tour="new-session"]',
     placement: 'right',
-    title: 'Start a New Chat',
+    title: '开始新对话',
     content:
-      'Click here to start a new AI chat session. Each conversation is saved automatically.',
+      '点击这里开始新的 AI 对话。每次对话都会自动保存。',
   },
   // Step 4: Dashboard
   {
     target: '[data-tour="dashboard"]',
     placement: 'right',
-    title: 'Your Dashboard',
+    title: '仪表盘',
     content:
-      'Your overview of sessions, usage, and activity. See everything at a glance.',
+      '查看会话、使用量和活动概览。一目了然。',
   },
   // Step 5: Agent Hub
   {
     target: '[data-tour="agent-hub"]',
     placement: 'right',
-    title: 'Agent Hub',
+    title: 'Agent 中心',
     content:
-      'Manage your AI agents and configurations. Create custom agents with specialized behaviors.',
+      '管理你的 AI Agent 和配置。创建具有专业行为的自定义 Agent。',
   },
   // Step 7: Skills
   {
     target: '[data-tour="skills"]',
     placement: 'right',
-    title: 'Skills Library',
+    title: '技能库',
     content:
-      'Browse and install agent skills to extend capabilities. Add new tools and abilities to your agents.',
+      '浏览和安装 Agent 技能以扩展能力。为你的 Agent 添加新工具和能力。',
   },
   // Step 8: Terminal
   {
     target: '[data-tour="terminal"]',
     placement: 'right',
-    title: 'Built-in Terminal',
+    title: '内置终端',
     content:
-      'Built-in terminal for quick commands. Execute shell commands without leaving Hermes Workspace.',
+      '用于快速命令的内置终端。无需离开 Hermes Workspace 即可执行 Shell 命令。',
   },
   // Step 9: Usage Meter (in header)
   {
     target: '[data-tour="usage-meter"]',
     placement: 'bottom',
-    title: 'Usage Monitor',
+    title: '用量监控',
     content:
-      'Monitor your AI provider usage in real-time. Track costs and API consumption.',
+      '实时监控你的 AI 服务商使用量。跟踪费用和 API 消耗。',
   },
   // Step 10: Settings
   {
     target: '[data-tour="settings"]',
     placement: 'right',
-    title: 'Settings & Customization',
+    title: '设置与个性化',
     content:
-      'Configure providers, themes, accent colors, and more. Make Hermes Workspace yours.',
+      '配置供应商、主题、强调色等。让 Hermes Workspace 成为你自己的。',
   },
   // Step 11: Finish
   {
     target: 'body',
     placement: 'center',
-    title: "You're all set! 🎉",
+    title: "一切就绪！🎉",
     content:
-      'Start chatting with your AI, explore the tools, and customize Hermes Workspace to fit your workflow. Need help? Press ? to see all keyboard shortcuts.',
+      '开始与你的 AI 对话，探索工具，并定制 Hermes Workspace 以适应你的工作流程。需要帮助？按 ? 查看所有快捷键。',
   },
 ]
