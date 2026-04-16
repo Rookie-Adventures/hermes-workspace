@@ -18,39 +18,31 @@ import {
 
 // Well-known models for providers available via auth store
 const AUTH_STORE_MODELS: Record<string, Array<ModelEntry>> = {
-  anthropic: [
-    {
-      id: 'claude-opus-4-6',
-      name: 'Claude Opus 4.6',
-      provider: 'anthropic',
-    },
-    {
-      id: 'claude-sonnet-4-6',
-      name: 'Claude Sonnet 4.6',
-      provider: 'anthropic',
-    },
-  ],
   nous: [
-    { id: 'hermes-3-llama-3.1-405b', name: 'Hermes 3 405B', provider: 'nous' },
-    { id: 'hermes-3-llama-3.1-70b', name: 'Hermes 3 70B', provider: 'nous' },
-    { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1', provider: 'nous' },
+    { id: 'charglm-4', name: 'CharGLM-4', provider: 'nous' },
+    { id: 'emohaa/emohaa', name: 'EmoHAA', provider: 'nous' },
+    { id: 'zhipuai/glm-5', name: 'GLM-5', provider: 'nous' },
+    { id: 'zhipuai/glm-5-0520', name: 'GLM-5-0520', provider: 'nous' },
+    { id: 'zhipuai/glm-5-plus', name: 'GLM-5 Plus', provider: 'nous' },
+    { id: 'zhipuai/glm-z1-32b', name: 'GLM-Z1-32B', provider: 'nous' },
+    { id: 'zhipuai/glm-z1-9b', name: 'GLM-Z1-9B', provider: 'nous' },
+    { id: 'mimo-v2-pro', name: 'MiMo v2 Pro', provider: 'nous' },
+    { id: 'mimo-v2-omni', name: 'MiMo v2 Omni', provider: 'nous' },
+    { id: 'mimo-v2-flash', name: 'MiMo v2 Flash', provider: 'nous' },
   ],
-  xiaomi: [
-    { id: 'mimo-v2-pro', name: 'MiMo v2 Pro', provider: 'xiaomi' },
-    { id: 'mimo-v2-omni', name: 'MiMo v2 Omni', provider: 'xiaomi' },
-    { id: 'mimo-v2-flash', name: 'MiMo v2 Flash', provider: 'xiaomi' },
-  ],
-  openai: [
-    { id: 'gpt-4.1', name: 'GPT-4.1', provider: 'openai' },
-    { id: 'gpt-4o', name: 'GPT-4o', provider: 'openai' },
-    { id: 'o3-mini', name: 'o3 Mini', provider: 'openai' },
+  nvidia: [
+    { id: 'minimaxai/minimax-m2.7', name: 'MiniMax M2.7', provider: 'nvidia' },
+    { id: 'deepseek-ai/deepseek-v3.2', name: 'DeepSeek V3.2', provider: 'nvidia' },
+    { id: 'mistralai/mistral-large-3-675b-instruct-2512', name: 'Mistral Large 3', provider: 'nvidia' },
+    { id: 'moonshotai/kimi-k2.5', name: 'Kimi K2.5', provider: 'nvidia' },
+    { id: 'qwen/qwen3.5-397b-a17b', name: 'Qwen3.5 397B', provider: 'nvidia' },
   ],
   openrouter: [
-    { id: 'google/gemini-2.5-pro-preview', name: 'Gemini 2.5 Pro', provider: 'openrouter' },
-    { id: 'qwen/qwen3-235b-a22b', name: 'Qwen3 235B', provider: 'openrouter' },
-    { id: 'meta-llama/llama-4-maverick', name: 'Llama 4 Maverick', provider: 'openrouter' },
+    { id: 'hermes-3-llama-3.1-405b:free', name: 'Hermes 3 405B (Free)', provider: 'openrouter' },
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Free)', provider: 'openrouter' },
+    { id: 'openai/gpt-oss-120b:free', name: 'GPT-OSS 120B (Free)', provider: 'openrouter' },
+    { id: 'nvidia/nemotron-3-super-120b-a12b:free', name: 'Nemotron 3 Super (Free)', provider: 'openrouter' },
   ],
-  xai: [{ id: 'grok-3', name: 'Grok 3', provider: 'xai' }],
 }
 
 function getAuthStoreModels(): Array<ModelEntry> {

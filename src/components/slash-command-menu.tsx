@@ -11,6 +11,7 @@ import type { Ref } from 'react'
 
 import { useAutocompleteFilter } from '@/components/ui/autocomplete'
 import { Command, CommandItem, CommandList } from '@/components/ui/command'
+import { t } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
 type SlashCommandDefinition = {
@@ -29,15 +30,26 @@ type SlashCommandMenuHandle = {
   selectActive: () => boolean
 }
 
-const SLASH_COMMANDS: Array<SlashCommandDefinition> = [
-  { command: '/new', description: 'Start new session' },
-  { command: '/clear', description: 'Clear screen and start fresh' },
-  { command: '/model', description: 'Show or change the current model' },
-  { command: '/save', description: 'Save the current conversation' },
-  { command: '/skills', description: 'Browse and manage skills' },
-  { command: '/skin', description: 'Change the display theme' },
-  { command: '/help', description: 'Show available commands' },
-]
+const useSlashCommands = (): Array<SlashCommandDefinition> => {
+  return useMemo(
+    () => [
+      { command: '/new', description: t('commands.new') },
+      { command: '/clear', description: t('commands.clear') },
+      { command: '/model', description: t('commands.model') },
+      { command: '/save', description: t('commands.save') },
+      { command: '/skills', description: t('commands.skills') },
+      { command: '/skin', description: t('commands.skin') },
+      { command: '/help', description: t('commands.help') },
+      { command: '/personality', description: t('commands.personality') },
+      { command: '/statusbar', description: t('commands.statusbar') },
+      { command: '/sb', description: t('commands.statusbar') },
+      { command: '/toolsets', description: t('commands.toolsets') },
+      { command: '/tools', description: t('commands.tools') },
+      { command: '/plugins', description: t('commands.plugins') },
+    ],
+    [],
+  )
+}
 
 const SlashCommandMenu = forwardRef(function SlashCommandMenu(
   { open, query, onSelect }: SlashCommandMenuProps,
@@ -45,19 +57,20 @@ const SlashCommandMenu = forwardRef(function SlashCommandMenu(
 ) {
   const [activeIndex, setActiveIndex] = useState(0)
   const filter = useAutocompleteFilter({ sensitivity: 'base' })
+  const slashCommands = useSlashCommands()
 
   const filteredCommands = useMemo(() => {
     const normalizedQuery = query.trim()
-    if (!normalizedQuery) return SLASH_COMMANDS
+    if (!normalizedQuery) return slashCommands
 
-    return SLASH_COMMANDS.filter((item) =>
+    return slashCommands.filter((item) =>
       filter.contains(
         item,
         normalizedQuery,
         (target) => `${target.command} ${target.description}`,
       ),
     )
-  }, [filter, query])
+  }, [filter, query, slashCommands])
 
   useEffect(() => {
     setActiveIndex(0)
