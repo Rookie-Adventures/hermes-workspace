@@ -42,7 +42,7 @@ type CommandPaletteProps = {
 
 type CommandAction = {
   id: string
-  group: 'Screens' | 'Recent Sessions' | 'Slash Commands'
+  group: '页面' | '最近会话' | '斜杠命令'
   label: string
   keywords: string
   shortcut?: string
