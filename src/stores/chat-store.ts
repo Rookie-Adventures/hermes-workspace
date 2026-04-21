@@ -984,7 +984,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
             timestamp: getMessageEventTime(cleanedMessage) ?? now,
             __receiveTime: now,
             __realtimeSequence: realtimeMessageSequence++,
+<<<<<<< HEAD
             __streamingStatus: 'complete' as any,
+=======
+            __streamingStatus: (event.state === 'interrupted' ? 'interrupted' : 'complete') as any,
+>>>>>>> upstream/main
             ...(streamToolCallsToEmbed
               ? { __streamToolCalls: streamToolCallsToEmbed }
               : {}),

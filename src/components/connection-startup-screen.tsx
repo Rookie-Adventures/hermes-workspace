@@ -5,6 +5,11 @@ import { fetchHermesAuthStatus } from '@/lib/hermes-auth'
 
 const POLL_INTERVAL_MS = 2_000
 const FAILURE_REVEAL_MS = 5_000
+<<<<<<< HEAD
+=======
+// Fire one silent auto-start attempt this many ms after we still can't connect.
+const AUTO_START_DELAY_MS = 4_000
+>>>>>>> upstream/main
 
 type Platform = 'macos' | 'windows' | 'linux' | 'unknown'
 
@@ -30,6 +35,7 @@ function getSetupSteps(
       note: 'Portable chat works with any backend that exposes /v1/chat/completions (Ollama, LiteLLM, vLLM, etc.)',
     },
     {
+<<<<<<< HEAD
       title: 'Optional: run a Hermes gateway locally',
       command: 'git clone https://github.com/outsourc-e/hermes-agent.git',
       note: 'Hermes gateway APIs unlock sessions, skills, memory, and other workspace extras automatically',
@@ -47,6 +53,21 @@ function getSetupSteps(
       title: 'Start the gateway',
       command: `cd hermes-agent && ${platform === 'windows' ? '.venv\\Scripts\\activate' : 'source .venv/bin/activate'} && hermes --gateway`,
       note: 'Or use Auto-Start below if hermes-agent is already installed locally',
+=======
+      title: 'Optional: install Hermes Agent locally',
+      command: `${pip} install hermes-agent`,
+      note: 'Vanilla hermes-agent unlocks sessions, skills, memory, jobs, and config automatically — no fork required',
+    },
+    {
+      title: 'Set up Hermes',
+      command: 'hermes setup',
+      note: 'Pick your providers once; Hermes stores them under ~/.hermes',
+    },
+    {
+      title: 'Start the gateway',
+      command: 'hermes gateway run',
+      note: 'This starts the HTTP API on :8642 for the workspace',
+>>>>>>> upstream/main
     },
   ]
 }
@@ -88,18 +109,63 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
   useEffect(() => {
     isDone.current = false
     let pollTimer: ReturnType<typeof setTimeout> | null = null
+<<<<<<< HEAD
+=======
+    let autoStartTimer: ReturnType<typeof setTimeout> | null = null
+    let autoStartFired = false
+
+>>>>>>> upstream/main
     const failureTimer = setTimeout(() => {
       if (!isDone.current) {
         setShowFailureState(true)
       }
     }, FAILURE_REVEAL_MS)
 
+<<<<<<< HEAD
+=======
+    // After a short grace period, fire /api/start-hermes once silently.
+    // If hermes-agent is installed and just not running, this brings it back
+    // up without making the user click anything. The polling loop will see it.
+    const fireSilentAutoStart = async () => {
+      if (autoStartFired || isDone.current) return
+      autoStartFired = true
+      try {
+        const res = await fetch('/api/start-hermes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        const ct = res.headers.get('content-type') || ''
+        if (!ct.includes('application/json')) return
+        const data = (await res.json()) as { ok?: boolean; message?: string }
+        if (res.ok && data.ok) {
+          // surface a one-line note so users see what happened if they're
+          // looking at the failure panel
+          setServerLog([
+            String(
+              data.message ||
+                'Auto-started Hermes gateway — reconnecting…',
+            ),
+          ])
+        }
+      } catch {
+        // silent: manual auto-start button stays available
+      }
+    }
+    autoStartTimer = setTimeout(() => {
+      void fireSilentAutoStart()
+    }, AUTO_START_DELAY_MS)
+
+>>>>>>> upstream/main
     const tryConnect = async () => {
       try {
         const status = await fetchHermesAuthStatus()
         if (isDone.current) return
         isDone.current = true
         clearTimeout(failureTimer)
+<<<<<<< HEAD
+=======
+        if (autoStartTimer) clearTimeout(autoStartTimer)
+>>>>>>> upstream/main
         if (pollTimer) clearTimeout(pollTimer)
         onConnectedRef.current(status)
       } catch {
@@ -113,6 +179,10 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
     return () => {
       isDone.current = true
       if (pollTimer) clearTimeout(pollTimer)
+<<<<<<< HEAD
+=======
+      if (autoStartTimer) clearTimeout(autoStartTimer)
+>>>>>>> upstream/main
       clearTimeout(failureTimer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

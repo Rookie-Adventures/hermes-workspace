@@ -138,7 +138,13 @@ export async function streamChatUnified(
     // Adapt StreamChunkType to plain string for legacy callers
     async function* toStringStream() {
       for await (const chunk of rawStream) {
+<<<<<<< HEAD
         yield chunk.text
+=======
+        if (chunk.type === 'content' || chunk.type === 'reasoning') {
+          yield chunk.text
+        }
+>>>>>>> upstream/main
       }
     }
     return toStringStream()

@@ -5,8 +5,6 @@
 
 export type LocaleId = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'pt' | 'ru' | 'ar'
 
-export type TranslationKey = keyof typeof EN
-
 const EN = {
   // Nav
   'nav.dashboard': 'Dashboard',
@@ -97,8 +95,7 @@ const EN = {
   'tasks.more': 'more',
   'tasks.moreCount': '+{count} more',
   'tasks.overdue': 'Overdue',
-  // Tasks
-  'tasks.pageTitle': 'Tasks',
+  'tasks.title': 'Tasks',
   'tasks.newTask': 'New Task',
   'tasks.backlog': 'Backlog',
   'tasks.todo': 'Todo',
@@ -108,7 +105,6 @@ const EN = {
   'tasks.filteredBy': 'Filtered by',
   'tasks.total': 'total',
   'tasks.completion': 'done',
-  'tasks.title': 'Title',
   'tasks.description': 'Description',
   'tasks.column': 'Column',
   'tasks.assignee': 'Assignee',
@@ -317,7 +313,10 @@ const EN = {
   'common.selectAll': 'Select All',
 } as const
 
-const ES: typeof EN = {
+export type TranslationKey = keyof typeof EN
+type LocaleTranslations = Record<TranslationKey, string>
+
+const ES: LocaleTranslations = {
   'nav.dashboard': 'Panel',
   'nav.chat': 'Chat',
   'nav.files': 'Archivos',
@@ -334,7 +333,7 @@ const ES: typeof EN = {
   'skills.noResults': 'No se encontraron habilidades',
   'profiles.profiles': 'Perfiles',
   'profiles.monitoring': 'Monitoreo',
-  'tasks.pageTitle': 'Tareas',
+  'tasks.title': 'Tareas',
   'tasks.newTask': 'Nueva Tarea',
   'tasks.backlog': 'Pendientes',
   'tasks.todo': 'Por Hacer',
@@ -355,7 +354,7 @@ const ES: typeof EN = {
   'common.noData': 'Sin datos',
 }
 
-const FR: typeof EN = {
+const FR: LocaleTranslations = {
   'nav.dashboard': 'Tableau de bord',
   'nav.chat': 'Chat',
   'nav.files': 'Fichiers',
@@ -372,7 +371,7 @@ const FR: typeof EN = {
   'skills.noResults': 'Aucune compétence trouvée',
   'profiles.profiles': 'Profils',
   'profiles.monitoring': 'Surveillance',
-  'tasks.pageTitle': 'Tâches',
+  'tasks.title': 'Tâches',
   'tasks.newTask': 'Nouvelle Tâche',
   'tasks.backlog': 'En attente',
   'tasks.todo': 'À faire',
@@ -393,8 +392,7 @@ const FR: typeof EN = {
   'common.noData': 'Aucune donnée',
 }
 
-const ZH: typeof EN = {
-  // Nav
+const ZH: LocaleTranslations = {
   'nav.dashboard': '仪表板',
   'nav.chat': '聊天',
   'nav.files': '文件',
@@ -405,7 +403,6 @@ const ZH: typeof EN = {
   'nav.skills': '技能',
   'nav.profiles': '配置',
   'nav.settings': '设置',
-  // Skills
   'skills.installed': '已安装',
   'skills.marketplace': '市场',
   'skills.search': '按名称、标签或描述搜索',
@@ -483,8 +480,7 @@ const ZH: typeof EN = {
   'tasks.more': '更多',
   'tasks.moreCount': '+{count} 个',
   'tasks.overdue': '已逾期',
-  // Tasks
-  'tasks.pageTitle': '任务',
+  'tasks.title': '任务',
   'tasks.newTask': '新建任务',
   'tasks.backlog': '待办',
   'tasks.todo': '计划中',
@@ -494,7 +490,6 @@ const ZH: typeof EN = {
   'tasks.filteredBy': '筛选',
   'tasks.total': '总计',
   'tasks.completion': '完成率',
-  'tasks.title': '标题',
   'tasks.description': '描述',
   'tasks.column': '列',
   'tasks.assignee': '负责人',
@@ -703,7 +698,7 @@ const ZH: typeof EN = {
   'common.selectAll': '全选',
 }
 
-const LOCALES: Record<LocaleId, typeof EN> = {
+const LOCALES: Record<LocaleId, LocaleTranslations> = {
   en: EN, es: ES, fr: FR, de: EN, zh: ZH, ja: EN, ko: EN, pt: EN, ru: EN, ar: EN,
 }
 

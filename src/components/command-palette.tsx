@@ -42,7 +42,11 @@ type CommandPaletteProps = {
 
 type CommandAction = {
   id: string
+<<<<<<< HEAD
   group: '页面' | '最近会话' | '斜杠命令'
+=======
+  group: 'Screens' | 'Recent Sessions' | 'Slash Commands'
+>>>>>>> upstream/main
   label: string
   keywords: string
   shortcut?: string
@@ -57,9 +61,15 @@ type ScoredAction = CommandAction & {
 }
 
 const SCREEN_GROUP_ORDER = [
+<<<<<<< HEAD
   '页面',
   '最近会话',
   '斜杠命令',
+=======
+  'Screens',
+  'Recent Sessions',
+  'Slash Commands',
+>>>>>>> upstream/main
 ] as const
 
 function getSessionLabel(session: SessionMeta) {
@@ -161,8 +171,13 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
     () => [
       {
         id: 'screen-chat',
+<<<<<<< HEAD
         group: '页面',
         label: '聊天',
+=======
+        group: 'Screens',
+        label: 'Chat',
+>>>>>>> upstream/main
         keywords: 'conversation new session home',
         shortcut: 'Go',
         icon: Chat01Icon,
@@ -170,8 +185,13 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
       },
       {
         id: 'screen-files',
+<<<<<<< HEAD
         group: '页面',
         label: '文件',
+=======
+        group: 'Screens',
+        label: 'Files',
+>>>>>>> upstream/main
         keywords: 'workspace editor browser',
         shortcut: 'Go',
         icon: File01Icon,
@@ -179,8 +199,13 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
       },
       {
         id: 'screen-terminal',
+<<<<<<< HEAD
         group: '页面',
         label: '终端',
+=======
+        group: 'Screens',
+        label: 'Terminal',
+>>>>>>> upstream/main
         keywords: 'console shell command line',
         shortcut: 'Go',
         icon: CommandLineIcon,
@@ -188,8 +213,13 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
       },
       {
         id: 'screen-memory',
+<<<<<<< HEAD
         group: '页面',
         label: '记忆',
+=======
+        group: 'Screens',
+        label: 'Memory',
+>>>>>>> upstream/main
         keywords: 'knowledge durable memory notes',
         shortcut: 'Go',
         icon: BrainIcon,
@@ -197,19 +227,33 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
       },
       {
         id: 'screen-skills',
+<<<<<<< HEAD
         group: '页面',
         label: '技能',
         keywords: 'install tools capabilities',
         shortcut: '前往',
+=======
+        group: 'Screens',
+        label: 'Skills',
+        keywords: 'install tools capabilities',
+        shortcut: 'Go',
+>>>>>>> upstream/main
         icon: PuzzleIcon,
         onSelect: () => void navigate({ to: '/skills' }),
       },
       {
         id: 'screen-settings',
+<<<<<<< HEAD
         group: '页面',
         label: '设置',
         keywords: 'preferences configuration',
         shortcut: '前往',
+=======
+        group: 'Screens',
+        label: 'Settings',
+        keywords: 'preferences configuration',
+        shortcut: 'Go',
+>>>>>>> upstream/main
         icon: Settings01Icon,
         onSelect: () => void navigate({ to: '/settings' }),
       },
@@ -224,10 +268,17 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
         .slice(0, 5)
         .map((session) => ({
           id: `session-${session.key}`,
+<<<<<<< HEAD
           group: '最近会话',
           label: getSessionLabel(session),
           keywords: `${session.key} ${session.friendlyId} ${session.title ?? ''} ${session.derivedTitle ?? ''}`,
           shortcut: '打开',
+=======
+          group: 'Recent Sessions',
+          label: getSessionLabel(session),
+          keywords: `${session.key} ${session.friendlyId} ${session.title ?? ''} ${session.derivedTitle ?? ''}`,
+          shortcut: 'Open',
+>>>>>>> upstream/main
           icon: Chat01Icon,
           onSelect: () =>
             void navigate({
@@ -242,55 +293,97 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
     () => [
       {
         id: 'slash-new',
+<<<<<<< HEAD
         group: '斜杠命令',
         label: '/new',
         keywords: 'start new session conversation',
         shortcut: '运行',
+=======
+        group: 'Slash Commands',
+        label: '/new',
+        keywords: 'start new session conversation',
+        shortcut: 'Run',
+>>>>>>> upstream/main
         icon: CommandLineIcon,
         onSelect: () => runSlashCommand('/new'),
       },
       {
         id: 'slash-clear',
+<<<<<<< HEAD
         group: '斜杠命令',
         label: '/clear',
         keywords: 'clear current chat history conversation',
         shortcut: '运行',
+=======
+        group: 'Slash Commands',
+        label: '/clear',
+        keywords: 'clear current chat history conversation',
+        shortcut: 'Run',
+>>>>>>> upstream/main
         icon: CommandLineIcon,
         onSelect: () => runSlashCommand('/clear'),
       },
       {
         id: 'slash-model',
+<<<<<<< HEAD
         group: '斜杠命令',
         label: '/model',
         keywords: 'open model picker settings hermes provider',
         shortcut: '运行',
+=======
+        group: 'Slash Commands',
+        label: '/model',
+        keywords: 'open model picker settings hermes provider',
+        shortcut: 'Run',
+>>>>>>> upstream/main
         icon: CommandLineIcon,
         onSelect: () => runSlashCommand('/model'),
       },
       {
         id: 'slash-skills',
+<<<<<<< HEAD
         group: '斜杠命令',
         label: '/skills',
         keywords: 'browse manage skills page',
         shortcut: '运行',
+=======
+        group: 'Slash Commands',
+        label: '/skills',
+        keywords: 'browse manage skills page',
+        shortcut: 'Run',
+>>>>>>> upstream/main
         icon: CommandLineIcon,
         onSelect: () => runSlashCommand('/skills'),
       },
       {
         id: 'slash-skin',
+<<<<<<< HEAD
         group: '斜杠命令',
         label: '/skin',
         keywords: 'open appearance settings theme',
         shortcut: '运行',
+=======
+        group: 'Slash Commands',
+        label: '/skin',
+        keywords: 'open appearance settings theme',
+        shortcut: 'Run',
+>>>>>>> upstream/main
         icon: CommandLineIcon,
         onSelect: () => runSlashCommand('/skin'),
       },
       {
         id: 'slash-save',
+<<<<<<< HEAD
         group: '斜杠命令',
         label: '/save',
         keywords: 'export current conversation transcript',
         shortcut: '运行',
+=======
+        group: 'Slash Commands',
+        label: '/save',
+        keywords: 'export current conversation transcript',
+        shortcut: 'Run',
+>>>>>>> upstream/main
         icon: CommandLineIcon,
         onSelect: () => runSlashCommand('/save'),
       },
@@ -423,11 +516,19 @@ export function CommandPalette({ pathname, sessions }: CommandPaletteProps) {
           onValueChange={setQuery}
           mode="none"
         >
+<<<<<<< HEAD
           <CommandInput placeholder="搜索页面、会话和命令" />
           <CommandPanel className="flex min-h-0 flex-1 flex-col">
             {groupedActions.length === 0 ? (
               <div className="flex h-72 items-center justify-center text-sm text-primary-600">
                 没有找到与「{query.trim()}」相关的结果。
+=======
+          <CommandInput placeholder="Search screens, sessions, and commands" />
+          <CommandPanel className="flex min-h-0 flex-1 flex-col">
+            {groupedActions.length === 0 ? (
+              <div className="flex h-72 items-center justify-center text-sm text-primary-600">
+                No results for “{query.trim()}”.
+>>>>>>> upstream/main
               </div>
             ) : (
               <CommandList className="h-72 min-h-0">

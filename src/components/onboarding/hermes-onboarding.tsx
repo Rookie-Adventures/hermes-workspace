@@ -30,7 +30,21 @@ function stripProviderPrefix(model: string): string {
   return model
 }
 
+<<<<<<< HEAD
 const ONBOARDING_KEY = 'hermes-onboarding-complete'
+=======
+export const ONBOARDING_KEY = 'hermes-onboarding-complete'
+export const ONBOARDING_COMPLETE_EVENT = 'hermes:onboarding-complete'
+
+function dispatchOnboardingCompletionChanged(completed: boolean) {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(
+    new CustomEvent(ONBOARDING_COMPLETE_EVENT, {
+      detail: { completed },
+    }),
+  )
+}
+>>>>>>> upstream/main
 
 type Step = 'welcome' | 'connect' | 'provider' | 'test' | 'done'
 
@@ -467,6 +481,10 @@ export function HermesOnboarding() {
 
   const complete = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, 'true')
+<<<<<<< HEAD
+=======
+    dispatchOnboardingCompletionChanged(true)
+>>>>>>> upstream/main
     setShow(false)
   }, [])
 

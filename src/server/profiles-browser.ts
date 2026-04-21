@@ -172,6 +172,7 @@ export function listProfiles(): Array<ProfileSummary> {
     }
   }
 
+<<<<<<< HEAD
   if (activeProfile === 'default') {
     const root = getHermesRoot()
     const config = readYamlConfig(path.join(root, 'config.yaml'))
@@ -194,6 +195,28 @@ export function listProfiles(): Array<ProfileSummary> {
       updatedAt: latestMtime([root, path.join(root, 'config.yaml')]),
     })
   }
+=======
+  const root = getHermesRoot()
+  const config = readYamlConfig(path.join(root, 'config.yaml'))
+  results.unshift({
+    name: 'default',
+    path: root,
+    active: activeProfile === 'default',
+    exists: true,
+    model: typeof config.model === 'string' ? config.model : undefined,
+    provider:
+      typeof config.provider === 'string' ? config.provider : undefined,
+    skillCount: countFilesRecursive(
+      path.join(root, 'skills'),
+      (full) => path.basename(full) === 'SKILL.md',
+    ),
+    sessionCount: countFilesRecursive(path.join(root, 'sessions'), (full) =>
+      /\.(jsonl|json|sqlite|db)$/i.test(full),
+    ),
+    hasEnv: fs.existsSync(path.join(root, '.env')),
+    updatedAt: latestMtime([root, path.join(root, 'config.yaml')]),
+  })
+>>>>>>> upstream/main
 
   results.sort((a, b) => {
     if (a.active && !b.active) return -1
@@ -306,6 +329,31 @@ export function deleteProfile(name: string): void {
   fs.renameSync(profilePath, path.join(trashDir, trashName))
 }
 
+<<<<<<< HEAD
+=======
+export function updateProfileConfig(
+  name: string,
+  patch: Record<string, unknown>,
+): ProfileDetail {
+  const normalized = name.trim() || 'default'
+  const profilePath =
+    normalized === 'default'
+      ? getHermesRoot()
+      : path.join(getProfilesRoot(), validateProfileName(normalized))
+  if (!fs.existsSync(profilePath)) throw new Error('Profile not found')
+  const configPath = path.join(profilePath, 'config.yaml')
+  const current = readYamlConfig(configPath)
+  const merged = { ...current, ...patch }
+  // Strip undefined keys
+  for (const key of Object.keys(merged)) {
+    if (merged[key] === undefined) delete merged[key]
+  }
+  fs.mkdirSync(path.dirname(configPath), { recursive: true })
+  fs.writeFileSync(configPath, YAML.stringify(merged), 'utf-8')
+  return readProfile(normalized)
+}
+
+>>>>>>> upstream/main
 export function renameProfile(oldName: string, newName: string): ProfileDetail {
   const from = validateProfileName(oldName)
   const to = validateProfileName(newName)

@@ -44,6 +44,11 @@ import { cn } from '@/lib/utils'
 import { useVoiceInput } from '@/hooks/use-voice-input'
 import { useVoiceRecorder } from '@/hooks/use-voice-recorder'
 import { toast } from '@/components/ui/toast'
+import {
+  getZeroForkModelInfoFlags,
+  MODEL_SWITCH_BLOCKED_TOAST,
+  shouldBlockZeroForkModelSwitch,
+} from './chat-composer-model-switch'
 
 type ChatComposerAttachment = {
   id: string
@@ -78,6 +83,9 @@ type ChatComposerProps = {
   /** Called when user changes thinking level */
   onThinkingLevelChange?: (level: ThinkingLevel) => void
   onAbort?: () => void
+  /** Embedded inside another surface (e.g. Operations card), so mobile composer
+   * must stay inline instead of docking fixed to the viewport bottom. */
+  embedded?: boolean
 }
 
 type ChatComposerHelpers = {
@@ -108,6 +116,16 @@ type SessionStatusApiResponse = {
   payload?: unknown
   error?: string
   [key: string]: unknown
+}
+
+type GatewayStatusApiResponse = {
+  mode?: string
+}
+
+type ModelInfoApiResponse = {
+  gatewayMode?: string | null
+  supportsRuntimeSwitching?: boolean | null
+  vanillaAgent?: boolean | null
 }
 
 type ModelSwitchNotice = {
@@ -160,155 +178,10 @@ async function fetchModels(): Promise<{
   providerLabels?: Record<string, string>
   providers?: Array<HermesProviderOption>
 }> {
-  // Prefer Hermes' current provider models; fetch other providers lazily if needed.
-  try {
-    const richRes = await fetch('/api/hermes-proxy/api/available-models')
-    if (richRes.ok) {
-      const richData = (await richRes.json()) as HermesAvailableModelsResponse
-      const allProviders = richData.providers || []
-      const authenticatedProviders = allProviders.filter(
-        (p) => p.authenticated,
-      )
-      // Always include key providers (Nous Portal offers free models)
-      // so users can discover and select them even before authenticating.
-      const ALWAYS_SHOW_PROVIDERS = ['nous']
-      const visibleProviders = [
-        ...authenticatedProviders,
-        ...allProviders.filter(
-          (p) =>
-            !p.authenticated &&
-            ALWAYS_SHOW_PROVIDERS.includes(p.id),
-        ),
-      ]
-      const configuredProviders = visibleProviders.map((p) => p.id)
-      const providerLabels = visibleProviders.reduce<
-        Record<string, string>
-      >((acc, provider) => {
-        acc[provider.id] = provider.label || provider.id
-        return acc
-      }, {})
-      const currentProvider = readModelText(richData.provider)
-      let models = (richData.models || []).map((model) => ({
-        id: model.id,
-        name: model.id,
-        provider:
-          ((model as Record<string, unknown>).provider as string) ||
-          currentProvider ||
-          undefined,
-      }))
-
-      // If gateway returns no models, try /v1/models as fallback
-      if (models.length === 0) {
-        try {
-          const fallbackRes = await fetch('/api/hermes-proxy/v1/models')
-          if (fallbackRes.ok) {
-            const fallbackData = (await fallbackRes.json()) as {
-              data?: Array<Record<string, unknown>>
-              models?: Array<Record<string, unknown>>
-            }
-            const rawFallback = Array.isArray(fallbackData.data)
-              ? fallbackData.data
-              : Array.isArray(fallbackData.models)
-                ? fallbackData.models
-                : []
-            models = rawFallback.map((m) => ({
-              id: readModelText(m.id) || readModelText(m.model) || 'unknown',
-              name: readModelText(m.id) || readModelText(m.model) || 'unknown',
-              provider: currentProvider || undefined,
-            }))
-          }
-        } catch {
-          /* ignore fallback failure */
-        }
-      }
-
-      // Always include current configured model so it appears in the list
-      if (currentProvider && models.length === 0) {
-        // Fetch current model from config
-        try {
-          const cfgRes = await fetch('/api/hermes-proxy/api/config')
-          if (cfgRes.ok) {
-            const cfg = (await cfgRes.json()) as Record<string, unknown>
-            const cfgModel = readModelText(cfg.model)
-            if (cfgModel) {
-              models = [
-                { id: cfgModel, name: cfgModel, provider: currentProvider },
-              ]
-            }
-          }
-        } catch {
-          /* ignore */
-        }
-      }
-
-      // Fetch models from all visible providers (authenticated + always-shown)
-      // so the picker shows everything the user can select or discover.
-      const otherVisible = visibleProviders.filter(
-        (p) => p.id !== currentProvider,
-      )
-      if (otherVisible.length > 0) {
-        const otherResults = await Promise.allSettled(
-          otherVisible.map(async (provider) => {
-            const res = await fetch(
-              `/api/hermes-proxy/api/available-models?provider=${encodeURIComponent(provider.id)}`,
-            )
-            if (!res.ok) return []
-            const data = (await res.json()) as HermesAvailableModelsResponse
-            return (data.models || []).map((m) => ({
-              id: m.id,
-              name: m.id,
-              provider: provider.id,
-            }))
-          }),
-        )
-        for (const result of otherResults) {
-          if (result.status === 'fulfilled' && result.value.length > 0) {
-            models.push(...result.value)
-          }
-        }
-      }
-
-      // Merge auto-discovered local models (Ollama, Atomic Chat, etc.)
-      try {
-        const localRes = await fetch('/api/local-providers')
-        if (localRes.ok) {
-          const localData = (await localRes.json()) as {
-            ok?: boolean
-            providers?: Array<{ id: string; name: string; online: boolean }>
-            models?: Array<{ id: string; name: string; provider: string }>
-          }
-          if (localData.ok && localData.models && localData.models.length > 0) {
-            const existingIds = new Set(models.map((m) => m.id))
-            for (const m of localData.models) {
-              if (!existingIds.has(m.id)) {
-                models.push({ id: m.id, name: m.name, provider: m.provider })
-                existingIds.add(m.id)
-              }
-            }
-            // Add local providers to configured list
-            for (const p of localData.providers || []) {
-              if (p.online && !configuredProviders.includes(p.id)) {
-                configuredProviders.push(p.id)
-                providerLabels[p.id] = p.name
-              }
-            }
-          }
-        }
-      } catch { /* ignore local discovery failure */ }
-
-      return {
-        ok: true,
-        models,
-        configuredProviders,
-        currentProvider,
-        providerLabels,
-        providers: visibleProviders,
-      }
-    }
-  } catch {
-    // Fall back to /v1/models
-  }
-
+  // Use the curated /api/models endpoint which returns only models
+  // actually configured and available (OCPlatform gateway + local providers).
+  // Previously this hit /api/hermes-proxy/api/available-models which returned
+  // every upstream provider model — flooding the picker with unusable options.
   const response = await fetch('/api/models')
   if (!response.ok) {
     throw new Error(`Models request failed (${response.status})`)
@@ -803,6 +676,23 @@ async function fetchCurrentModelFromStatus(): Promise<string> {
   }
 }
 
+async function fetchGatewayMode(): Promise<string | null> {
+  const response = await fetch('/api/gateway-status')
+  if (!response.ok) {
+    throw new Error(await readResponseError(response))
+  }
+  const payload = (await response.json()) as GatewayStatusApiResponse
+  return typeof payload.mode === 'string' ? payload.mode : null
+}
+
+async function fetchModelInfo(): Promise<ModelInfoApiResponse | null> {
+  const response = await fetch('/api/model/info')
+  if (!response.ok) {
+    throw new Error(await readResponseError(response))
+  }
+  return (await response.json()) as ModelInfoApiResponse
+}
+
 function focusPromptTarget(target: HTMLTextAreaElement | null) {
   if (!target) return
   try {
@@ -826,6 +716,7 @@ function ChatComposerComponent({
   thinkingLevel: externalThinkingLevel,
   onThinkingLevelChange,
   onAbort,
+  embedded = false,
 }: ChatComposerProps) {
   const mobileKeyboardInset = useWorkspaceStore((s) => s.mobileKeyboardInset)
   const mobileComposerFocused = useWorkspaceStore(
@@ -943,6 +834,22 @@ function ChatComposerComponent({
     refetchInterval: 30_000,
     retry: false,
   })
+  const gatewayModeQuery = useQuery({
+    queryKey: ['gateway-status', 'mode'],
+    queryFn: fetchGatewayMode,
+    staleTime: 30_000,
+    retry: false,
+  })
+  const modelInfoQuery = useQuery({
+    queryKey: ['dashboard', 'model-info'],
+    queryFn: fetchModelInfo,
+    staleTime: 30_000,
+    retry: false,
+  })
+  const zeroForkModelInfoFlags = useMemo(
+    () => getZeroForkModelInfoFlags(modelInfoQuery.data),
+    [modelInfoQuery.data],
+  )
 
   // Phase 4.2: (pinned model tracking kept for future use)
   void modelsQuery.data
@@ -999,6 +906,16 @@ function ChatComposerComponent({
         typeof sessionKey === 'string' && sessionKey.trim().length > 0
           ? sessionKey.trim()
           : undefined
+      if (
+        shouldBlockZeroForkModelSwitch(
+          gatewayModeQuery.data,
+          zeroForkModelInfoFlags,
+        )
+      ) {
+        toast(MODEL_SWITCH_BLOCKED_TOAST)
+        setIsModelMenuOpen(false)
+        return
+      }
       setModelNotice(null)
       setCurrentSelectedModel(getResolvedModelKey(model, provider))
       modelSwitchMutation.mutate({
@@ -1007,7 +924,12 @@ function ChatComposerComponent({
         sessionKey: normalizedSessionKey,
       })
     },
-    [modelSwitchMutation, sessionKey],
+    [
+      gatewayModeQuery.data,
+      modelSwitchMutation,
+      sessionKey,
+      zeroForkModelInfoFlags,
+    ],
   )
 
   const retryModel = modelNotice?.retryModel ?? ''
@@ -1798,7 +1720,7 @@ function ChatComposerComponent({
   const effectiveScrollHidden = scrollHidden && !keyboardOrFocusActive
 
   const composerWrapperStyle = useMemo(() => {
-    if (!isMobileViewport)
+    if (!isMobileViewport || embedded)
       return { maxWidth: 'min(768px, 100%)' } as CSSProperties
     const safeArea = 'env(safe-area-inset-bottom, 0px)'
     const tabBarH = 'var(--tabbar-h, 0px)'
@@ -1837,30 +1759,36 @@ function ChatComposerComponent({
       WebkitTransform: tf,
       '--mobile-tab-bar-offset': MOBILE_TAB_BAR_OFFSET,
     } as CSSProperties
-  }, [isMobileViewport, keyboardOrFocusActive, effectiveScrollHidden])
+  }, [isMobileViewport, keyboardOrFocusActive, effectiveScrollHidden, embedded])
 
   return (
     <div
       className={cn(
         'no-swipe pointer-events-auto touch-manipulation',
         isMobileViewport
-          ? [
-              'fixed z-[70] transition-all duration-200',
-              chatNavMode === 'dock'
-                ? [
-                    // iMessage-style: edge-to-edge, docked to bottom
-                    'left-0 right-0',
-                    'bg-surface/95 backdrop-blur-xl',
-                    'border-t border-primary-200/60',
-                  ].join(' ')
-                : [
-                    // scroll-hide / integrated: floating pill above tab bar
-                    'left-4 right-4',
-                    'bg-surface/95 backdrop-blur-2xl',
-                    'shadow-[0_8px_32px_rgba(0,0,0,0.15)]',
-                    'rounded-[22px]',
-                  ].join(' '),
-            ].join(' ')
+          ? embedded
+            ? [
+                // Embedded mobile composer: stay inside the card, no fixed bottom.
+                'relative z-40 w-full',
+                'bg-surface border-t border-primary-200/60',
+              ].join(' ')
+            : [
+                'fixed z-[70] transition-all duration-200',
+                chatNavMode === 'dock'
+                  ? [
+                      // iMessage-style: edge-to-edge, docked to bottom
+                      'left-0 right-0',
+                      'bg-surface/95 backdrop-blur-xl',
+                      'border-t border-primary-200/60',
+                    ].join(' ')
+                  : [
+                      // scroll-hide / integrated: floating pill above tab bar
+                      'left-4 right-4',
+                      'bg-surface/95 backdrop-blur-2xl',
+                      'shadow-[0_8px_32px_rgba(0,0,0,0.15)]',
+                      'rounded-[22px]',
+                    ].join(' '),
+              ].join(' ')
           : [
               'relative z-40 shrink-0 w-full mx-auto px-3 pt-2 sm:px-5',
               'bg-surface',

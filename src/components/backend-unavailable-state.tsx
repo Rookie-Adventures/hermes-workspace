@@ -16,8 +16,13 @@ export function BackendUnavailableState({ feature, description }: Props) {
         <div className="mt-4 space-y-2">
           <h2 className="text-lg font-semibold text-primary-900">{feature}</h2>
           <p className="text-sm leading-6 text-primary-600">
+<<<<<<< HEAD
             此后端不可用。连接到 Hermes 网关以解锁{' '}
             {feature}。
+=======
+            Not available on this backend. Connect to a Hermes gateway to unlock{' '}
+            {feature}.
+>>>>>>> upstream/main
           </p>
           {description ? (
             <p className="text-xs leading-5 text-primary-500">{description}</p>

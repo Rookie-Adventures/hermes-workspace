@@ -15,70 +15,6 @@ import {
   ensureProviderInConfig,
 } from '../../server/local-provider-discovery'
 
-
-// Well-known models for providers available via auth store
-const AUTH_STORE_MODELS: Record<string, Array<ModelEntry>> = {
-  nous: [
-    { id: 'charglm-4', name: 'CharGLM-4', provider: 'nous' },
-    { id: 'emohaa/emohaa', name: 'EmoHAA', provider: 'nous' },
-    { id: 'zhipuai/glm-5', name: 'GLM-5', provider: 'nous' },
-    { id: 'zhipuai/glm-5-0520', name: 'GLM-5-0520', provider: 'nous' },
-    { id: 'zhipuai/glm-5-plus', name: 'GLM-5 Plus', provider: 'nous' },
-    { id: 'zhipuai/glm-z1-32b', name: 'GLM-Z1-32B', provider: 'nous' },
-    { id: 'zhipuai/glm-z1-9b', name: 'GLM-Z1-9B', provider: 'nous' },
-    { id: 'mimo-v2-pro', name: 'MiMo v2 Pro', provider: 'nous' },
-    { id: 'mimo-v2-omni', name: 'MiMo v2 Omni', provider: 'nous' },
-    { id: 'mimo-v2-flash', name: 'MiMo v2 Flash', provider: 'nous' },
-  ],
-  nvidia: [
-    { id: 'minimaxai/minimax-m2.7', name: 'MiniMax M2.7', provider: 'nvidia' },
-    { id: 'deepseek-ai/deepseek-v3.2', name: 'DeepSeek V3.2', provider: 'nvidia' },
-    { id: 'mistralai/mistral-large-3-675b-instruct-2512', name: 'Mistral Large 3', provider: 'nvidia' },
-    { id: 'moonshotai/kimi-k2.5', name: 'Kimi K2.5', provider: 'nvidia' },
-    { id: 'qwen/qwen3.5-397b-a17b', name: 'Qwen3.5 397B', provider: 'nvidia' },
-  ],
-  openrouter: [
-    { id: 'hermes-3-llama-3.1-405b:free', name: 'Hermes 3 405B (Free)', provider: 'openrouter' },
-    { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Free)', provider: 'openrouter' },
-    { id: 'openai/gpt-oss-120b:free', name: 'GPT-OSS 120B (Free)', provider: 'openrouter' },
-    { id: 'nvidia/nemotron-3-super-120b-a12b:free', name: 'Nemotron 3 Super (Free)', provider: 'openrouter' },
-  ],
-}
-
-function getAuthStoreModels(): Array<ModelEntry> {
-  const extra: Array<ModelEntry> = []
-  for (const storePath of [
-    path.join(os.homedir(), '.hermes', 'auth-profiles.json'),
-    path.join(
-      os.homedir(),
-      '.openclaw',
-      'agents',
-      'main',
-      'agent',
-      'auth-profiles.json',
-    ),
-  ]) {
-    try {
-      if (!fs.existsSync(storePath)) continue
-      const store = JSON.parse(fs.readFileSync(storePath, 'utf-8'))
-      const profiles = store?.profiles || {}
-      const seen = new Set<string>()
-      for (const key of Object.keys(profiles)) {
-        const providerId = key.split(':')[0]
-        if (seen.has(providerId)) continue
-        const p = profiles[key]
-        const token = String(p?.token || p?.key || p?.access || '').trim()
-        if (!token) continue
-        seen.add(providerId)
-        const models = AUTH_STORE_MODELS[providerId]
-        if (models) extra.push(...models)
-      }
-      if (extra.length > 0) break // Use first store that has data
-    } catch {}
-  }
-  return extra
-}
-
 type ModelEntry = {
   provider?: string
   id?: string
@@ -96,14 +32,14 @@ function readString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function normalizeHermesModel(entry: unknown): ModelEntry | null {
+function normalizeModel(entry: unknown): ModelEntry | null {
   if (typeof entry === 'string') {
     const id = entry.trim()
     if (!id) return null
     return {
       id,
       name: id,
-      provider: id.includes('/') ? id.split('/')[0] : 'hermes-agent',
+      provider: id.includes('/') ? id.split('/')[0] : 'unknown',
     }
   }
   const record = asRecord(entry)
@@ -121,10 +57,63 @@ function normalizeHermesModel(entry: unknown): ModelEntry | null {
     provider:
       readString(record.provider) ||
       readString(record.owned_by) ||
-      (id.includes('/') ? id.split('/')[0] : 'hermes-agent'),
+      (id.includes('/') ? id.split('/')[0] : 'unknown'),
   }
 }
 
+/**
+ * Read user-configured models from ~/.hermes/models.json.
+ * This is the curated list the user manages via the Hermes CLI or UI.
+ * Each entry has: { id, name, provider, model, baseUrl, createdAt }
+ */
+function readHermesModelsJson(): Array<ModelEntry> {
+  const modelsPath = path.join(os.homedir(), '.hermes', 'models.json')
+  try {
+    if (!fs.existsSync(modelsPath)) return []
+    const raw = fs.readFileSync(modelsPath, 'utf-8')
+    const entries = JSON.parse(raw)
+    if (!Array.isArray(entries)) return []
+    return entries
+      .map((entry: unknown): ModelEntry | null => {
+        const record = asRecord(entry)
+        // models.json uses "model" field for the model ID
+        const modelId = readString(record.model) || readString(record.id)
+        if (!modelId) return null
+        return {
+          id: modelId,
+          name: readString(record.name) || modelId,
+          provider: readString(record.provider) || 'unknown',
+        }
+      })
+      .filter((entry): entry is ModelEntry => entry !== null)
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Read the default model from ~/.hermes/config.yaml without a YAML parser.
+ * Looks for "default: <model-id>" under the "model:" section.
+ */
+function readHermesDefaultModel(): ModelEntry | null {
+  const configPath = path.join(os.homedir(), '.hermes', 'config.yaml')
+  try {
+    if (!fs.existsSync(configPath)) return null
+    const raw = fs.readFileSync(configPath, 'utf-8')
+    const defaultMatch = raw.match(/^\s*default:\s*(.+)$/m)
+    const providerMatch = raw.match(/^\s*provider:\s*(.+)$/m)
+    if (!defaultMatch) return null
+    const modelId = defaultMatch[1].trim()
+    const provider = providerMatch ? providerMatch[1].trim() : 'unknown'
+    return { id: modelId, name: modelId, provider }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Fallback: fetch models from the hermes-agent /v1/models endpoint.
+ */
 async function fetchHermesModels(): Promise<Array<ModelEntry>> {
   const headers: Record<string, string> = {}
   if (BEARER_TOKEN) headers['Authorization'] = `Bearer ${BEARER_TOKEN}`
@@ -138,7 +127,7 @@ async function fetchHermesModels(): Promise<Array<ModelEntry>> {
       ? payload.models
       : []
   return rawModels
-    .map(normalizeHermesModel)
+    .map(normalizeModel)
     .filter((e): e is ModelEntry => e !== null)
 }
 
@@ -150,39 +139,39 @@ export const Route = createFileRoute('/api/models')({
           return json({ ok: false, error: 'Unauthorized' }, { status: 401 })
         }
         await ensureGatewayProbed()
-        if (!getGatewayCapabilities().models) {
-          return json({
-            ok: true,
-            object: 'list',
-            data: [],
-            models: [],
-            configuredProviders: [],
-            source: 'unavailable',
-            message: 'Gateway does not support /v1/models',
-          })
-        }
+
         try {
-          const models = await fetchHermesModels()
-          // Add models from auth store providers (Anthropic, OpenAI, etc.)
-          const authModels = getAuthStoreModels()
-          const existingIds = new Set(models.map((m) => m.id))
-          for (const m of authModels) {
-            if (!existingIds.has(m.id)) {
-              models.push(m)
+          // Primary: read user-configured models from ~/.hermes/models.json
+          let models = readHermesModelsJson()
+          let source = 'models.json'
+
+          // Ensure the default model from config.yaml is always included
+          const defaultModel = readHermesDefaultModel()
+          if (defaultModel) {
+            const hasDefault = models.some((m) => m.id === defaultModel.id)
+            if (!hasDefault) {
+              models.unshift(defaultModel)
             }
           }
 
-          // Auto-discover local providers (Ollama, Atomic Chat, etc.)
+          // Fallback: if no models.json, fetch from hermes-agent /v1/models
+          if (models.length === 0 && getGatewayCapabilities().models) {
+            models = await fetchHermesModels()
+            source = 'hermes-agent'
+          }
+
+          // Merge auto-discovered local models (Ollama, Atomic Chat, etc.)
           await ensureDiscovery()
           const localModels = getDiscoveredModels()
+          const existingIds = new Set(models.map((m) => m.id))
           for (const m of localModels) {
             if (!existingIds.has(m.id)) {
               models.push(m)
               existingIds.add(m.id)
-              // Auto-register provider in config if not already there
               ensureProviderInConfig(m.provider)
             }
           }
+
           const configuredProviders = Array.from(
             new Set(
               models
@@ -192,12 +181,14 @@ export const Route = createFileRoute('/api/models')({
                 .filter(Boolean),
             ),
           )
+
           return json({
             ok: true,
             object: 'list',
             data: models,
             models,
             configuredProviders,
+            source,
           })
         } catch (err) {
           return json(

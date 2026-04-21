@@ -4,6 +4,10 @@ import { isAuthenticated } from '../../../server/auth-middleware'
 import {
   BEARER_TOKEN,
   HERMES_API,
+<<<<<<< HEAD
+=======
+  ensureGatewayProbed,
+>>>>>>> upstream/main
 } from '../../../server/gateway-capabilities'
 
 function authHeaders(): Record<string, string> {
@@ -33,6 +37,7 @@ export const Route = createFileRoute('/api/skills/install')({
             )
           }
 
+<<<<<<< HEAD
           const response = await fetch(
             `${HERMES_API}/api/skills/install`,
             {
@@ -49,6 +54,33 @@ export const Route = createFileRoute('/api/skills/install')({
               signal: AbortSignal.timeout(120_000),
             },
           )
+=======
+          const capabilities = await ensureGatewayProbed()
+          if (capabilities.dashboard.available) {
+            return json(
+              {
+                ok: false,
+                error:
+                  'Skill install is only available on the legacy enhanced fork right now.',
+              },
+              { status: 501 },
+            )
+          }
+
+          const response = await fetch(`${HERMES_API}/api/skills/install`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeaders(),
+            },
+            body: JSON.stringify({
+              identifier,
+              category: body.category || '',
+              force: Boolean(body.force),
+            }),
+            signal: AbortSignal.timeout(120_000),
+          })
+>>>>>>> upstream/main
 
           const result = await response.json()
           return json(result, { status: response.status })

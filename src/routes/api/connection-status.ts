@@ -59,9 +59,14 @@ export const Route = createFileRoute('/api/connection-status')({
         const chatReady = caps.chatCompletions
         const enhancedReady =
           chatReady &&
+<<<<<<< HEAD
           caps.sessions &&
           caps.skills &&
           caps.memory &&
+=======
+          (caps.dashboard.available || caps.sessions) &&
+          caps.skills &&
+>>>>>>> upstream/main
           caps.config
 
         let status: ConnectionStatus['status']
@@ -76,8 +81,17 @@ export const Route = createFileRoute('/api/connection-status')({
           status = 'enhanced'
           label = 'Enhanced'
           detail = modelConfigured
+<<<<<<< HEAD
             ? 'Core chat works and Hermes gateway APIs are available.'
             : 'Hermes gateway APIs are available. Choose a model to start chatting.'
+=======
+            ? caps.dashboard.available
+              ? 'Core chat works and the Hermes dashboard APIs are available.'
+              : 'Core chat works and Hermes gateway APIs are available.'
+            : caps.dashboard.available
+              ? 'Hermes dashboard APIs are available. Choose a model to start chatting.'
+              : 'Hermes gateway APIs are available. Choose a model to start chatting.'
+>>>>>>> upstream/main
         } else if (chatReady && modelConfigured) {
           status = 'connected'
           label = 'Connected'
@@ -115,6 +129,10 @@ export const Route = createFileRoute('/api/connection-status')({
             memory: caps.memory,
             config: caps.config,
             jobs: caps.jobs,
+<<<<<<< HEAD
+=======
+            dashboard: caps.dashboard.available,
+>>>>>>> upstream/main
           },
           hermesUrl: HERMES_API,
         }

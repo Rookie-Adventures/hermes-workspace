@@ -3,6 +3,7 @@ import path from 'node:path'
 import { createFileRoute } from '@tanstack/react-router'
 import { json } from '@tanstack/react-start'
 import { isAuthenticated } from '../../../server/auth-middleware'
+<<<<<<< HEAD
 import {
   ensureGatewayProbed,
   getCapabilities,
@@ -10,6 +11,10 @@ import {
 import { getMemoryWorkspaceRoot } from '../../../server/memory-browser'
 import { requireJsonContentType } from '../../../server/rate-limit'
 import { createCapabilityUnavailablePayload } from '@/lib/feature-gates'
+=======
+import { getMemoryWorkspaceRoot } from '../../../server/memory-browser'
+import { requireJsonContentType } from '../../../server/rate-limit'
+>>>>>>> upstream/main
 
 function validateMemoryWritePath(inputPath: unknown): {
   relativePath: string
@@ -47,6 +52,7 @@ export const Route = createFileRoute('/api/memory/write')({
         }
         const csrfCheck = requireJsonContentType(request)
         if (csrfCheck) return csrfCheck
+<<<<<<< HEAD
         await ensureGatewayProbed()
         if (!getCapabilities().memory) {
           return json(
@@ -57,6 +63,10 @@ export const Route = createFileRoute('/api/memory/write')({
           )
         }
 
+=======
+        // Memory writes go directly to local fs ($HERMES_HOME/memory/...).
+        // No remote gateway endpoint is involved.
+>>>>>>> upstream/main
         try {
           const body = (await request.json().catch(() => ({}))) as {
             path?: unknown

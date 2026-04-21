@@ -46,6 +46,15 @@ export function HermesReconnectBanner({
   >(null)
   const wasDisconnectedRef = useRef(false)
   const flashTimerRef = useRef<number | null>(null)
+<<<<<<< HEAD
+=======
+  // Silent auto-restart: if the gateway disappears mid-session, fire
+  // /api/start-hermes once. After that, fall back to the manual "Start Agent"
+  // button so we don't loop forever on a busted environment.
+  const autoRestartTriedAtRef = useRef<number>(0)
+  // Cool-down so a permanently-dead gateway doesn't get poked every probe.
+  const AUTO_RESTART_COOLDOWN_MS = 5 * 60_000
+>>>>>>> upstream/main
 
   useEffect(() => {
     mountedRef.current = true
@@ -107,6 +116,43 @@ export function HermesReconnectBanner({
           } else {
             wasDisconnectedRef.current = true
             setBannerState('disconnected')
+<<<<<<< HEAD
+=======
+            const sinceLastTry =
+              Date.now() - autoRestartTriedAtRef.current
+            if (sinceLastTry > AUTO_RESTART_COOLDOWN_MS) {
+              autoRestartTriedAtRef.current = Date.now()
+              void fetch('/api/start-hermes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+              })
+                .then(async (res) => {
+                  if (!mountedRef.current) return
+                  const ct = res.headers.get('content-type') || ''
+                  if (!ct.includes('application/json')) return
+                  const data = (await res.json().catch(() => ({}))) as {
+                    ok?: boolean
+                    message?: string
+                  }
+                  if (res.ok && data.ok) {
+                    setMessage(
+                      data.message ||
+                        'Auto-restarting Hermes gateway…',
+                    )
+                    // Probe again shortly so the banner clears as soon as
+                    // the gateway answers /health.
+                    window.setTimeout(() => {
+                      if (mountedRef.current) {
+                        void probeNowRef.current?.(false)
+                      }
+                    }, 2_500)
+                  }
+                })
+                .catch(() => {
+                  // silent: user can still hit "Start Agent"
+                })
+            }
+>>>>>>> upstream/main
           }
 
           return connected
@@ -116,7 +162,11 @@ export function HermesReconnectBanner({
             wasDisconnectedRef.current = true
             setBannerState('disconnected')
             setMessage(
+<<<<<<< HEAD
               error instanceof Error ? error.message : '连接失败',
+=======
+              error instanceof Error ? error.message : 'Connection failed',
+>>>>>>> upstream/main
             )
           }
           return false
@@ -170,17 +220,30 @@ export function HermesReconnectBanner({
       }
 
       if (!response.ok || !payload.ok) {
+<<<<<<< HEAD
         throw new Error(payload.error || '启动 Hermes Agent 失败')
+=======
+        throw new Error(payload.error || 'Failed to start Hermes agent')
+>>>>>>> upstream/main
       }
 
       setMessage(
         payload.message === 'already running'
+<<<<<<< HEAD
           ? 'Hermes Agent 已在运行'
           : '正在启动 Hermes Agent…',
       )
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : '启动 Hermes Agent 失败',
+=======
+          ? 'Hermes agent is already running'
+          : 'Starting Hermes agent…',
+      )
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : 'Failed to start Hermes agent',
+>>>>>>> upstream/main
       )
     } finally {
       setIsStarting(false)
@@ -220,7 +283,11 @@ export function HermesReconnectBanner({
           />
           <div className="min-w-0">
             <p className="text-sm font-semibold">
+<<<<<<< HEAD
               {isDisconnected ? 'Hermes Agent 未连接' : '已连接'}
+=======
+              {isDisconnected ? 'Hermes agent not connected' : 'Connected'}
+>>>>>>> upstream/main
             </p>
             {message ? (
               <p className="truncate text-xs opacity-80">{message}</p>
@@ -241,7 +308,11 @@ export function HermesReconnectBanner({
                 color: 'inherit',
               }}
             >
+<<<<<<< HEAD
               {isChecking ? '重试中…' : '重试'}
+=======
+              {isChecking ? 'Retrying…' : 'Retry'}
+>>>>>>> upstream/main
             </button>
             <button
               type="button"
@@ -252,7 +323,11 @@ export function HermesReconnectBanner({
                 background: 'var(--theme-danger)',
               }}
             >
+<<<<<<< HEAD
               {isStarting ? '启动中…' : '启动 Agent'}
+=======
+              {isStarting ? 'Starting…' : 'Start Agent'}
+>>>>>>> upstream/main
             </button>
           </div>
         ) : null}

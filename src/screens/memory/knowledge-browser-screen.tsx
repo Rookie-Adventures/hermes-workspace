@@ -22,7 +22,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+<<<<<<< HEAD
 import { t } from '@/lib/i18n'
+=======
+>>>>>>> upstream/main
 
 type WikiPageMeta = {
   path: string
@@ -459,6 +462,7 @@ export function KnowledgeBrowserScreen() {
             }}
           >
             <HugeiconsIcon icon={Link01Icon} size={16} strokeWidth={1.7} />
+<<<<<<< HEAD
             {t('knowledge.graphView')}
           </button>
 
@@ -477,6 +481,23 @@ export function KnowledgeBrowserScreen() {
                 <HugeiconsIcon icon={Settings01Icon} size={16} strokeWidth={1.7} />
                 <span className="hidden sm:inline">{t('knowledge.settings')}</span>
               </button>
+=======
+            Graph view
+          </button>
+
+          <DialogRoot open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <DialogTrigger
+              className="inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-primary-100 dark:hover:bg-neutral-900"
+              style={{
+                border: '1px solid var(--theme-border)',
+                backgroundColor: 'var(--theme-card)',
+                color: 'var(--theme-text)',
+              }}
+              title="Knowledge base settings"
+            >
+              <HugeiconsIcon icon={Settings01Icon} size={16} strokeWidth={1.7} />
+              <span className="hidden sm:inline">Settings</span>
+>>>>>>> upstream/main
             </DialogTrigger>
             <DialogContent
               className="sm:max-w-md"
@@ -489,15 +510,26 @@ export function KnowledgeBrowserScreen() {
               <div className="space-y-4">
                 <div>
                   <DialogTitle className="text-base font-semibold">
+<<<<<<< HEAD
                     {t('knowledge.baseSettings')}
                   </DialogTitle>
                   <DialogDescription className="mt-1 text-sm" style={{ color: 'var(--theme-muted)' }}>
                     {t('knowledge.chooseLocation')}
+=======
+                    Knowledge Base Settings
+                  </DialogTitle>
+                  <DialogDescription className="mt-1 text-sm" style={{ color: 'var(--theme-muted)' }}>
+                    Choose where your knowledge base is located. Changes take effect immediately.
+>>>>>>> upstream/main
                   </DialogDescription>
                 </div>
 
                 <div className="space-y-2">
+<<<<<<< HEAD
                   <label className="text-sm font-medium">{t('knowledge.sourceType')}</label>
+=======
+                  <label className="text-sm font-medium">Source type</label>
+>>>>>>> upstream/main
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -521,7 +553,11 @@ export function KnowledgeBrowserScreen() {
                       }}
                     >
                       <HugeiconsIcon icon={Folder01Icon} size={16} strokeWidth={1.7} />
+<<<<<<< HEAD
                       {t('knowledge.localFolder')}
+=======
+                      Local folder
+>>>>>>> upstream/main
                     </button>
                     <button
                       type="button"
@@ -547,7 +583,11 @@ export function KnowledgeBrowserScreen() {
                       }}
                     >
                       <HugeiconsIcon icon={CodeIcon} size={16} strokeWidth={1.7} />
+<<<<<<< HEAD
                       {t('knowledge.gitRepo')}
+=======
+                      GitHub repo
+>>>>>>> upstream/main
                     </button>
                   </div>
                 </div>
@@ -555,7 +595,11 @@ export function KnowledgeBrowserScreen() {
                 {settingsSource?.type === 'local' && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium" htmlFor="kb-local-path">
+<<<<<<< HEAD
                       {t('knowledge.folderPath')}
+=======
+                      Folder path
+>>>>>>> upstream/main
                     </label>
                     <input
                       id="kb-local-path"
@@ -583,7 +627,11 @@ export function KnowledgeBrowserScreen() {
                   <div className="space-y-3">
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium" htmlFor="kb-gh-repo">
+<<<<<<< HEAD
                         {t('knowledge.repository')}
+=======
+                        Repository
+>>>>>>> upstream/main
                       </label>
                       <input
                         id="kb-gh-repo"
@@ -608,7 +656,11 @@ export function KnowledgeBrowserScreen() {
                     <div className="flex gap-3">
                       <div className="flex-1 space-y-1.5">
                         <label className="text-sm font-medium" htmlFor="kb-gh-branch">
+<<<<<<< HEAD
                           {t('knowledge.gitBranch')}
+=======
+                          Branch
+>>>>>>> upstream/main
                         </label>
                         <input
                           id="kb-gh-branch"
@@ -632,7 +684,11 @@ export function KnowledgeBrowserScreen() {
                       </div>
                       <div className="flex-1 space-y-1.5">
                         <label className="text-sm font-medium" htmlFor="kb-gh-path">
+<<<<<<< HEAD
                           {t('knowledge.subFolder')}
+=======
+                          Sub-folder
+>>>>>>> upstream/main
                         </label>
                         <input
                           id="kb-gh-path"
@@ -701,7 +757,11 @@ export function KnowledgeBrowserScreen() {
                         color: 'var(--theme-text)',
                       }}
                     >
+<<<<<<< HEAD
                       {syncing ? t('knowledge.syncing') : t('knowledge.syncNow')}
+=======
+                      {syncing ? 'Syncing…' : 'Sync now'}
+>>>>>>> upstream/main
                     </button>
                   )}
                   <button
@@ -727,7 +787,11 @@ export function KnowledgeBrowserScreen() {
                     }}
                     className="inline-flex items-center gap-2 rounded-xl bg-accent-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-600"
                   >
+<<<<<<< HEAD
                     {t('common.save')}
+=======
+                    Save
+>>>>>>> upstream/main
                   </button>
                 </div>
               </div>
@@ -744,7 +808,11 @@ export function KnowledgeBrowserScreen() {
             onClick={() => setMobileTreeOpen((value) => !value)}
           >
             <span className="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-neutral-400">
+<<<<<<< HEAD
               {t('knowledge.pagesCount', { count: filteredPages.length })}
+=======
+              Knowledge Pages ({filteredPages.length})
+>>>>>>> upstream/main
             </span>
             <span className="text-primary-500 dark:text-neutral-400 md:hidden">
               <HugeiconsIcon
@@ -762,6 +830,7 @@ export function KnowledgeBrowserScreen() {
           ) : searchTerm ? (
             <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
               <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-primary-400 dark:text-neutral-500">
+<<<<<<< HEAD
                 {t('knowledge.searchResults')}
               </div>
               <div className="space-y-1">
@@ -769,6 +838,15 @@ export function KnowledgeBrowserScreen() {
                   <StateBox label={t('knowledge.searching')} />
                 ) : searchResults.length === 0 ? (
                   <StateBox label={t('knowledge.noMatches')} />
+=======
+                Search Results
+              </div>
+              <div className="space-y-1">
+                {searchQuery.isLoading ? (
+                  <StateBox label="Searching knowledge..." />
+                ) : searchResults.length === 0 ? (
+                  <StateBox label="No matches found" />
+>>>>>>> upstream/main
                 ) : (
                   searchResults.map((result, index) => (
                     <button
@@ -813,11 +891,19 @@ export function KnowledgeBrowserScreen() {
               <div className="space-y-3 overflow-y-auto pr-1 md:h-full">
                 <section className="rounded-xl border border-primary-200 bg-primary-50/80 p-2 dark:border-neutral-800 dark:bg-neutral-900/60">
                   <div className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-primary-400 dark:text-neutral-500">
+<<<<<<< HEAD
                     {t('knowledge.tags')}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     <TagPill
                       label={t('knowledge.all')}
+=======
+                    Tags
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <TagPill
+                      label="All"
+>>>>>>> upstream/main
                       count={pages.length}
                       active={selectedTag == null}
                       onClick={() => setSelectedTag(null)}
@@ -836,15 +922,24 @@ export function KnowledgeBrowserScreen() {
 
                 <section className="rounded-xl border border-primary-200 bg-primary-50/80 p-1 dark:border-neutral-800 dark:bg-neutral-900/60">
                   {listQuery.isLoading ? (
+<<<<<<< HEAD
                     <StateBox label={t('knowledge.loadingPages')} />
+=======
+                    <StateBox label="Loading knowledge pages..." />
+>>>>>>> upstream/main
                   ) : listQuery.error instanceof Error ? (
                     <StateBox label={listQuery.error.message} error />
                   ) : filteredPages.length === 0 ? (
                     <StateBox
                       label={
                         selectedTag
+<<<<<<< HEAD
                           ? t('knowledge.noTagMatch')
                           : t('knowledge.noMarkdown')
+=======
+                          ? 'No pages match this tag'
+                          : 'No markdown pages found'
+>>>>>>> upstream/main
                       }
                     />
                   ) : (
@@ -883,19 +978,28 @@ export function KnowledgeBrowserScreen() {
                   size={14}
                   strokeWidth={1.7}
                 />
+<<<<<<< HEAD
                 {t('knowledge.askAgent')}
+=======
+                Ask agent about this
+>>>>>>> upstream/main
               </a>
             ) : null}
           </div>
 
           <div className="h-full overflow-auto p-2 md:p-3">
             {listQuery.isLoading ? (
+<<<<<<< HEAD
               <StateBox label={t('common.loading')} />
+=======
+              <StateBox label="Loading knowledge base..." />
+>>>>>>> upstream/main
             ) : listQuery.error instanceof Error ? (
               <StateBox label={listQuery.error.message} error />
             ) : !knowledgeExists ? (
               <EmptyKnowledgeState knowledgeRoot={knowledgeRoot} />
             ) : !selectedPath ? (
+<<<<<<< HEAD
               <StateBox label={t('knowledge.selectPage')} />
             ) : readQuery.isLoading ? (
               <StateBox label={t('knowledge.loadingPage')} />
@@ -903,6 +1007,15 @@ export function KnowledgeBrowserScreen() {
               <StateBox label={readQuery.error.message} error />
             ) : !page ? (
               <StateBox label={t('knowledge.pageNotFound')} error />
+=======
+              <StateBox label="Select a page to start browsing" />
+            ) : readQuery.isLoading ? (
+              <StateBox label="Loading page..." />
+            ) : readQuery.error instanceof Error ? (
+              <StateBox label={readQuery.error.message} error />
+            ) : !page ? (
+              <StateBox label="Page not found" error />
+>>>>>>> upstream/main
             ) : (
               <div
                 className="rounded-xl"
@@ -916,7 +1029,11 @@ export function KnowledgeBrowserScreen() {
                     {focusedResult && focusedResult.path === page.path ? (
                       <div className="rounded-xl border border-yellow-300/40 bg-yellow-300/10 px-3 py-2 text-sm text-primary-900 dark:text-yellow-50">
                         <div className="font-medium">
+<<<<<<< HEAD
                           {t('knowledge.searchHit', { line: focusLine || 0 })}
+=======
+                          Search hit at line {focusLine}
+>>>>>>> upstream/main
                         </div>
                         <div className="mt-1 text-xs opacity-80">
                           {focusedResult.text}
@@ -980,11 +1097,19 @@ export function KnowledgeBrowserScreen() {
                           size={16}
                           strokeWidth={1.7}
                         />
+<<<<<<< HEAD
                         {t('knowledge.backlinks')}
                       </div>
                       {backlinks.length === 0 ? (
                         <div className="text-sm text-primary-500 dark:text-neutral-400">
                           {t('knowledge.noBacklinks')}
+=======
+                        Backlinks
+                      </div>
+                      {backlinks.length === 0 ? (
+                        <div className="text-sm text-primary-500 dark:text-neutral-400">
+                          No pages link here yet.
+>>>>>>> upstream/main
                         </div>
                       ) : (
                         <div className="flex flex-wrap gap-2">
@@ -1008,6 +1133,7 @@ export function KnowledgeBrowserScreen() {
                   </div>
 
                   <aside className="space-y-3">
+<<<<<<< HEAD
                     <MetadataCard label={t('knowledge.type')} value={page.type} />
                     <MetadataCard label={t('knowledge.domain')} value={page.domain} />
                     <MetadataCard label={t('knowledge.status')} value={page.status} />
@@ -1023,11 +1149,32 @@ export function KnowledgeBrowserScreen() {
                     <div className="rounded-xl border border-primary-200 bg-primary-50/70 p-3 dark:border-neutral-800 dark:bg-neutral-900/60">
                       <div className="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-neutral-400">
                         {t('knowledge.tags')}
+=======
+                    <MetadataCard label="Type" value={page.type} />
+                    <MetadataCard label="Domain" value={page.domain} />
+                    <MetadataCard label="Status" value={page.status} />
+                    <MetadataCard
+                      label="Created"
+                      value={formatDate(page.created)}
+                    />
+                    <MetadataCard
+                      label="Updated"
+                      value={formatDate(page.updated || page.modified)}
+                    />
+                    <MetadataCard label="Size" value={formatBytes(page.size)} />
+                    <div className="rounded-xl border border-primary-200 bg-primary-50/70 p-3 dark:border-neutral-800 dark:bg-neutral-900/60">
+                      <div className="text-xs font-semibold uppercase tracking-wide text-primary-500 dark:text-neutral-400">
+                        Tags
+>>>>>>> upstream/main
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {page.tags.length === 0 ? (
                           <span className="text-sm text-primary-500 dark:text-neutral-400">
+<<<<<<< HEAD
                             {t('knowledge.noTags')}
+=======
+                            No tags
+>>>>>>> upstream/main
                           </span>
                         ) : (
                           page.tags.map((tag) => (
@@ -1050,11 +1197,19 @@ export function KnowledgeBrowserScreen() {
                           size={14}
                           strokeWidth={1.7}
                         />
+<<<<<<< HEAD
                         {t('knowledge.wikilinks')}
                       </div>
                       {page.wikilinks.length === 0 ? (
                         <div className="text-sm text-primary-500 dark:text-neutral-400">
                           {t('knowledge.noOutbound')}
+=======
+                        Wikilinks
+                      </div>
+                      {page.wikilinks.length === 0 ? (
+                        <div className="text-sm text-primary-500 dark:text-neutral-400">
+                          No outbound links
+>>>>>>> upstream/main
                         </div>
                       ) : (
                         <div className="flex flex-wrap gap-2">
@@ -1085,18 +1240,33 @@ export function KnowledgeBrowserScreen() {
       <DialogRoot open={graphOpen} onOpenChange={setGraphOpen}>
         <DialogContent className="w-[min(980px,94vw)] max-w-none p-0">
           <div className="border-b border-primary-200 px-5 py-4 dark:border-neutral-800">
+<<<<<<< HEAD
             <DialogTitle>{t('knowledge.graph')}</DialogTitle>
             <DialogDescription>
               {t('knowledge.graphDesc')}
+=======
+            <DialogTitle>Knowledge graph</DialogTitle>
+            <DialogDescription>
+              Page relationships from wiki links. Click any node to open that
+              page.
+>>>>>>> upstream/main
             </DialogDescription>
           </div>
           <div className="p-5">
             {graphQuery.isLoading ? (
+<<<<<<< HEAD
               <StateBox label={t('knowledge.loadingGraph')} />
             ) : graphQuery.error instanceof Error ? (
               <StateBox label={graphQuery.error.message} error />
             ) : (graphQuery.data?.nodes?.length ?? 0) === 0 ? (
               <StateBox label={t('knowledge.noGraphData')} />
+=======
+              <StateBox label="Loading graph..." />
+            ) : graphQuery.error instanceof Error ? (
+              <StateBox label={graphQuery.error.message} error />
+            ) : (graphQuery.data?.nodes?.length ?? 0) === 0 ? (
+              <StateBox label="No graph data yet" />
+>>>>>>> upstream/main
             ) : (
               <GraphCanvas
                 nodes={graphQuery.data?.nodes ?? []}
@@ -1243,10 +1413,17 @@ function EmptyKnowledgeState({ knowledgeRoot }: { knowledgeRoot: string }) {
   return (
     <div className="flex min-h-32 flex-col justify-center rounded-xl border border-primary-200 bg-primary-50 px-4 py-5 text-sm text-primary-600 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300">
       <div className="text-base font-semibold text-primary-900 dark:text-neutral-100">
+<<<<<<< HEAD
         {t('knowledge.noBaseFound')}
       </div>
       <p className="mt-2 text-pretty">
         {t('knowledge.createMarkdown', { path: knowledgeRoot })}
+=======
+        No knowledge base found
+      </div>
+      <p className="mt-2 text-pretty">
+        Create markdown files in <code>{knowledgeRoot}</code> to get started.
+>>>>>>> upstream/main
       </p>
       <a
         href="https://karpathy.ai/"
@@ -1255,7 +1432,11 @@ function EmptyKnowledgeState({ knowledgeRoot }: { knowledgeRoot: string }) {
         className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary-900 underline decoration-primary-300 underline-offset-4 hover:decoration-primary-500 dark:text-neutral-100"
       >
         <HugeiconsIcon icon={Link01Icon} size={14} strokeWidth={1.7} />
+<<<<<<< HEAD
         {t('knowledge.seePattern')}
+=======
+        See the Karpathy LLM wiki pattern
+>>>>>>> upstream/main
       </a>
     </div>
   )

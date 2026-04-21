@@ -43,7 +43,11 @@ async function sendPing(fingerprint: string): Promise<void> {
 
   const payload = {
     id: fingerprint,
+<<<<<<< HEAD
     version: process.env.NEXT_PUBLIC_APP_VERSION ?? '1.0.0',
+=======
+    version: process.env.NEXT_PUBLIC_APP_VERSION ?? '2.0.0',
+>>>>>>> upstream/main
     ts: Date.now(),
     mobile: window.innerWidth < 768,
   }

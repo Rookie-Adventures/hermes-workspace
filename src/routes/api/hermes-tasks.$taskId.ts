@@ -1,7 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { isAuthenticated } from '../../server/auth-middleware'
 import { deleteTask, getTask, moveTask, updateTask } from '../../server/tasks-store'
+<<<<<<< HEAD
 import type { TaskColumn } from '../../server/tasks-store'
+=======
+import type { TaskColumn, TaskPriority } from '../../server/tasks-store'
+>>>>>>> upstream/main
 
 function jsonResponse(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -10,6 +14,23 @@ function jsonResponse(data: unknown, status = 200) {
   })
 }
 
+<<<<<<< HEAD
+=======
+function isTaskColumn(value: unknown): value is TaskColumn {
+  return (
+    value === 'backlog' ||
+    value === 'todo' ||
+    value === 'in_progress' ||
+    value === 'review' ||
+    value === 'done'
+  )
+}
+
+function isTaskPriority(value: unknown): value is TaskPriority {
+  return value === 'high' || value === 'medium' || value === 'low'
+}
+
+>>>>>>> upstream/main
 export const Route = createFileRoute('/api/hermes-tasks/$taskId')({
   server: {
     handlers: {
@@ -33,8 +54,13 @@ export const Route = createFileRoute('/api/hermes-tasks/$taskId')({
           const task = updateTask(params.taskId, {
             title: typeof body.title === 'string' ? body.title : undefined,
             description: typeof body.description === 'string' ? body.description : undefined,
+<<<<<<< HEAD
             column: typeof body.column === 'string' ? body.column : undefined,
             priority: typeof body.priority === 'string' ? body.priority : undefined,
+=======
+            column: isTaskColumn(body.column) ? body.column : undefined,
+            priority: isTaskPriority(body.priority) ? body.priority : undefined,
+>>>>>>> upstream/main
             assignee: body.assignee === null || typeof body.assignee === 'string' ? body.assignee : undefined,
             tags: Array.isArray(body.tags) ? body.tags.filter((tag): tag is string => typeof tag === 'string') : undefined,
             due_date: body.due_date === null || typeof body.due_date === 'string' ? body.due_date : undefined,

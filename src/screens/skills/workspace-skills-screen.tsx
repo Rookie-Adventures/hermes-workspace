@@ -13,7 +13,10 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { Markdown } from '@/components/prompt-kit/markdown'
+<<<<<<< HEAD
 import { t } from '@/lib/i18n'
+=======
+>>>>>>> upstream/main
 
 function SkillMarkdown({ content }: { content: string }) {
   return <Markdown>{content}</Markdown>
@@ -50,9 +53,15 @@ type SkillContentResponse = {
 }
 
 const MEMORY_FILTERS: Array<MemoryFilter> = [
+<<<<<<< HEAD
   '全部',
   '工作区',
   '项目',
+=======
+  'All',
+  'Workspace',
+  'Project',
+>>>>>>> upstream/main
   'Agent',
 ]
 
@@ -92,6 +101,7 @@ async function apiRequest(input: string, init?: RequestInit): Promise<unknown> {
 }
 
 function sectionLabel(section: MemorySection): string {
+<<<<<<< HEAD
   if (section === 'workspace') return '工作区记忆'
   if (section === 'project') return '每日日志'
   return 'Agent 记忆'
@@ -101,20 +111,39 @@ function matchesFilter(section: MemorySection, filter: MemoryFilter): boolean {
   if (filter === '全部') return true
   if (filter === '工作区') return section === 'workspace'
   if (filter === '项目') return section === 'project'
+=======
+  if (section === 'workspace') return 'Workspace Memory'
+  if (section === 'project') return 'Daily Logs'
+  return 'Agent Memory'
+}
+
+function matchesFilter(section: MemorySection, filter: MemoryFilter): boolean {
+  if (filter === 'All') return true
+  if (filter === 'Workspace') return section === 'workspace'
+  if (filter === 'Project') return section === 'project'
+>>>>>>> upstream/main
   return section === 'agent'
 }
 
 function EmptyMemorySection({ label }: { label: string }) {
   return (
     <div className="rounded-xl border border-dashed border-primary-200 bg-primary-50/70 px-3 py-4 text-xs text-primary-500">
+<<<<<<< HEAD
       {label} 中未找到文件。
+=======
+      No files found in {label.toLowerCase()}.
+>>>>>>> upstream/main
     </div>
   )
 }
 
 export function WorkspaceSkillsScreen() {
   const [selectedSkillId, setSelectedSkillId] = useState<string>('')
+<<<<<<< HEAD
   const [memoryFilter, setMemoryFilter] = useState<MemoryFilter>('全部')
+=======
+  const [memoryFilter, setMemoryFilter] = useState<MemoryFilter>('All')
+>>>>>>> upstream/main
   const [memorySearch, setMemorySearch] = useState('')
   const deferredSearch = useDeferredValue(memorySearch)
   const [selectedMemoryPath, setSelectedMemoryPath] = useState<string | null>(
@@ -216,6 +245,7 @@ export function WorkspaceSkillsScreen() {
   }, [memoryQuery.data?.files, selectedMemoryPath])
 
   function handleComingSoon() {
+<<<<<<< HEAD
     toast('即将推出', { type: 'info' })
   }
 
@@ -228,6 +258,20 @@ export function WorkspaceSkillsScreen() {
 
     if (!confirmed) return
     toast('已清除', { type: 'success' })
+=======
+    toast('Coming soon', { type: 'info' })
+  }
+
+  function handleClearAll() {
+    toast('Are you sure?', { type: 'warning' })
+    const confirmed =
+      typeof window === 'undefined'
+        ? true
+        : window.confirm('Are you sure you want to clear all memory?')
+
+    if (!confirmed) return
+    toast('Cleared', { type: 'success' })
+>>>>>>> upstream/main
   }
 
   return (
@@ -240,10 +284,17 @@ export function WorkspaceSkillsScreen() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-primary-900">
+<<<<<<< HEAD
                 技能
               </h1>
               <p className="mt-1 text-sm text-primary-500">
                 已安装的技能和工作区记忆来源
+=======
+                Skills
+              </h1>
+              <p className="mt-1 text-sm text-primary-500">
+                Installed skills and workspace memory sources
+>>>>>>> upstream/main
               </p>
             </div>
           </div>
@@ -255,7 +306,11 @@ export function WorkspaceSkillsScreen() {
               <div className="flex flex-col gap-3 border-b border-primary-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-[15px] font-semibold text-primary-900">
+<<<<<<< HEAD
                     技能
+=======
+                    Skills
+>>>>>>> upstream/main
                   </h2>
                 </div>
                 <div className="flex flex-wrap gap-2">

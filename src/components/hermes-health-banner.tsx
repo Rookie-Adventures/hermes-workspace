@@ -32,7 +32,11 @@ export function HermesHealthBanner({
       } catch (err) {
         if (!cancelled) {
           setStatus('error')
+<<<<<<< HEAD
           setLastError(err instanceof Error ? err.message : '连接失败')
+=======
+          setLastError(err instanceof Error ? err.message : 'Connection failed')
+>>>>>>> upstream/main
         }
       }
     }
@@ -56,7 +60,11 @@ export function HermesHealthBanner({
       }}
     >
       <span className="inline-block h-2 w-2 rounded-full bg-white/60 animate-pulse" />
+<<<<<<< HEAD
       <span>Hermes Agent 无法连接{lastError ? ` — ${lastError}` : ''}</span>
+=======
+      <span>Hermes Agent unreachable{lastError ? ` — ${lastError}` : ''}</span>
+>>>>>>> upstream/main
       <button
         type="button"
         onClick={() => {
@@ -69,14 +77,22 @@ export function HermesHealthBanner({
             .catch((err) => {
               setStatus('error')
               setLastError(
+<<<<<<< HEAD
                 err instanceof Error ? err.message : '连接失败',
+=======
+                err instanceof Error ? err.message : 'Connection failed',
+>>>>>>> upstream/main
               )
             })
         }}
         className="ml-2 rounded px-2 py-0.5 text-xs font-semibold transition-opacity hover:opacity-80"
         style={{ background: 'rgba(255,255,255,0.2)' }}
       >
+<<<<<<< HEAD
         重试
+=======
+        Retry
+>>>>>>> upstream/main
       </button>
     </div>
   )

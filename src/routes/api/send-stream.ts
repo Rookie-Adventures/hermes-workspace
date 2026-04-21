@@ -20,6 +20,7 @@ import {
   createSession,
   ensureGatewayProbed,
   getGatewayCapabilities,
+  listSessions,
   streamChat,
 } from '../../server/hermes-api'
 import type {OpenAICompatContentPart, OpenAICompatMessage} from '../../server/openai-compat-api';
@@ -361,6 +362,7 @@ export const Route = createFileRoute('/api/send-stream')({
         let streamClosed = false
         let activeRunId: string | null = null
         let unregisterTimer: ReturnType<typeof setTimeout> | null = null
+        let streamTimeoutTimer: ReturnType<typeof setTimeout> | null = null
         const abortController = new AbortController()
         let closeStream = () => {
           streamClosed = true
@@ -381,6 +383,10 @@ export const Route = createFileRoute('/api/send-stream')({
                 clearTimeout(unregisterTimer)
                 unregisterTimer = null
               }
+              if (streamTimeoutTimer) {
+                clearTimeout(streamTimeoutTimer)
+                streamTimeoutTimer = null
+              }
               if (activeRunId) {
                 unregisterActiveSendRun(activeRunId)
                 activeRunId = null
@@ -398,14 +404,8 @@ export const Route = createFileRoute('/api/send-stream')({
                 const runId = crypto.randomUUID()
                 const portableSessionKey = sessionKey
 
-                // Persist user message to local session store
+                // Ensure session exists (user message appended after building history)
                 ensureLocalSession(portableSessionKey, typeof body.model === 'string' ? body.model : undefined)
-                appendLocalMessage(portableSessionKey, {
-                  id: crypto.randomUUID(),
-                  role: 'user',
-                  content: typeof body.message === 'string' ? body.message : '',
-                  timestamp: Date.now(),
-                })
                 const portableFriendlyId =
                   resolvedFriendlyId ||
                   requestedFriendlyId ||
@@ -438,12 +438,19 @@ export const Route = createFileRoute('/api/send-stream')({
                   const localeSystemMsg: Array<OpenAICompatMessage> = locale && locale !== 'en'
                     ? [{ role: 'system', content: `Respond in ${locale === 'es' ? 'Spanish' : locale === 'fr' ? 'French' : locale === 'zh' ? 'Chinese' : locale === 'de' ? 'German' : locale === 'ja' ? 'Japanese' : locale === 'ko' ? 'Korean' : locale === 'pt' ? 'Portuguese' : locale === 'ru' ? 'Russian' : locale === 'ar' ? 'Arabic' : 'English'}. The user's interface is set to this language.` }]
                     : []
-                  // Load persisted history for this session
+                  // Load persisted history for this session, then append user message
                   const persistedMessages = getLocalMessages(portableSessionKey)
                   const persistedHistory = persistedMessages.map(m => ({
                     role: m.role as 'user' | 'assistant' | 'system',
                     content: m.content,
                   }))
+                  // Persist user message AFTER reading history to avoid duplication
+                  appendLocalMessage(portableSessionKey, {
+                    id: crypto.randomUUID(),
+                    role: 'user',
+                    content: typeof body.message === 'string' ? body.message : '',
+                    timestamp: Date.now(),
+                  })
                   // Use persisted history if available, otherwise fall back to client-sent history
                   const effectiveHistory = persistedHistory.length > 0 ? persistedHistory : history
                   const portableMessages: Array<OpenAICompatMessage> = [
@@ -467,11 +474,22 @@ export const Route = createFileRoute('/api/send-stream')({
                   })
 
                   let thinking = ''
+                  let toolEventCount = 0
                   for await (const chunk of stream) {
                     if (chunk.type === 'reasoning') {
                       thinking += chunk.text
                       sendEvent('thinking', {
                         text: thinking,
+                        sessionKey: portableSessionKey,
+                        runId,
+                      })
+                    } else if (chunk.type === 'tool') {
+                      toolEventCount += 1
+                      sendEvent('tool', {
+                        phase: 'start',
+                        name: chunk.name,
+                        toolCallId: `${runId}:${chunk.name}:${toolEventCount}`,
+                        preview: chunk.label,
                         sessionKey: portableSessionKey,
                         runId,
                       })
@@ -526,9 +544,50 @@ export const Route = createFileRoute('/api/send-stream')({
               }
 
               if (SESSION_BOOTSTRAP_KEYS.has(sessionKey)) {
-                const session = await createSession()
-                sessionKey = session.id
-                resolvedFriendlyId = session.id
+                // 'main' should land in the user's existing main chat,
+                // not spin up a brand new session every time. Skip cron
+                // and Operations per-agent sessions so the orchestrator
+                // chat doesn't latch onto them.
+                let reused: string | null = null
+                if (sessionKey === 'main') {
+                  try {
+                    const recent = await listSessions(30, 0)
+                    const isInternal = (id: string) =>
+                      id.startsWith('cron_') ||
+                      id.startsWith('cron:') ||
+                      id.startsWith('agent:main:ops-')
+                    const hasRealTitle = (s: {
+                      id: string
+                      title?: string | null
+                    }) => {
+                      const t = (s.title ?? '').trim()
+                      return t.length > 0 && t !== s.id
+                    }
+                    const titled = recent.find(
+                      (s) => !isInternal(s.id) && hasRealTitle(s),
+                    )
+                    const fallback = titled
+                      ? null
+                      : recent.find(
+                          (s) =>
+                            !isInternal(s.id) &&
+                            typeof s.message_count === 'number' &&
+                            s.message_count > 0,
+                        )
+                    const candidate = titled ?? fallback
+                    if (candidate) reused = candidate.id
+                  } catch {
+                    // fall through to createSession()
+                  }
+                }
+                if (reused) {
+                  sessionKey = reused
+                  resolvedFriendlyId = reused
+                } else {
+                  const session = await createSession()
+                  sessionKey = session.id
+                  resolvedFriendlyId = session.id
+                }
               }
 
               let startedSent = false
@@ -846,7 +905,7 @@ export const Route = createFileRoute('/api/send-stream')({
               )
 
               // Set a timeout to close the stream if no completion event
-              setTimeout(() => {
+              streamTimeoutTimer = setTimeout(() => {
                 if (!streamClosed) {
                   sendEvent('error', { message: 'Stream timeout' })
                   closeStream()

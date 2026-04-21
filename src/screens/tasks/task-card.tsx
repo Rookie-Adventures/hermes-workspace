@@ -1,7 +1,10 @@
 import { cn } from '@/lib/utils'
 import type { HermesTask } from '@/lib/tasks-api'
 import { PRIORITY_COLORS, isOverdue } from '@/lib/tasks-api'
+<<<<<<< HEAD
 import { t } from '@/lib/i18n'
+=======
+>>>>>>> upstream/main
 
 type Props = {
   task: HermesTask
@@ -11,14 +14,29 @@ type Props = {
   isDragging?: boolean
 }
 
+<<<<<<< HEAD
+=======
+export function formatTaskAssigneeLabel(
+  assignee: string | null,
+  assigneeLabels: Record<string, string>,
+): string {
+  const resolvedLabel = assignee ? (assigneeLabels[assignee] ?? assignee) : 'Unassigned'
+  return `Assignee: ${resolvedLabel}`
+}
+
+>>>>>>> upstream/main
 export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDragging }: Props) {
   const overdue = isOverdue(task)
   const priorityColor = PRIORITY_COLORS[task.priority]
   const visibleTags = task.tags.slice(0, 2)
   const extraTagCount = task.tags.length - 2
+<<<<<<< HEAD
   const assigneeLabel = task.assignee
     ? (assigneeLabels[task.assignee] ?? task.assignee)
     : null
+=======
+  const assigneeLabel = formatTaskAssigneeLabel(task.assignee, assigneeLabels)
+>>>>>>> upstream/main
 
   return (
     <div
@@ -37,7 +55,11 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
       <span
         className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full shrink-0"
         style={{ background: priorityColor }}
+<<<<<<< HEAD
         title={`${t('tasks.priority')}: ${task.priority}`}
+=======
+        title={`Priority: ${task.priority}`}
+>>>>>>> upstream/main
       />
 
       <p className="text-sm font-medium text-[var(--theme-text)] leading-snug mb-1 line-clamp-2 pr-4">
@@ -52,11 +74,17 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
 
       <div className="flex items-center justify-between gap-2 mt-2 flex-wrap">
         <div className="flex items-center gap-1.5 flex-wrap">
+<<<<<<< HEAD
           {assigneeLabel && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--theme-hover)] text-[var(--theme-muted)]">
               {assigneeLabel}
             </span>
           )}
+=======
+          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--theme-hover)] text-[var(--theme-muted)]">
+            {assigneeLabel}
+          </span>
+>>>>>>> upstream/main
           {visibleTags.map((tag) => (
             <span
               key={tag}
@@ -67,7 +95,11 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
           ))}
           {extraTagCount > 0 && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--theme-hover)] text-[var(--theme-muted)]">
+<<<<<<< HEAD
               +{extraTagCount} {t('tasks.more')}
+=======
+              +{extraTagCount} more
+>>>>>>> upstream/main
             </span>
           )}
         </div>
@@ -77,7 +109,11 @@ export function TaskCard({ task, assigneeLabels = {}, onClick, onDragStart, isDr
             {overdue && (
               <>
                 <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+<<<<<<< HEAD
                 <span className="text-red-400 font-semibold">{t('tasks.overdue')}</span>
+=======
+                <span className="text-red-400 font-semibold">Overdue</span>
+>>>>>>> upstream/main
                 <span className="text-[var(--theme-muted)] mx-0.5">·</span>
               </>
             )}

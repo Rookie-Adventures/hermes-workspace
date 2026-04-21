@@ -49,7 +49,11 @@ function readHermesEnv(): Record<string, string> {
   }
 }
 
+<<<<<<< HEAD
 /** Same directory resolution logic as vite.config.ts. */
+=======
+/** Same directory resolution logic as vite.config.ts. Kept in sync. */
+>>>>>>> upstream/main
 export function resolveHermesAgentDir(
   env: Record<string, string | undefined> = process.env,
 ): string | null {
@@ -61,8 +65,15 @@ export function resolveHermesAgentDir(
 
   const workspaceRoot = dirname(resolve('.'))
   candidates.push(
+<<<<<<< HEAD
     resolve(workspaceRoot, 'hermes-agent'),
     resolve(workspaceRoot, '..', 'hermes-agent'),
+=======
+    resolve(workspaceRoot, 'hermes-agent'),          // sibling (old README)
+    resolve(workspaceRoot, '..', 'hermes-agent'),    // one level up
+    resolve(homedir(), '.hermes', 'hermes-agent'),   // Nous installer default
+    resolve(homedir(), 'hermes-agent'),              // ~/hermes-agent
+>>>>>>> upstream/main
   )
 
   for (const candidate of candidates) {
@@ -72,11 +83,32 @@ export function resolveHermesAgentDir(
   return null
 }
 
+<<<<<<< HEAD
+=======
+/** Find the `hermes` CLI binary installed by Nous's installer (or on PATH). */
+export function resolveHermesBinary(): string | null {
+  const candidates = [
+    resolve(homedir(), '.hermes', 'bin', 'hermes'),
+    resolve(homedir(), '.local', 'bin', 'hermes'),
+  ]
+  for (const c of candidates) {
+    if (existsSync(c)) return c
+  }
+  return null
+}
+
+>>>>>>> upstream/main
 export function resolveHermesPython(agentDir: string): string {
   const venvPython = resolve(agentDir, '.venv', 'bin', 'python')
   if (existsSync(venvPython)) return venvPython
   const uvVenv = resolve(agentDir, 'venv', 'bin', 'python')
   if (existsSync(uvVenv)) return uvVenv
+<<<<<<< HEAD
+=======
+  // Nous installer ships its own uv-managed python alongside the binary
+  const nousPython = resolve(homedir(), '.hermes', 'venv', 'bin', 'python')
+  if (existsSync(nousPython)) return nousPython
+>>>>>>> upstream/main
   return 'python3'
 }
 
@@ -104,6 +136,7 @@ export async function startHermesAgent(): Promise<StartHermesAgentResult> {
 
   startPromise = (async () => {
     try {
+<<<<<<< HEAD
       const agentDir = resolveHermesAgentDir()
       if (!agentDir) {
         return {
@@ -119,6 +152,26 @@ export async function startHermesAgent(): Promise<StartHermesAgentResult> {
       const child = spawn(
         python,
         [
+=======
+      const hermesEnv = readHermesEnv()
+      const hermesBin = resolveHermesBinary()
+      const agentDir = resolveHermesAgentDir()
+
+      // Prefer the `hermes gateway run` binary path (the Nous installer's
+      // canonical entrypoint). Fall back to launching uvicorn against the
+      // source tree if we only have a directory.
+      let command: string
+      let commandArgs: Array<string>
+      let cwd: string | undefined
+
+      if (hermesBin) {
+        command = hermesBin
+        commandArgs = ['gateway', 'run']
+        cwd = agentDir ?? undefined
+      } else if (agentDir) {
+        command = resolveHermesPython(agentDir)
+        commandArgs = [
+>>>>>>> upstream/main
           '-m',
           'uvicorn',
           'webapi.app:app',
@@ -126,15 +179,43 @@ export async function startHermesAgent(): Promise<StartHermesAgentResult> {
           '0.0.0.0',
           '--port',
           String(HERMES_START_PORT),
+<<<<<<< HEAD
         ],
         {
           cwd: agentDir,
+=======
+        ]
+        cwd = agentDir
+      } else {
+        return {
+          ok: false,
+          error:
+            "hermes-agent not found. Run the installer: curl -fsSL https://hermes-workspace.com/install.sh | bash",
+        }
+      }
+
+      const child = spawn(
+        command,
+        commandArgs,
+        {
+          cwd,
+>>>>>>> upstream/main
           detached: true,
           stdio: 'ignore',
           env: {
             ...process.env,
             ...hermesEnv,
+<<<<<<< HEAD
             PATH: `${resolve(agentDir, '.venv', 'bin')}:${resolve(agentDir, 'venv', 'bin')}:${process.env.PATH || ''}`,
+=======
+            PATH: [
+              resolve(homedir(), '.hermes', 'bin'),
+              resolve(homedir(), '.local', 'bin'),
+              agentDir ? resolve(agentDir, '.venv', 'bin') : '',
+              agentDir ? resolve(agentDir, 'venv', 'bin') : '',
+              process.env.PATH || '',
+            ].filter(Boolean).join(':'),
+>>>>>>> upstream/main
           },
         },
       )

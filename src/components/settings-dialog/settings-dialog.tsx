@@ -82,10 +82,10 @@ const SECTIONS: Array<{ id: SectionId; label: string; icon: any }> = [
 ]
 
 const DARK_ENTERPRISE_THEMES = new Set<ThemeId>([
+  'hermes-nous',
   'hermes-official',
   'hermes-classic',
   'hermes-slate',
-  'hermes-mono',
 ])
 
 function _isDarkEnterpriseTheme(theme: string | null): theme is ThemeId {
@@ -908,17 +908,33 @@ function AppearanceContent() {
 }
 
 const ENTERPRISE_THEME_FAMILIES: Array<ThemeId> = [
+  'hermes-nous',
   'hermes-official',
   'hermes-classic',
   'hermes-slate',
-  'hermes-mono',
 ]
 
 const ENTERPRISE_THEMES = THEMES.map((theme) => ({
   ...theme,
   desc: theme.description,
   preview:
-    theme.id === 'hermes-official'
+    theme.id === 'hermes-nous'
+      ? {
+          bg: '#041C1C',
+          panel: '#06282A',
+          border: 'rgba(255,230,203,0.2)',
+          accent: '#FFAC02',
+          text: '#FFE6CB',
+        }
+      : theme.id === 'hermes-nous-light'
+        ? {
+            bg: '#F8FAF8',
+            panel: '#FBFDFB',
+            border: 'rgba(30,74,92,0.18)',
+            accent: '#2557B7',
+            text: '#16315F',
+          }
+      : theme.id === 'hermes-official'
       ? {
           bg: '#0A0E1A',
           panel: '#11182A',
@@ -928,11 +944,11 @@ const ENTERPRISE_THEMES = THEMES.map((theme) => ({
         }
       : theme.id === 'hermes-official-light'
         ? {
-            bg: '#F6F8FC',
-            panel: '#FFFFFF',
-            border: '#D7DEEE',
-            accent: '#4F46E5',
-            text: '#111827',
+            bg: '#F7F7F1',
+            panel: '#FAFBF6',
+            border: '#CDD5DA',
+            accent: '#2557B7',
+            text: '#16315F',
           }
         : theme.id === 'hermes-classic'
           ? {
@@ -958,29 +974,13 @@ const ENTERPRISE_THEMES = THEMES.map((theme) => ({
                   accent: '#7eb8f6',
                   text: '#c9d1d9',
                 }
-              : theme.id === 'hermes-slate-light'
-                ? {
-                    bg: '#F6F8FA',
-                    panel: '#FFFFFF',
-                    border: '#D0D7DE',
-                    accent: '#3b82f6',
-                    text: '#24292f',
-                  }
-                : theme.id === 'hermes-mono'
-                  ? {
-                      bg: '#111111',
-                      panel: '#222222',
-                      border: '#333333',
-                      accent: '#aaaaaa',
-                      text: '#e6edf3',
-                    }
-                  : {
-                      bg: '#FAFAFA',
-                      panel: '#FFFFFF',
-                      border: '#D4D4D4',
-                      accent: '#666666',
-                      text: '#1a1a1a',
-                    },
+              : {
+                  bg: '#F6F8FA',
+                  panel: '#FFFFFF',
+                  border: '#D0D7DE',
+                  accent: '#3b82f6',
+                  text: '#24292f',
+                },
 }))
 
 function ThemeSwatch({
@@ -1026,7 +1026,7 @@ function ThemeSwatch({
 function EnterpriseThemePicker() {
   const { updateSettings } = useSettings()
   const [current, setCurrent] = useState(() => {
-    if (typeof window === 'undefined') return 'hermes-official'
+    if (typeof window === 'undefined') return 'hermes-nous'
     return getTheme()
   })
   const currentMode = isDarkTheme(current) ? 'dark' : 'light'

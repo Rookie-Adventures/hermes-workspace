@@ -20,9 +20,8 @@ import { Markdown } from '@/components/prompt-kit/markdown'
 import { cn } from '@/lib/utils'
 import { writeTextToClipboard } from '@/lib/clipboard'
 import { toast } from '@/components/ui/toast'
-import { t } from '@/lib/i18n'
 
-type SkillsTab = 'installed' | 'marketplace'
+type SkillsTab = 'installed' | 'marketplace' | 'featured'
 type SkillsSort = 'name' | 'category'
 
 type SecurityRisk = {
@@ -299,7 +298,7 @@ export function SkillsScreen() {
                 ? 'safe'
                 : skill.trust_level === 'trusted'
                   ? 'safe'
-                  : 'review',
+                  : 'medium',
             flags: [],
             score: 0,
           },
@@ -312,7 +311,7 @@ export function SkillsScreen() {
   async function copyCommandAndToast(command: string, message: string) {
     try {
       await writeTextToClipboard(command)
-      toast(`${message} ${t('common.copy')}: ${command}`, {
+      toast(`${message} Copied: ${command}`, {
         type: 'warning',
         icon: '📋',
       })
@@ -452,13 +451,14 @@ export function SkillsScreen() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1.5">
               <p className="text-xs font-medium uppercase text-primary-500 tabular-nums">
-                {t('skills.marketplaceHeader')}
+                Hermes Workspace Marketplace
               </p>
               <h1 className="text-2xl font-medium text-ink text-balance sm:text-3xl">
-                {t('skills.browser')}
+                Skills Browser
               </h1>
               <p className="text-sm text-primary-500 text-pretty sm:text-base">
-                {t('skills.discover')}
+                Discover, install, and manage skills across your local workspace
+                and Skills Hub.
               </p>
             </div>
           </div>
@@ -472,13 +472,13 @@ export function SkillsScreen() {
                 variant="default"
               >
                 <TabsTab value="installed" className="flex-1 sm:min-w-[132px]">
-                  {t('skills.installed')}
+                  Installed
                 </TabsTab>
                 <TabsTab
                   value="marketplace"
                   className="flex-1 sm:min-w-[168px]"
                 >
-                  {t('skills.marketplace')}
+                  Marketplace
                 </TabsTab>
 
               </TabsList>
@@ -488,7 +488,7 @@ export function SkillsScreen() {
                   <input
                     value={searchInput}
                     onChange={(event) => handleSearchChange(event.target.value)}
-                    placeholder={t('skills.search')}
+                    placeholder="Search by name, tags, or description"
                     className="h-9 w-full min-w-0 rounded-lg border border-primary-200 bg-primary-100/60 px-3 text-sm text-ink outline-none transition-colors focus:border-primary sm:min-w-[220px]"
                   />
 
@@ -520,8 +520,8 @@ export function SkillsScreen() {
                       }
                       className="h-9 rounded-lg border border-primary-200 bg-primary-100/60 px-3 text-sm text-ink outline-none"
                     >
-                      <option value="name">{t('skills.nameAZ')}</option>
-                      <option value="category">{t('skills.categories')}</option>
+                      <option value="name">Name A-Z</option>
+                      <option value="category">Category</option>
                     </select>
                   ) : null}
                 </div>
@@ -556,11 +556,11 @@ export function SkillsScreen() {
                 <input
                   value={searchInput}
                   onChange={(event) => handleSearchChange(event.target.value)}
-                  placeholder={t('skills.marketplaceSearch')}
+                  placeholder="Search Skills Hub, GitHub, and local fallback"
                   className="h-10 w-full rounded-lg border border-primary-200 bg-primary-100/60 px-3 text-sm text-ink outline-none transition-colors focus:border-primary"
                 />
                 <div className="text-xs text-primary-500 sm:text-right">
-                  {t('skills.source')}: {hubQuery.data?.source || 'hub'}
+                  Source: {hubQuery.data?.source || 'hub'}
                 </div>
               </div>
 
@@ -568,13 +568,14 @@ export function SkillsScreen() {
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                   {hubQuery.error instanceof Error
                     ? hubQuery.error.message
-                    : t('skills.failedLoad')}
+                    : 'Failed to load marketplace skills.'}
                 </div>
               ) : hubQuery.data &&
                 (hubQuery.data.source === 'installed-fallback' ||
                   hubQuery.data.source === 'error') ? (
                 <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
-                  {t('skills.hubUnavailable')}
+                  Skills Hub search unavailable — showing installed skills
+                  instead. Ensure the Hermes gateway is running.
                 </div>
               ) : null}
 
@@ -585,11 +586,11 @@ export function SkillsScreen() {
                 tab="marketplace"
                 emptyState={{
                   title: searchInput.trim()
-                    ? t('skills.noHubSkills')
-                    : t('skills.searchHub'),
+                    ? 'No hub skills found'
+                    : 'Search the Skills Hub',
                   description: searchInput.trim()
-                    ? t('skills.noHubSkillsDesc')
-                    : t('skills.startTyping'),
+                    ? 'Try a different search term. If Skills Hub is unavailable, local installed skills are used as fallback.'
+                    : 'Start typing to search Skills Hub and other skill sources.',
                 }}
                 onOpenDetails={setSelectedSkill}
                 onInstall={(skillId) => {
@@ -615,7 +616,7 @@ export function SkillsScreen() {
         {tab !== 'marketplace' ? (
           <footer className="flex items-center justify-between rounded-xl border border-primary-200 bg-primary-50/80 px-3 py-2.5 text-sm text-primary-500 tabular-nums">
             <span>
-              {(skillsQuery.data?.total || 0).toLocaleString()} {t('skills.totalSkills')}
+              {(skillsQuery.data?.total || 0).toLocaleString()} total skills
             </span>
             <div className="flex items-center gap-2">
               <Button
@@ -624,7 +625,7 @@ export function SkillsScreen() {
                 disabled={page <= 1 || skillsQuery.isPending}
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
               >
-                {t('common.prev')}
+                Previous
               </Button>
               <span className="min-w-[82px] text-center">
                 {page} / {totalPages}
@@ -637,7 +638,7 @@ export function SkillsScreen() {
                   setPage((current) => Math.min(totalPages, current + 1))
                 }
               >
-                {t('common.next')}
+                Next
               </Button>
             </div>
           </footer>
@@ -660,8 +661,8 @@ export function SkillsScreen() {
                   {selectedSkill.icon} {selectedSkill.name}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-pretty">
-                  {t('skills.by')} {selectedSkill.author} • {selectedSkill.category} •{' '}
-                  {selectedSkill.fileCount.toLocaleString()} {t('skills.files')}
+                  by {selectedSkill.author} • {selectedSkill.category} •{' '}
+                  {selectedSkill.fileCount.toLocaleString()} files
                 </DialogDescription>
                 {selectedSkill.security && (
                   <div className="mt-3 rounded-xl border border-primary-200 bg-primary-50/80 overflow-hidden">
@@ -678,7 +679,7 @@ export function SkillsScreen() {
                   <div className="space-y-3">
                     {selectedSkill.homepage ? (
                       <p className="text-sm text-primary-500 text-pretty">
-                        {t('skills.homepage')}:{' '}
+                        Homepage:{' '}
                         <a
                           href={selectedSkill.homepage}
                           target="_blank"
@@ -702,7 +703,7 @@ export function SkillsScreen() {
                         ))
                       ) : (
                         <span className="rounded-md border border-primary-200 bg-primary-100/50 px-2 py-0.5 text-xs text-primary-500">
-                          {t('skills.noTriggers')}
+                          No triggers listed
                         </span>
                       )}
                     </div>
@@ -722,7 +723,7 @@ export function SkillsScreen() {
 
               <div className="flex flex-wrap items-center justify-between gap-2 border-t border-primary-200 px-5 py-3">
                 <p className="text-sm text-primary-500 text-pretty">
-                  {t('skills.source')}:{' '}
+                  Source:{' '}
                   <code className="inline-code">
                     {selectedSkill.sourcePath}
                   </code>
@@ -739,7 +740,7 @@ export function SkillsScreen() {
                         })
                       }}
                     >
-                      {t('skills.uninstall')}
+                      Uninstall
                     </Button>
                   ) : (
                     <Button
@@ -749,7 +750,7 @@ export function SkillsScreen() {
                         runSkillAction('install', { skillId: selectedSkill.id })
                       }
                     >
-                      {t('skills.install')}
+                      Install
                     </Button>
                   )}
                   <Button
@@ -757,7 +758,7 @@ export function SkillsScreen() {
                     size="sm"
                     onClick={() => setSelectedSkill(null)}
                   >
-                    {t('common.close')}
+                    Close
                   </Button>
                 </div>
               </div>
@@ -789,24 +790,24 @@ const SECURITY_BADGE: Record<
   { label: string; badgeClass: string; confidence: string }
 > = {
   safe: {
-    label: t('security.safe'),
+    label: 'Benign',
     badgeClass: 'bg-green-100 text-green-700 border-green-200',
-    confidence: t('security.highConf'),
+    confidence: 'HIGH CONFIDENCE',
   },
   low: {
-    label: t('security.benign'),
+    label: 'Benign',
     badgeClass: 'bg-green-100 text-green-700 border-green-200',
-    confidence: t('security.moderate'),
+    confidence: 'MODERATE',
   },
   medium: {
-    label: t('security.caution'),
+    label: 'Caution',
     badgeClass: 'bg-amber-100 text-amber-700 border-amber-200',
-    confidence: t('security.review'),
+    confidence: 'REVIEW RECOMMENDED',
   },
   high: {
-    label: t('security.warning'),
+    label: 'Warning',
     badgeClass: 'bg-red-100 text-red-700 border-red-200',
-    confidence: t('security.manual'),
+    confidence: 'MANUAL REVIEW',
   },
 }
 
@@ -862,16 +863,16 @@ function SecurityScanCard({ security }: { security: SecurityRisk }) {
 
   const summaryText =
     security.flags.length === 0
-      ? t('security.noRisks')
+      ? 'No risky patterns detected. This skill appears safe to install.'
       : security.level === 'high'
-        ? t('security.foundRisks', { count: security.flags.length, s: security.flags.length !== 1 ? 's' : '' })
-        : t('security.scanned', { count: security.flags.length, s: security.flags.length !== 1 ? 's' : '' })
+        ? `Found ${security.flags.length} potential security concern${security.flags.length !== 1 ? 's' : ''}. Review before installing.`
+        : `The skill's code was scanned for common risk patterns. ${security.flags.length} item${security.flags.length !== 1 ? 's' : ''} noted.`
 
   return (
     <div className="text-xs">
       <div className="px-3 pt-3 pb-2">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-primary-400 mb-2">
-          {t('security.scan')}
+          Security Scan
         </p>
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
@@ -907,7 +908,7 @@ function SecurityScanCard({ security }: { security: SecurityRisk }) {
             }}
             className="flex w-full items-center justify-between px-3 py-2 text-accent-500 hover:text-accent-600 transition-colors"
           >
-            <span className="text-[11px] font-medium">{t('security.details')}</span>
+            <span className="text-[11px] font-medium">Details</span>
             <span className="text-[10px]">{showDetails ? '▲' : '▼'}</span>
           </button>
           {showDetails && (
@@ -927,7 +928,8 @@ function SecurityScanCard({ security }: { security: SecurityRisk }) {
       )}
       <div className="border-t border-primary-100 px-3 py-2">
         <p className="text-[10px] text-primary-400 italic">
-          {t('security.lobsterTip')}
+          Like a lobster shell, security has layers — review code before you run
+          it.
         </p>
       </div>
     </div>
@@ -953,10 +955,11 @@ function SkillsGrid({
     return (
       <div className="rounded-xl border border-dashed border-primary-200 bg-primary-100/40 px-4 py-8 text-center">
         <p className="text-sm font-medium text-primary-700">
-          {emptyState?.title || t('security.noSkillsFound')}
+          {emptyState?.title || 'No skills found'}
         </p>
         <p className="mt-1 text-xs text-primary-500 text-pretty max-w-sm mx-auto">
-          {emptyState?.description || t('security.tryAdjusting')}
+          {emptyState?.description ||
+            'Try adjusting your filters or search term'}
         </p>
       </div>
     )
@@ -983,7 +986,7 @@ function SkillsGrid({
                     {skill.name}
                   </h3>
                   <p className="line-clamp-1 text-xs text-primary-500">
-                    {t('skills.by')} {skill.author}
+                    by {skill.author}
                   </p>
                 </div>
                 <span
@@ -994,7 +997,7 @@ function SkillsGrid({
                       : 'border-primary-200 bg-primary-100/60 text-primary-500',
                   )}
                 >
-                  {skill.installed ? t('skills.installed') : t('skills.available')}
+                  {skill.installed ? 'Installed' : 'Available'}
                 </span>
               </div>
 
@@ -1023,7 +1026,7 @@ function SkillsGrid({
                   size="sm"
                   onClick={() => onOpenDetails(skill)}
                 >
-                  {t('skills.details')}
+                  Details
                 </Button>
 
                 {tab === 'installed' ? (
@@ -1037,7 +1040,7 @@ function SkillsGrid({
                         }
                         aria-label={`Toggle ${skill.name}`}
                       />
-                      {skill.enabled ? t('skills.enabled') : t('skills.disabled')}
+                      {skill.enabled ? 'Enabled' : 'Disabled'}
                     </div>
                     <Button
                       variant="outline"
@@ -1045,7 +1048,7 @@ function SkillsGrid({
                       disabled={isActing}
                       onClick={() => onUninstall(skill.id)}
                     >
-                      {t('skills.uninstall')}
+                      Uninstall
                     </Button>
                   </div>
                 ) : skill.installed ? (
@@ -1055,7 +1058,7 @@ function SkillsGrid({
                     disabled={isActing}
                     onClick={() => onUninstall(skill.id)}
                   >
-                    {t('skills.uninstall')}
+                    Uninstall
                   </Button>
                 ) : (
                   <Button
@@ -1063,7 +1066,7 @@ function SkillsGrid({
                     disabled={isActing}
                     onClick={() => onInstall(skill.id)}
                   >
-                    {t('skills.install')}
+                    Install
                   </Button>
                 )}
               </div>
@@ -1099,7 +1102,7 @@ function FeaturedGrid({
   if (skills.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-primary-200 bg-primary-100/40 px-4 py-10 text-center text-sm text-primary-500 text-pretty">
-        {t('security.featuredUnavailable')}
+        Featured picks are currently unavailable.
       </div>
     )
   }

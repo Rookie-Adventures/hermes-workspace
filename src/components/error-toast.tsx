@@ -18,7 +18,11 @@ function classifyError(raw: string): string {
     lower.includes('rate limit') ||
     lower.includes('too many')
   ) {
+<<<<<<< HEAD
     return '频率限制 — 稍后重试'
+=======
+    return 'Rate limited — try again in a moment'
+>>>>>>> upstream/main
   }
   if (
     lower.includes('401') ||
@@ -27,7 +31,11 @@ function classifyError(raw: string): string {
     lower.includes('invalid api key') ||
     lower.includes('api key')
   ) {
+<<<<<<< HEAD
     return '认证错误 — 请在设置中检查 API 密钥'
+=======
+    return 'Authentication error — check your API key in Settings'
+>>>>>>> upstream/main
   }
   if (
     lower.includes('500') ||

@@ -10,6 +10,10 @@ import {
   File01Icon,
   Menu01Icon,
   PuzzleIcon,
+<<<<<<< HEAD
+=======
+  Rocket01Icon,
+>>>>>>> upstream/main
   Settings01Icon,
   UserGroupIcon,
 } from '@hugeicons/core-free-icons'
@@ -52,6 +56,23 @@ const NAV_ITEMS = [
     match: (p: string) => p.startsWith('/jobs'),
   },
   {
+<<<<<<< HEAD
+=======
+    id: 'conductor',
+    label: 'Conductor',
+    icon: Rocket01Icon,
+    to: '/conductor',
+    match: (p: string) => p.startsWith('/conductor'),
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    icon: UserGroupIcon,
+    to: '/operations',
+    match: (p: string) => p.startsWith('/operations'),
+  },
+  {
+>>>>>>> upstream/main
     id: 'memory',
     label: 'Memory',
     icon: BrainIcon,
@@ -220,10 +241,17 @@ export function MobileHamburgerMenu() {
                   isActive
                     ? {
                         background:
+<<<<<<< HEAD
                           'var(--color-accent-muted, rgba(99,102,241,0.12))',
                         color: 'var(--color-accent, #6366f1)',
                       }
                     : { color: 'var(--color-ink-muted, #555)' }
+=======
+                          'var(--theme-accent-subtle, color-mix(in srgb, var(--theme-accent, #6366f1) 12%, transparent))',
+                        color: 'var(--theme-accent, var(--color-accent, #6366f1))',
+                      }
+                    : { color: 'var(--theme-muted, var(--color-ink-muted, #555))' }
+>>>>>>> upstream/main
                 }
               >
                 <HugeiconsIcon
@@ -247,7 +275,12 @@ export function MobileHamburgerMenu() {
             <div
               className="size-9 rounded-xl shrink-0 flex items-center justify-center"
               style={{
+<<<<<<< HEAD
                 background: 'var(--color-accent-muted, rgba(99,102,241,0.15))',
+=======
+                background:
+                  'var(--theme-accent-subtle, color-mix(in srgb, var(--theme-accent, #6366f1) 15%, transparent))',
+>>>>>>> upstream/main
               }}
             >
               <svg
@@ -259,7 +292,11 @@ export function MobileHamburgerMenu() {
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+<<<<<<< HEAD
                 style={{ color: 'var(--color-accent, #6366f1)' }}
+=======
+                style={{ color: 'var(--theme-accent, var(--color-accent, #6366f1))' }}
+>>>>>>> upstream/main
               >
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />

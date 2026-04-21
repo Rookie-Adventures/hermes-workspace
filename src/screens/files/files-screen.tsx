@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/use-page-title'
+<<<<<<< HEAD
 import { t } from '@/lib/i18n'
+=======
+>>>>>>> upstream/main
 import {
   ScrollAreaCorner,
   ScrollAreaRoot,
@@ -436,6 +439,7 @@ function DiffModal({
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-primary-200 dark:border-neutral-800 px-5 py-3">
             <div className="min-w-0">
               <DialogTitle className="text-sm font-semibold text-primary-900 dark:text-neutral-100 truncate">
+<<<<<<< HEAD
                 {t('files.reviewChanges', { fileName })}
               </DialogTitle>
               <DialogDescription className="mt-0.5 text-xs text-primary-500 dark:text-neutral-400">
@@ -445,15 +449,33 @@ function DiffModal({
                 {' · '}
                 <span className="text-red-600 font-medium">
                   −{removedCount} {t('files.removed')}
+=======
+                Review changes — {fileName}
+              </DialogTitle>
+              <DialogDescription className="mt-0.5 text-xs text-primary-500 dark:text-neutral-400">
+                <span className="text-emerald-600 font-medium">
+                  +{addedCount} added
+                </span>
+                {' · '}
+                <span className="text-red-600 font-medium">
+                  −{removedCount} removed
+>>>>>>> upstream/main
                 </span>
               </DialogDescription>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <Button variant="outline" size="sm" onClick={onCancel}>
+<<<<<<< HEAD
                 {t('common.cancel')}
               </Button>
               <Button size="sm" onClick={onSave}>
                 {t('files.saveAnyway')}
+=======
+                Cancel
+              </Button>
+              <Button size="sm" onClick={onSave}>
+                Save anyway
+>>>>>>> upstream/main
               </Button>
             </div>
           </div>
@@ -463,7 +485,11 @@ function DiffModal({
             {/* Left — original */}
             <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
               <div className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-primary-500 dark:text-neutral-400 bg-primary-100/60 dark:bg-neutral-900/60 border-b border-primary-200 dark:border-neutral-800 uppercase tracking-wide">
+<<<<<<< HEAD
                 {t('files.original')}
+=======
+                Original
+>>>>>>> upstream/main
               </div>
               <div className="flex-1 overflow-auto">
                 <div className="font-mono text-[11px] leading-relaxed">
@@ -509,7 +535,11 @@ function DiffModal({
             {/* Right — new */}
             <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
               <div className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-primary-500 dark:text-neutral-400 bg-primary-100/60 dark:bg-neutral-900/60 border-b border-primary-200 dark:border-neutral-800 uppercase tracking-wide">
+<<<<<<< HEAD
                 {t('files.new')}
+=======
+                New
+>>>>>>> upstream/main
               </div>
               <div className="flex-1 overflow-auto">
                 <div className="font-mono text-[11px] leading-relaxed">
@@ -654,7 +684,11 @@ function Breadcrumb({ path }: { path: string }) {
   const parts = path ? path.split('/').filter(Boolean) : []
   return (
     <div className="flex items-center gap-1 truncate text-xs text-primary-500 dark:text-neutral-400 min-w-0">
+<<<<<<< HEAD
       <span className="shrink-0">{t('files.workspace')}</span>
+=======
+      <span className="shrink-0">workspace</span>
+>>>>>>> upstream/main
       {parts.map((part, i) => (
         <span key={i} className="flex items-center gap-1 min-w-0">
           <span className="shrink-0 text-primary-300 dark:text-neutral-600">
@@ -807,7 +841,11 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
         <div className="flex h-full items-center justify-center text-center text-primary-400 dark:text-neutral-600">
           <div>
             <div className="text-5xl mb-3 opacity-40">📂</div>
+<<<<<<< HEAD
             <p className="text-sm">{t('files.selectFile')}</p>
+=======
+            <p className="text-sm">Select a file to preview or edit</p>
+>>>>>>> upstream/main
           </div>
         </div>
       </>
@@ -823,7 +861,11 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
             <div className="text-5xl mb-3 opacity-40">📁</div>
             <p className="text-sm font-medium">{selectedEntry.name}</p>
             <p className="text-xs mt-1 opacity-70">
+<<<<<<< HEAD
               {t('files.selectInside')}
+=======
+              Select a file inside to preview
+>>>>>>> upstream/main
             </p>
           </div>
         </div>
@@ -848,7 +890,11 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
             variant="outline"
             onClick={() => setRawMode((v) => !v)}
           >
+<<<<<<< HEAD
             {rawMode ? t('files.preview') : t('files.raw')}
+=======
+            {rawMode ? 'Preview' : 'Raw'}
+>>>>>>> upstream/main
           </Button>
         )}
         {isEditable && (
@@ -858,7 +904,11 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
             disabled={!dirty || saving}
             onClick={handleSave}
           >
+<<<<<<< HEAD
             {saving ? t('files.saving') : savedOk ? t('files.saved') : t('files.save')}
+=======
+            {saving ? 'Saving…' : savedOk ? '✓ Saved' : 'Save'}
+>>>>>>> upstream/main
           </Button>
         )}
       </div>
@@ -871,10 +921,17 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
         <span>{formatBytes(selectedEntry.size)}</span>
       )}
       {selectedEntry.modifiedAt && (
+<<<<<<< HEAD
         <span>{t('files.modified')} {formatDate(selectedEntry.modifiedAt)}</span>
       )}
       {dirty && (
         <span className="text-accent-500 font-medium">{t('files.unsavedChanges')}</span>
+=======
+        <span>Modified {formatDate(selectedEntry.modifiedAt)}</span>
+      )}
+      {dirty && (
+        <span className="text-accent-500 font-medium">Unsaved changes</span>
+>>>>>>> upstream/main
       )}
     </div>
   )
@@ -888,7 +945,11 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
         <div className="flex h-full flex-col">
           {header}
           <div className="flex flex-1 items-center justify-center text-sm text-primary-400 dark:text-neutral-500">
+<<<<<<< HEAD
             {t('files.loading')}
+=======
+            Loading…
+>>>>>>> upstream/main
           </div>
           {footer}
         </div>
@@ -927,7 +988,11 @@ function FilePanel({ selectedEntry }: FilePanelProps) {
                 className="max-h-full max-w-full rounded-lg border border-primary-200 dark:border-neutral-800 shadow-sm object-contain"
               />
             ) : (
+<<<<<<< HEAD
               <div className="text-sm text-primary-400">{t('files.noPreview')}</div>
+=======
+              <div className="text-sm text-primary-400">No preview</div>
+>>>>>>> upstream/main
             )}
           </div>
           {footer}
@@ -1211,7 +1276,11 @@ export function FilesScreen() {
             <button
               type="button"
               onClick={openNewFolderPrompt}
+<<<<<<< HEAD
               title={t('files.newFolder')}
+=======
+              title="New folder"
+>>>>>>> upstream/main
               className="rounded p-1 text-sm text-primary-400 hover:bg-primary-200 dark:hover:bg-neutral-800 hover:text-primary-600 dark:hover:text-neutral-300 transition-colors leading-none"
             >
               📁+
@@ -1219,7 +1288,11 @@ export function FilesScreen() {
             <button
               type="button"
               onClick={() => void loadTree()}
+<<<<<<< HEAD
               title={t('common.refresh')}
+=======
+              title="Refresh"
+>>>>>>> upstream/main
               className="rounded p-1 text-lg text-primary-400 hover:bg-primary-200 dark:hover:bg-neutral-800 hover:text-primary-600 dark:hover:text-neutral-300 transition-colors leading-none"
             >
               ↺
@@ -1232,13 +1305,21 @@ export function FilesScreen() {
           <ScrollAreaViewport className="px-1 py-1">
             {treeLoading ? (
               <div className="px-3 py-2 text-xs text-primary-400 dark:text-neutral-500">
+<<<<<<< HEAD
                 {t('files.loading')}
+=======
+                Loading…
+>>>>>>> upstream/main
               </div>
             ) : treeError ? (
               <div className="px-3 py-2 text-xs text-red-500">{treeError}</div>
             ) : entries.length === 0 ? (
               <div className="px-3 py-2 text-xs text-primary-400 dark:text-neutral-500">
+<<<<<<< HEAD
                 {t('files.empty')}
+=======
+                Workspace is empty
+>>>>>>> upstream/main
               </div>
             ) : (
               entries
@@ -1290,7 +1371,11 @@ export function FilesScreen() {
               setContextMenu(null)
             }}
           >
+<<<<<<< HEAD
             ✏️ {t('files.rename')}
+=======
+            ✏️ Rename
+>>>>>>> upstream/main
           </button>
           {contextMenu.entry.type === 'folder' ? (
             <button
@@ -1304,7 +1389,11 @@ export function FilesScreen() {
                 setContextMenu(null)
               }}
             >
+<<<<<<< HEAD
               📁 {t('files.newFolderInside')}
+=======
+              📁 New folder inside
+>>>>>>> upstream/main
             </button>
           ) : (
             <button
@@ -1314,7 +1403,11 @@ export function FilesScreen() {
                 setContextMenu(null)
               }}
             >
+<<<<<<< HEAD
               ⬇️ {t('files.download')}
+=======
+              ⬇️ Download
+>>>>>>> upstream/main
             </button>
           )}
           <button
@@ -1324,7 +1417,11 @@ export function FilesScreen() {
               setContextMenu(null)
             }}
           >
+<<<<<<< HEAD
             🗑️ {t('files.delete')}
+=======
+            🗑️ Delete
+>>>>>>> upstream/main
           </button>
         </div>
       ) : null}
@@ -1339,12 +1436,21 @@ export function FilesScreen() {
         <DialogContent>
           <div className="p-5 space-y-3">
             <DialogTitle>
+<<<<<<< HEAD
               {promptState?.mode === 'rename' ? t('files.rename') : t('files.newFolder')}
             </DialogTitle>
             <DialogDescription>
               {promptState?.mode === 'rename'
                 ? t('files.enterNewName')
                 : t('files.enterFolderName')}
+=======
+              {promptState?.mode === 'rename' ? 'Rename' : 'New Folder'}
+            </DialogTitle>
+            <DialogDescription>
+              {promptState?.mode === 'rename'
+                ? 'Enter a new name.'
+                : 'Enter a folder name to create.'}
+>>>>>>> upstream/main
             </DialogDescription>
             <input
               value={promptValue}
@@ -1356,8 +1462,13 @@ export function FilesScreen() {
               autoFocus
             />
             <div className="flex justify-end gap-2 pt-2">
+<<<<<<< HEAD
               <DialogClose render={<Button variant="outline">{t('common.cancel')}</Button>} />
               <Button onClick={() => void handlePromptSubmit()}>{t('files.save')}</Button>
+=======
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button onClick={() => void handlePromptSubmit()}>Save</Button>
+>>>>>>> upstream/main
             </div>
           </div>
         </DialogContent>
@@ -1373,6 +1484,7 @@ export function FilesScreen() {
         <DialogContent>
           <div className="p-5 space-y-3">
             <DialogTitle>
+<<<<<<< HEAD
               {deleteConfirm?.type === 'folder' ? t('files.deleteFolder') : t('files.deleteFile')}
             </DialogTitle>
             <DialogDescription>
@@ -1384,11 +1496,28 @@ export function FilesScreen() {
             </DialogDescription>
             <div className="flex justify-end gap-2 pt-2">
               <DialogClose render={<Button variant="outline">{t('common.cancel')}</Button>} />
+=======
+              Delete {deleteConfirm?.type === 'folder' ? 'Folder' : 'File'}
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{' '}
+              <strong>{deleteConfirm?.name}</strong>?
+              {deleteConfirm?.type === 'folder' &&
+                ' This will delete all contents inside.'}{' '}
+              This action cannot be undone.
+            </DialogDescription>
+            <div className="flex justify-end gap-2 pt-2">
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+>>>>>>> upstream/main
               <Button
                 variant="destructive"
                 onClick={() => void handleDeleteConfirmed()}
               >
+<<<<<<< HEAD
                 {t('files.delete')}
+=======
+                Delete
+>>>>>>> upstream/main
               </Button>
             </div>
           </div>
