@@ -37,7 +37,7 @@ export const THEMES: Array<{
   {
     id: 'hermes-official-light',
     label: 'Hermes Official Light',
-    description: 'Soft indigo light palette',
+    description: 'Editorial paper white with muted cobalt accents',
     icon: '⚕',
   },
   {
@@ -79,7 +79,7 @@ export const THEMES: Array<{
 ]
 
 const STORAGE_KEY = 'hermes-theme'
-const DEFAULT_THEME: ThemeId = 'hermes-official'
+const DEFAULT_THEME: ThemeId = 'hermes-nous'
 const THEME_SET = new Set<ThemeId>(THEMES.map((theme) => theme.id))
 const LIGHT_THEME_MAP: Record<
   Exclude<ThemeId, `${string}-light`>,
