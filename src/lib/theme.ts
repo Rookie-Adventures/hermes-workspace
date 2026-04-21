@@ -1,20 +1,14 @@
 export type ThemeId =
-<<<<<<< HEAD
-=======
   | 'hermes-nous'
   | 'hermes-nous-light'
->>>>>>> upstream/main
   | 'hermes-official'
   | 'hermes-official-light'
   | 'hermes-classic'
   | 'hermes-classic-light'
   | 'hermes-slate'
   | 'hermes-slate-light'
-<<<<<<< HEAD
   | 'hermes-mono'
   | 'hermes-mono-light'
-=======
->>>>>>> upstream/main
 
 export const THEMES: Array<{
   id: ThemeId
@@ -23,8 +17,6 @@ export const THEMES: Array<{
   icon: string
 }> = [
   {
-<<<<<<< HEAD
-=======
     id: 'hermes-nous',
     label: 'Hermes Nous',
     description: 'Deep teal background, cream accent — matches Nous Research chrome',
@@ -37,7 +29,6 @@ export const THEMES: Array<{
     icon: '◲',
   },
   {
->>>>>>> upstream/main
     id: 'hermes-official',
     label: 'Hermes Official',
     description: 'Navy and indigo flagship theme',
@@ -46,11 +37,7 @@ export const THEMES: Array<{
   {
     id: 'hermes-official-light',
     label: 'Hermes Official Light',
-<<<<<<< HEAD
     description: 'Soft indigo light palette',
-=======
-    description: 'Editorial paper white with muted cobalt accents',
->>>>>>> upstream/main
     icon: '⚕',
   },
   {
@@ -77,7 +64,6 @@ export const THEMES: Array<{
     description: 'GitHub-light palette with blue accents',
     icon: '🔷',
   },
-<<<<<<< HEAD
   {
     id: 'hermes-mono',
     label: 'Mono',
@@ -94,34 +80,22 @@ export const THEMES: Array<{
 
 const STORAGE_KEY = 'hermes-theme'
 const DEFAULT_THEME: ThemeId = 'hermes-official'
-=======
-]
-
-const STORAGE_KEY = 'hermes-theme'
-const DEFAULT_THEME: ThemeId = 'hermes-nous'
->>>>>>> upstream/main
 const THEME_SET = new Set<ThemeId>(THEMES.map((theme) => theme.id))
 const LIGHT_THEME_MAP: Record<
   Exclude<ThemeId, `${string}-light`>,
   Extract<ThemeId, `${string}-light`>
 > = {
-<<<<<<< HEAD
-  'hermes-official': 'hermes-official-light',
-  'hermes-classic': 'hermes-classic-light',
-  'hermes-slate': 'hermes-slate-light',
-  'hermes-mono': 'hermes-mono-light',
-=======
   'hermes-nous': 'hermes-nous-light',
   'hermes-official': 'hermes-official-light',
   'hermes-classic': 'hermes-classic-light',
   'hermes-slate': 'hermes-slate-light',
->>>>>>> upstream/main
+  'hermes-mono': 'hermes-mono-light',
 }
 const DARK_THEME_MAP: Record<
   Extract<ThemeId, `${string}-light`>,
   Exclude<ThemeId, `${string}-light`>
 > = {
-<<<<<<< HEAD
+  'hermes-nous-light': 'hermes-nous',
   'hermes-official-light': 'hermes-official',
   'hermes-classic-light': 'hermes-classic',
   'hermes-slate-light': 'hermes-slate',
@@ -129,23 +103,11 @@ const DARK_THEME_MAP: Record<
 }
 
 const LIGHT_THEMES = new Set<ThemeId>([
-  'hermes-official-light',
-  'hermes-classic-light',
-  'hermes-slate-light',
-  'hermes-mono-light',
-=======
-  'hermes-nous-light': 'hermes-nous',
-  'hermes-official-light': 'hermes-official',
-  'hermes-classic-light': 'hermes-classic',
-  'hermes-slate-light': 'hermes-slate',
-}
-
-const LIGHT_THEMES = new Set<ThemeId>([
   'hermes-nous-light',
   'hermes-official-light',
   'hermes-classic-light',
   'hermes-slate-light',
->>>>>>> upstream/main
+  'hermes-mono-light',
 ])
 
 export function isValidTheme(
