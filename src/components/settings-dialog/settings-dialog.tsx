@@ -1839,9 +1839,10 @@ function DisplayContent() {
 
 // ── Language ────────────────────────────────────────────────────────────
 
-import { getLocale, setLocale, LOCALE_LABELS, type LocaleId } from '@/lib/i18n'
+import { getLocale, setLocale, LOCALE_LABELS, type LocaleId, useLocale } from '@/lib/i18n'
 
 function LanguageContent() {
+  const { locale } = useLocale()
   return (
     <div className="space-y-4">
       <SectionHeader
@@ -1850,10 +1851,9 @@ function LanguageContent() {
       />
       <Row label="Interface Language" description="Translates navigation, labels, and buttons.">
         <select
-          value={getLocale()}
+          value={locale}
           onChange={(e) => {
             setLocale(e.target.value as LocaleId)
-            window.location.reload()
           }}
           className="h-9 w-full rounded-lg border border-primary-200 dark:border-neutral-700 bg-primary-50 dark:bg-neutral-800 px-3 text-sm text-primary-900 dark:text-neutral-100 outline-none md:max-w-xs"
         >

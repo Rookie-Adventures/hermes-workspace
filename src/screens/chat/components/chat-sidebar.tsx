@@ -19,7 +19,7 @@ import {
   Search01Icon, Settings01Icon, Sun02Icon, UserGroupIcon, UserMultipleIcon
 } from '@hugeicons/core-free-icons'
 import { AnimatePresence, motion } from 'motion/react'
-import { t } from '@/lib/i18n'
+import { useLocale } from '@/lib/i18n'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import {
@@ -503,6 +503,7 @@ function ChatSidebarComponent({
   sessionsError,
   onRetrySessions,
 }: ChatSidebarProps) {
+  const { t } = useLocale()
   const {
     settingsOpen,
     settingsSection,
@@ -747,7 +748,7 @@ function ChatSidebarComponent({
   const searchItem: NavItemDef = {
     kind: 'button',
     icon: Search01Icon,
-    label: 'Search',
+    label: t('nav.search'),
     active: isSearchModalOpen,
     onClick: openSearchModal,
   }
@@ -801,14 +802,14 @@ function ChatSidebarComponent({
       kind: 'link',
       to: '/conductor',
       icon: Rocket01Icon,
-      label: 'Conductor',
+      label: t('nav.conductor'),
       active: isConductorActive,
     },
     {
       kind: 'link',
       to: '/operations',
       icon: UserGroupIcon,
-      label: 'Operations',
+      label: t('nav.operations'),
       active: isOperationsActive,
     },
   ]
@@ -884,7 +885,7 @@ function ChatSidebarComponent({
                 )}
               >
                 <img src="/hermes-avatar.webp" alt="Hermes" className="size-6 rounded-lg" />
-                <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--theme-text)' }}>Hermes Workspace</span>
+                <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--theme-text)' }}>{t('nav.workspace')}</span>
               </Link>
             </motion.div>
           ) : null}
@@ -897,7 +898,7 @@ function ChatSidebarComponent({
                 <Button
                   size="icon-sm"
                   variant="ghost"
-                  aria-label={isVisuallyCollapsed ? 'Open Sidebar' : 'Close Sidebar'}
+                  aria-label={isVisuallyCollapsed ? t('nav.openSidebar') : t('nav.closeSidebar')}
                   className="absolute right-2 top-1/2 shrink-0 -translate-y-1/2 opacity-80 hover:opacity-100"
                   data-tour="sidebar-collapse-toggle"
                 >
@@ -918,7 +919,7 @@ function ChatSidebarComponent({
               }
             />
             <TooltipContent side="right">
-              {isVisuallyCollapsed ? 'Open Sidebar' : 'Close Sidebar'}
+              {isVisuallyCollapsed ? t('nav.openSidebar') : t('nav.closeSidebar')}
             </TooltipContent>
           </TooltipRoot>
         </TooltipProvider>
@@ -963,7 +964,7 @@ function ChatSidebarComponent({
               strokeWidth={1.5}
               className="size-5 shrink-0"
             />
-            <span>New Session</span>
+            <span>{t('nav.newSession')}</span>
           </Link>
         </div>
       )}
@@ -973,7 +974,7 @@ function ChatSidebarComponent({
         {/* Navigation sections */}
         <div className={cn('shrink-0 space-y-0.5 px-2', isMobile && 'order-2')}>
           <SectionLabel
-            label="Main"
+            label={t('nav.main')}
             isCollapsed={isVisuallyCollapsed}
             transition={transition}
             collapsible
@@ -990,7 +991,7 @@ function ChatSidebarComponent({
           />
 
           <SectionLabel
-            label="Knowledge"
+            label={t('nav.knowledge')}
             isCollapsed={isVisuallyCollapsed}
             transition={transition}
             collapsible
@@ -1104,7 +1105,7 @@ function ChatSidebarComponent({
                     size={20}
                     strokeWidth={1.5}
                   />
-                  Settings
+                  {t('nav.settings')}
                 </span>
               </MenuItem>
             </MenuContent>
@@ -1117,7 +1118,7 @@ function ChatSidebarComponent({
                 type="button"
                 onClick={() => handleOpenSettings('hermes')}
                 className="shrink-0 rounded-lg p-1.5 text-primary-400 hover:bg-primary-200 dark:hover:bg-neutral-800 hover:text-primary-600 dark:hover:text-neutral-300 transition-colors"
-                aria-label="Settings"
+                aria-label={t('nav.settings')}
               >
                 <HugeiconsIcon icon={Settings01Icon} size={16} strokeWidth={1.5} />
               </button>

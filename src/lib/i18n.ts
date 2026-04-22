@@ -3,6 +3,8 @@
  * Add new languages by adding a locale map below.
  */
 
+import { useCallback, useEffect, useState } from 'react'
+
 export type LocaleId = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'pt' | 'ru' | 'ar'
 
 const EN = {
@@ -17,6 +19,15 @@ const EN = {
   'nav.skills': 'Skills',
   'nav.profiles': 'Profiles',
   'nav.settings': 'Settings',
+  'nav.conductor': 'Conductor',
+  'nav.operations': 'Operations',
+  'nav.search': 'Search',
+  'nav.newSession': 'New Session',
+  'nav.main': 'Main',
+  'nav.knowledge': 'Knowledge',
+  'nav.openSidebar': 'Open Sidebar',
+  'nav.closeSidebar': 'Close Sidebar',
+  'nav.workspace': 'Hermes Workspace',
   // Skills
   'skills.installed': 'Installed',
   'skills.marketplace': 'Marketplace',
@@ -64,6 +75,15 @@ const ES: LocaleTranslations = {
   'nav.skills': 'Habilidades',
   'nav.profiles': 'Perfiles',
   'nav.settings': 'Configuración',
+  'nav.conductor': 'Conductor',
+  'nav.operations': 'Operaciones',
+  'nav.search': 'Buscar',
+  'nav.newSession': 'Nueva Sesión',
+  'nav.main': 'Principal',
+  'nav.knowledge': 'Conocimiento',
+  'nav.openSidebar': 'Abrir Barra Lateral',
+  'nav.closeSidebar': 'Cerrar Barra Lateral',
+  'nav.workspace': 'Hermes Workspace',
   'skills.installed': 'Instaladas',
   'skills.marketplace': 'Mercado',
   'skills.search': 'Buscar por nombre, etiquetas o descripción',
@@ -102,6 +122,15 @@ const FR: LocaleTranslations = {
   'nav.skills': 'Compétences',
   'nav.profiles': 'Profils',
   'nav.settings': 'Paramètres',
+  'nav.conductor': 'Conducteur',
+  'nav.operations': 'Opérations',
+  'nav.search': 'Rechercher',
+  'nav.newSession': 'Nouvelle Session',
+  'nav.main': 'Principal',
+  'nav.knowledge': 'Connaissances',
+  'nav.openSidebar': 'Ouvrir la Barre Latérale',
+  'nav.closeSidebar': 'Fermer la Barre Latérale',
+  'nav.workspace': 'Hermes Workspace',
   'skills.installed': 'Installées',
   'skills.marketplace': 'Marché',
   'skills.search': 'Rechercher par nom, tags ou description',
@@ -140,6 +169,15 @@ const ZH: LocaleTranslations = {
   'nav.skills': '技能',
   'nav.profiles': '配置',
   'nav.settings': '设置',
+  'nav.conductor': '指挥官',
+  'nav.operations': '运维',
+  'nav.search': '搜索',
+  'nav.newSession': '新会话',
+  'nav.main': '导航',
+  'nav.knowledge': '知识',
+  'nav.openSidebar': '展开侧边栏',
+  'nav.closeSidebar': '收起侧边栏',
+  'nav.workspace': 'Hermes 工作台',
   'skills.installed': '已安装',
   'skills.marketplace': '市场',
   'skills.search': '按名称、标签或描述搜索',
@@ -203,4 +241,29 @@ export function setLocale(id: LocaleId): void {
 export function t(key: TranslationKey): string {
   const locale = getLocale()
   return LOCALES[locale]?.[key] ?? LOCALES.en[key] ?? key
+}
+
+/**
+ * React hook that returns the current locale and a reactive `t()` function.
+ * Re-renders when the locale changes, without needing a full page reload.
+ */
+export function useLocale() {
+  const [locale, setLocaleState] = useState<LocaleId>(() => getLocale())
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setLocaleState((e as CustomEvent<LocaleId>).detail)
+    }
+    window.addEventListener('locale-change', handler)
+    return () => window.removeEventListener('locale-change', handler)
+  }, [])
+
+  const tFn = useCallback(
+    (key: TranslationKey): string => {
+      return LOCALES[locale]?.[key] ?? LOCALES.en[key] ?? key
+    },
+    [locale],
+  )
+
+  return { locale, t: tFn, setLocale } as const
 }

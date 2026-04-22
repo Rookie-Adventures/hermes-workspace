@@ -1,0 +1,36 @@
+# Custom Hermes Workspace with Chinese localization
+FROM ghcr.io/outsourc-e/hermes-workspace:latest AS builder
+
+USER root
+WORKDIR /build
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install ALL dependencies including devDependencies
+RUN npm install --legacy-peer-deps --include=dev
+
+# Copy source code
+COPY tsconfig.json vite.config.ts ./
+COPY src/ ./src/
+COPY public/ ./public/
+COPY eslint.config.js prettier.config.js ./
+
+# Build
+RUN npx vite build
+
+# Final image — use base image, copy only dist + node_modules
+FROM ghcr.io/outsourc-e/hermes-workspace:latest
+
+USER root
+WORKDIR /app
+
+# Replace dist and node_modules with our custom build
+COPY --from=builder /build/dist ./dist
+COPY --from=builder /build/node_modules ./node_modules
+
+# Copy server entry point
+COPY server-entry.js ./
+
+EXPOSE 3000
+CMD ["node", "server-entry.js"]
