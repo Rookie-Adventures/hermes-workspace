@@ -6,9 +6,10 @@ services:
   # The Hermes AI Agent Gateway
   hermes-agent:
     image: nousresearch/hermes-agent:latest
+    tty: true
+    stdin_open: true
     env_file:
       - ../.env
-    command: ["-T"]
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
