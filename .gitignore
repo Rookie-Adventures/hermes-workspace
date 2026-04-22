@@ -4,7 +4,7 @@ node_modules
 .pnp.js
 
 # Build outputs
-dist
+# dist (removed from ignore - needed for deployment)
 dist-ssr
 build
 .output
@@ -88,7 +88,6 @@ tmp/
 
 # Task data (local persistence)
 data/
-dist/
 research/
 BROWSER-RESEARCH.md
 CHAT-TEST-REPORT.md
