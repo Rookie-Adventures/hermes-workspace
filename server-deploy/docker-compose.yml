@@ -8,6 +8,7 @@ services:
     image: nousresearch/hermes-agent:latest
     env_file:
       - ../.env
+    command: ["-T"]
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
