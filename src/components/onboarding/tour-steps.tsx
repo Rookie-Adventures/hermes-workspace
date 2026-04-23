@@ -5,7 +5,7 @@ export const tourSteps: Array<Step> = [
   {
     target: 'body',
     placement: 'center',
-    title: 'Welcome to Hermes Workspace! ⚕',
+    title: 'Welcome to munr Workspace!',
     content: (
       <div
         style={{
@@ -17,7 +17,7 @@ export const tourSteps: Array<Step> = [
       >
         <img
           src="/hermes-avatar.webp"
-          alt="Hermes"
+          alt="munr"
           style={{ width: 48, height: 48, borderRadius: 12 }}
         />
         <p style={{ textAlign: 'center', margin: 0 }}>
@@ -98,6 +98,6 @@ export const tourSteps: Array<Step> = [
     placement: 'center',
     title: "You're all set! 🎉",
     content:
-      'Start chatting with your AI, explore the tools, and customize Hermes Workspace to fit your workflow. Need help? Press ? to see all keyboard shortcuts.',
+      'Start chatting with your AI, explore the tools, and customize munr Workspace to fit your workflow. Need help? Press ? to see all keyboard shortcuts.',
   },
 ]

@@ -186,8 +186,8 @@ function normalizePortableHistory(
 function normalizeHermesErrorMessage(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error)
   const message = raw.trim()
-  if (!message) return 'Hermes request failed'
-  return message.replace(/\bserver\b/gi, 'Hermes')
+  if (!message) return 'Request failed'
+  return message
 }
 
 function readRecord(value: unknown): Record<string, unknown> | undefined {

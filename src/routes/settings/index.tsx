@@ -857,7 +857,7 @@ type LoaderStyleOption = { value: LoaderStyle; label: string }
 
 const LOADER_STYLES: Array<LoaderStyleOption> = [
   { value: 'dots', label: 'Dots' },
-  { value: 'braille-hermes', label: 'Hermes' },
+  { value: 'braille-hermes', label: 'Braille' },
   { value: 'braille-orbit', label: 'Orbit' },
   { value: 'braille-breathe', label: 'Breathe' },
   { value: 'braille-pulse', label: 'Pulse' },
@@ -1449,7 +1449,7 @@ function HermesConfigSection({
       >
         <SettingsRow
           label="Config location"
-          description="Where Hermes stores its configuration."
+          description="Where the agent stores its configuration."
         >
           <span
             className="text-xs font-mono"

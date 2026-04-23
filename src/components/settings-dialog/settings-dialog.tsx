@@ -1124,7 +1124,7 @@ function _LoaderContent() {
   const { settings: cs, updateSettings: updateCS } = useChatSettingsStore()
   const styles: Array<{ value: LoaderStyle; label: string }> = [
     { value: 'dots', label: 'Dots' },
-    { value: 'braille-hermes', label: 'Hermes' },
+    { value: 'braille-hermes', label: 'Braille' },
     { value: 'braille-orbit', label: 'Orbit' },
     { value: 'braille-breathe', label: 'Breathe' },
     { value: 'braille-pulse', label: 'Pulse' },

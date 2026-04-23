@@ -177,7 +177,7 @@ const ZH: LocaleTranslations = {
   'nav.knowledge': '知识',
   'nav.openSidebar': '展开侧边栏',
   'nav.closeSidebar': '收起侧边栏',
-  'nav.workspace': 'Hermes 工作台',
+  'nav.workspace': 'munr 工作台',
   'skills.installed': '已安装',
   'skills.marketplace': '市场',
   'skills.search': '按名称、标签或描述搜索',

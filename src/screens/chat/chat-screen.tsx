@@ -1621,7 +1621,7 @@ export function ChatScreen({
       : historyError
         ? `Failed to load history. ${historyError}`
         : statusError
-          ? `Hermes unavailable. ${statusError.message}`
+          ? `Agent unavailable. ${statusError.message}`
           : null
     if (message) setError(message)
   }, [

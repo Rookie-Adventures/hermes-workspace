@@ -80,7 +80,7 @@ function classifyConnectionError(
   return {
     title: 'Connection error',
     description: normalizedError || 'Something went wrong.',
-    action: 'Try refreshing or check Settings -> Advanced -> Hermes.',
+    action: 'Try refreshing or check Settings -> Advanced.',
   }
 }
 
@@ -133,7 +133,7 @@ export function ConnectionStatusMessage({
         />
         <div className="flex-1 text-xs">
           <p className="font-medium">
-            {isChecking ? 'Connecting to Hermes...' : errorInfo.title}
+            {isChecking ? 'Connecting...' : errorInfo.title}
           </p>
           {!isChecking ? (
             <>

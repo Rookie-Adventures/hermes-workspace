@@ -102,7 +102,7 @@ export function MobilePromptTrigger() {
                 <div className="flex shrink-0 items-center gap-1.5">
                   <img
                     src="/hermes-avatar.webp"
-                    alt="Hermes"
+                    alt="munr"
                     className="size-8 rounded-lg"
                   />
                   <span className="text-xs text-primary-600">+</span>

@@ -321,7 +321,7 @@ export function ProfilesScreen() {
                   >
                     <img
                       src="/hermes-avatar.webp"
-                      alt={profile.name}
+                      alt={profile.name || 'munr'}
                       className={cn(
                         'size-20 rounded-full border-2 object-cover',
                         profile.active

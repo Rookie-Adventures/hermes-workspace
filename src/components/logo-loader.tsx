@@ -11,7 +11,7 @@ function LogoLoader({ className }: LogoLoaderProps) {
     <span className="logo-loader-track" aria-hidden="true">
       <img
         src="/hermes-avatar.webp"
-        alt=""
+        alt="munr"
         className={cn('logo-loader-icon size-4 rounded', className)}
       />
     </span>

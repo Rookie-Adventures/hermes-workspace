@@ -517,7 +517,7 @@ export function HermesOnboarding() {
             <div className="space-y-4 text-center">
               <img
                 src="/hermes-avatar.webp"
-                alt="Hermes"
+                alt="munr"
                 className="mx-auto size-20 rounded-2xl"
                 style={{
                   filter: 'drop-shadow(0 8px 24px rgba(99,102,241,0.3))',

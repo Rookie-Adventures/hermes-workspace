@@ -793,7 +793,7 @@ export function DashboardScreen() {
       <div className="flex flex-col items-center gap-3 py-3">
         <img
           src="/hermes-avatar.webp"
-          alt="Hermes"
+          alt="munr"
           className="size-12 md:size-14 rounded-md border border-[var(--theme-border)]"
           style={{ padding: '3px', background: 'var(--theme-card)' }}
         />

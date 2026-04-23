@@ -59,7 +59,7 @@ export const ONBOARDING_STEPS: Array<OnboardingStep> = [
     id: 'ready',
     title: 'You are all set!',
     description:
-      'Start chatting with Hermes. Try asking it to help with code, research, or anything else.',
+      'Start chatting with munr. Try asking it to help with code, research, or anything else.',
     icon: CheckmarkCircle02Icon,
     iconBg: 'bg-emerald-500',
     completeLabel: 'Start Chatting',
