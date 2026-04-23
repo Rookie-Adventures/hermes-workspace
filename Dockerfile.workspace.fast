@@ -1,0 +1,14 @@
+# Fast rebuild — uses pre-built dist from the repo, skips npm install + vite build
+FROM ghcr.io/outsourc-e/hermes-workspace:latest
+
+USER root
+WORKDIR /app
+
+# Copy pre-built dist directly
+COPY dist ./dist
+
+# Copy server entry point
+COPY server-entry.js ./
+
+EXPOSE 3000
+CMD ["node", "server-entry.js"]
