@@ -1,6 +1,6 @@
 # Project Workspace + Agent — Docker Compose Setup (Production)
 #
-# Build from source on server
+# All images pulled from registries (no local build needed on server)
 
 services:
   # The Hermes AI Agent Gateway

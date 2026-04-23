@@ -97,8 +97,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
           flexDirection: 'column',
           alignItems: 'center',
           gap: 20,
-          width: 340,
-          padding: '40px 32px 36px',
+          width: 400,
+          padding: '40px 36px 36px',
           borderRadius: 24,
           background: 'linear-gradient(165deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 100%)',
           border: '1px solid rgba(255,255,255,.12)',
@@ -131,13 +131,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
             }}
           />
           <img
-            src="/hermes-avatar.webp"
+            src="/munragirl.png"
             alt="munr"
             style={{
               position: 'relative',
-              width: 72,
-              height: 72,
-              borderRadius: 18,
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              objectFit: 'cover',
               border: '1px solid rgba(255,255,255,.15)',
               boxShadow: '0 4px 24px rgba(37,87,183,.2)',
             }}
@@ -165,6 +166,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
             textAlign: 'center',
             marginTop: -8,
             letterSpacing: '0.01em',
+            lineHeight: 1.6,
           }}
         >
           请输入访问密码
@@ -261,6 +263,54 @@ export function AuthGate({ children }: { children: ReactNode }) {
           进入
         </button>
       </form>
+
+      {/* Company info footer */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '24px 20px 28px',
+          textAlign: 'center',
+          pointerEvents: 'none',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 520,
+            margin: '0 auto',
+            fontSize: 12,
+            lineHeight: 1.7,
+            color: 'rgba(255,255,255,.32)',
+          }}
+        >
+          <div style={{ marginBottom: 8 }}>
+            Munr is currently in active development and testing. This workspace is
+            reserved for internal use and approved team members only. If you were
+            directed here, please contact the administrator through the same
+            channel you received this link to request access.
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              marginTop: 12,
+            }}
+          >
+            <div style={{ fontWeight: 500, color: 'rgba(255,255,255,.4)' }}>
+              Neurathm LLC
+            </div>
+            <div>30 N Gould St Ste N, Sheridan, 82801, Wyoming, USA</div>
+            <div>D-U-N-S&reg;: 139-243-649</div>
+            <div style={{ marginTop: 4, fontSize: 16, letterSpacing: 4 }}>
+              🐔🐤🐦🐧🐥🦆🦢🦉🐨
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

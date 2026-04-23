@@ -39,31 +39,11 @@ export function LoginScreen() {
         <div className="rounded-2xl bg-white px-8 py-10 shadow-xl shadow-primary-900/5 ring-1 ring-primary-900/5">
           {/* Logo */}
           <div className="mb-8 flex justify-center">
-            <div className="flex items-center gap-2.5">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-accent-500"
-              >
-                <path
-                  d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z"
-                  fill="currentColor"
-                  opacity="0.15"
-                />
-                <path
-                  d="M50 25 L75 38 L75 62 L50 75 L25 62 L25 38 Z"
-                  fill="currentColor"
-                  opacity="0.3"
-                />
-                <circle cx="50" cy="50" r="15" fill="currentColor" />
-              </svg>
-              <h1 className="text-2xl font-bold tracking-tight text-primary-900">
-                Hermes Workspace
-              </h1>
-            </div>
+            <img
+              src="/munragirl.png"
+              alt="munr"
+              className="h-24 w-24 rounded-full object-cover shadow-lg"
+            />
           </div>
 
           {/* Title */}

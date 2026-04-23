@@ -260,7 +260,7 @@ export function HermesReconnectBanner({
           />
           <div className="min-w-0">
             <p className="text-sm font-semibold">
-              {isDisconnected ? 'Hermes agent not connected' : 'Connected'}
+              {isDisconnected ? 'munr backend not connected' : 'Connected'}
             </p>
             {message ? (
               <p className="truncate text-xs opacity-80">{message}</p>

@@ -48,9 +48,9 @@ export function ChatEmptyState({
         {/* Avatar in editorial frame, no glow — architectural restraint */}
         <div className="relative mb-6">
           <img
-            src="/hermes-avatar.webp"
+            src="/munragirl.png"
             alt="munr"
-            className="relative size-20 rounded-md"
+            className="relative size-24 rounded-full object-cover"
             style={{
               border: '1px solid var(--theme-border)',
               padding: '4px',
@@ -64,7 +64,7 @@ export function ChatEmptyState({
           className="micro-label mb-2"
           style={{ color: 'var(--theme-muted)' }}
         >
-          Hermes Workspace
+          munr
         </p>
 
         {/* Editorial display title */}

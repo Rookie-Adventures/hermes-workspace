@@ -32,7 +32,7 @@ function getSetupSteps(
       note: 'Portable chat works with any backend that exposes /v1/chat/completions (Ollama, LiteLLM, vLLM, etc.)',
     },
     {
-      title: 'Optional: install Hermes Agent locally',
+      title: 'Optional: install backend locally',
       command: `${pip} install hermes-agent`,
       note: 'Vanilla hermes-agent unlocks sessions, skills, memory, jobs, and config automatically — no fork required',
     },
@@ -222,13 +222,13 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
     >
       <div className="flex w-full max-w-lg flex-col items-center text-center">
         <img
-          src="/hermes-avatar.webp"
+          src="/munragirl.png"
           alt="munr"
-          className="mb-5 h-20 w-20 rounded-2xl object-cover shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
+          className="mb-5 h-28 w-28 rounded-full object-cover shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
         />
 
         <h1 className="text-[2rem] font-semibold tracking-tight text-white">
-          Hermes Workspace
+          munr
         </h1>
 
         {/* Connecting spinner */}
@@ -257,8 +257,8 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
               Welcome! Let&apos;s connect your backend
             </p>
             <p className="mt-2 text-sm leading-6 text-white/60">
-              Hermes Workspace works with any OpenAI-compatible backend. Hermes
-              gateway APIs unlock enhanced features automatically when they are
+              munr works with any OpenAI-compatible backend. Gateway APIs
+              unlock enhanced features automatically when they are
               available.
             </p>
 
@@ -281,7 +281,7 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
                     Detecting...
                   </span>
                 ) : (
-                  'Auto-Start Hermes Gateway'
+                  'Auto-Start Gateway'
                 )}
               </button>
 

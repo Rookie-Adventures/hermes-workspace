@@ -16,7 +16,7 @@ export const tourSteps: Array<Step> = [
         }}
       >
         <img
-          src="/hermes-avatar.webp"
+          src="/munragirl.png"
           alt="munr"
           style={{ width: 48, height: 48, borderRadius: 12 }}
         />
@@ -74,7 +74,7 @@ export const tourSteps: Array<Step> = [
     placement: 'right',
     title: 'Built-in Terminal',
     content:
-      'Built-in terminal for quick commands. Execute shell commands without leaving Hermes Workspace.',
+      'Built-in terminal for quick commands. Execute shell commands without leaving munr.',
   },
   // Step 9: Usage Meter (in header)
   {
@@ -90,7 +90,7 @@ export const tourSteps: Array<Step> = [
     placement: 'right',
     title: 'Settings & Customization',
     content:
-      'Configure providers, themes, accent colors, and more. Make Hermes Workspace yours.',
+      'Configure providers, themes, accent colors, and more. Make munr yours.',
   },
   // Step 11: Finish
   {

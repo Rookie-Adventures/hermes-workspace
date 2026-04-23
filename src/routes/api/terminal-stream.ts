@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { requireLocalOrAuth } from '../../server/auth-middleware'
+import { isAuthenticated } from '../../server/auth-middleware'
 import { createTerminalSession } from '../../server/terminal-sessions'
 import {
   getClientIp,
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/api/terminal-stream')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (!requireLocalOrAuth(request)) {
+        if (!isAuthenticated(request)) {
           return new Response(
             JSON.stringify({ ok: false, error: 'Unauthorized' }),
             {

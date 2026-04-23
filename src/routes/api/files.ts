@@ -7,7 +7,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { json } from '@tanstack/react-start'
 import {
   isAuthenticated,
-  requireLocalOrAuth,
 } from '../../server/auth-middleware'
 import {
   getClientIp,
@@ -356,7 +355,7 @@ export const Route = createFileRoute('/api/files')({
           }
 
           if (action === 'delete') {
-            if (!requireLocalOrAuth(request)) {
+            if (!isAuthenticated(request)) {
               return json({ ok: false, error: 'Unauthorized' }, { status: 401 })
             }
             const targetPath = ensureWorkspacePath(String(body.path || ''))

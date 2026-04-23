@@ -25,8 +25,8 @@ function classifyConnectionError(
   if (!normalizedError && !status) {
     return {
       title: 'Not connected',
-      description: "Hermes Workspace can't reach Hermes.",
-      action: 'Check that Hermes is running, then try again.',
+      description: "munr can't reach the backend.",
+      action: 'Check that the backend is running, then try again.',
     }
   }
 
@@ -38,8 +38,8 @@ function classifyConnectionError(
   ) {
     return {
       title: 'Authentication required',
-      description: 'Hermes rejected the connection token.',
-      action: 'Go to Settings -> Advanced -> Hermes to update your token.',
+      description: 'The backend rejected the connection token.',
+      action: 'Go to Settings -> Advanced to update your token.',
     }
   }
 
@@ -50,8 +50,8 @@ function classifyConnectionError(
   ) {
     return {
       title: 'Pairing required',
-      description: "This device isn't paired with Hermes yet.",
-      action: 'Check Hermes Agent connection.',
+      description: "This device isn't paired yet.",
+      action: 'Check backend connection.',
     }
   }
 

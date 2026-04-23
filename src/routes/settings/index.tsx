@@ -1085,7 +1085,7 @@ function HermesConfigSection({
   if (loading) {
     return (
       <SettingsSection
-        title="Hermes Agent"
+        title="munr Backend"
         description="Loading configuration..."
         icon={Settings02Icon}
       >
@@ -1100,12 +1100,12 @@ function HermesConfigSection({
   if (!data) {
     return (
       <SettingsSection
-        title="Hermes Agent"
-        description="Could not load Hermes configuration."
+        title="munr Backend"
+        description="Could not load backend configuration."
         icon={Settings02Icon}
       >
         <p className="text-sm" style={{ color: 'var(--theme-muted)' }}>
-          Make sure Hermes Agent is running on localhost:8642
+          Make sure the backend is running on localhost:8642
         </p>
       </SettingsSection>
     )
@@ -1134,7 +1134,7 @@ function HermesConfigSection({
     <>
       <SettingsSection
         title="Model & Provider"
-        description="Configure the default AI model for Hermes Agent."
+        description="Configure the default AI model for munr."
         icon={SourceCodeSquareIcon}
       >
         <SettingsRow
@@ -1320,7 +1320,7 @@ function HermesConfigSection({
 
       <SettingsSection
         title="Memory"
-        description="Configure Hermes Agent memory and user profiles."
+        description="Configure munr memory and user profiles."
         icon={UserIcon}
       >
         <SettingsRow
@@ -1444,7 +1444,7 @@ function HermesConfigSection({
 
       <SettingsSection
         title="About"
-        description="Hermes Agent runtime information."
+        description="munr backend runtime information."
         icon={Notification03Icon}
       >
         <SettingsRow

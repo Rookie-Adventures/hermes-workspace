@@ -62,7 +62,7 @@ export function MobileSetupModal({ isOpen, onClose }: MobileSetupModalProps) {
   const steps = [
     {
       title: 'Install Tailscale on your desktop',
-      body: 'Install Tailscale on the machine running Hermes Workspace, then sign in.',
+      body: 'Install Tailscale on the machine running munr, then sign in.',
       showTailscaleIcon: true,
       action: (
         <a
@@ -77,7 +77,7 @@ export function MobileSetupModal({ isOpen, onClose }: MobileSetupModalProps) {
     },
     {
       title: 'Keep your backend reachable',
-      body: 'Hermes Workspace can talk to any OpenAI-compatible backend on mobile too. Make sure both the workspace and backend stay reachable over Tailscale or your local network.',
+      body: 'munr can talk to any OpenAI-compatible backend on mobile too. Make sure both the workspace and backend stay reachable over Tailscale or your local network.',
       showTailscaleIcon: false,
       action: (
         <div className="rounded-lg border border-primary-700 bg-primary-950 px-4 py-3 text-sm text-primary-200">
@@ -221,7 +221,7 @@ export function MobileSetupModal({ isOpen, onClose }: MobileSetupModalProps) {
 
         <div className="mb-4 flex items-center gap-3 pr-10">
           <img
-            src="/hermes-avatar.webp"
+            src="/munragirl.png"
             alt="Hermes"
             className="size-9 rounded-xl"
           />

@@ -356,7 +356,7 @@ function HermesContent() {
   if (!configAvailable) {
     return (
       <BackendUnavailableState
-        feature="Hermes Agent Settings"
+        feature="munr Settings"
         description={getUnavailableReason('config')}
       />
     )
@@ -1917,7 +1917,7 @@ export function SettingsDialog({
                 Settings
               </DialogTitle>
               <DialogDescription className="sr-only">
-                Configure Hermes Workspace
+                Configure munr
               </DialogDescription>
             </div>
             <DialogClose

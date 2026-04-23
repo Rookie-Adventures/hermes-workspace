@@ -884,7 +884,7 @@ function ChatSidebarComponent({
                   'w-full pl-1.5 justify-start gap-2',
                 )}
               >
-                <img src="/hermes-avatar.webp" alt="munr" className="size-6 rounded-lg" />
+                <img src="/munragirl.png" alt="munr" className="size-6 rounded-full" />
                 <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--theme-text)' }}>{t('nav.workspace')}</span>
               </Link>
             </motion.div>

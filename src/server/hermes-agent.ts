@@ -101,7 +101,13 @@ export async function isHermesAgentHealthy(
   port = HERMES_START_PORT,
 ): Promise<boolean> {
   try {
-    const response = await fetch(`http://127.0.0.1:${port}/health`, {
+    // When HERMES_API_URL is explicitly configured (e.g., Docker deployment),
+    // use it instead of localhost default port
+    const apiUrl = process.env.HERMES_API_URL
+    const healthUrl = apiUrl
+      ? `${apiUrl.replace(/\/$/, '')}/health`
+      : `http://127.0.0.1:${port}/health`
+    const response = await fetch(healthUrl, {
       signal: AbortSignal.timeout(HERMES_HEALTH_TIMEOUT_MS),
     })
     return response.ok

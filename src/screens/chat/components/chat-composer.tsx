@@ -980,7 +980,7 @@ function ChatComposerComponent({
     return typeof first === 'string' ? first : first.id || first.name || ''
   }, [modelsQuery.data])
   const modelButtonLabel =
-    currentSelectedModel || currentModel || configuredModel || '⚕ Hermes Agent'
+    currentSelectedModel || currentModel || configuredModel || 'munr'
 
   // Measure composer height and set CSS variable for scroll padding
   useLayoutEffect(() => {

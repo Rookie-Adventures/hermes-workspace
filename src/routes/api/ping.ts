@@ -3,7 +3,7 @@ import {
   HERMES_API,
   ensureGatewayProbed,
 } from '../../server/gateway-capabilities'
-import { requireLocalOrAuth } from '../../server/auth-middleware'
+import { isAuthenticated } from '../../server/auth-middleware'
 
 type PingResponse = {
   ok: boolean
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/api/ping')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        if (!requireLocalOrAuth(request)) {
+        if (!isAuthenticated(request)) {
           return Response.json(
             {
               ok: false,

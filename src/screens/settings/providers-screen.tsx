@@ -1122,7 +1122,7 @@ function ActiveModelCard({
         </p>
       ) : configQuery.error ? (
         <p className="mt-4 text-sm text-red-500">
-          Could not load config — is Hermes Agent running?
+          Could not load config — is the backend running?
         </p>
       ) : (
         <div className="mt-5 space-y-4">
@@ -1614,7 +1614,7 @@ export function ProvidersScreen({ embedded = false }: ProvidersScreenProps) {
                 Settings
               </h1>
               <p className="text-sm text-primary-600">
-                Configure providers plus Hermes agent defaults in one place.
+                Configure providers and backend defaults in one place.
               </p>
             </div>
 
