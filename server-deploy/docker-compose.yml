@@ -56,6 +56,7 @@ services:
     environment:
       HERMES_API_URL: http://hermes-agent:8642
       HERMES_DASHBOARD_URL: http://hermes-dashboard:9119
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-munr2026}
     volumes:
       - /var/hermes-workspace-home:/home/workspace
     ports:

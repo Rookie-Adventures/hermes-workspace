@@ -27,6 +27,7 @@ import { useSwipeNavigation } from '@/hooks/use-swipe-navigation'
 import { ChatPanel } from '@/components/chat-panel'
 import { ChatPanelToggle } from '@/components/chat-panel-toggle'
 import { LoginScreen } from '@/components/auth/login-screen'
+import { AuthGate } from '@/components/auth-gate'
 import { MobileTabBar } from '@/components/mobile-tab-bar'
 import { MobileHamburgerMenu } from '@/components/mobile-hamburger-menu'
 import { MobilePageHeader } from '@/components/mobile-page-header'
@@ -253,7 +254,11 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
 
   // Show login screen if auth is required and not authenticated
   if (authState.authRequired && !authState.authenticated) {
-    return <LoginScreen />
+    return (
+      <AuthGate>
+        <LoginScreen />
+      </AuthGate>
+    )
   }
 
   const shellStyle: React.CSSProperties & Record<'--titlebar-h', string> = {
@@ -263,8 +268,8 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
   }
 
   return (
-    <>
-      <div
+    <AuthGate>
+    <div
         className="relative overflow-hidden theme-bg theme-text"
         style={shellStyle}
       >
@@ -288,7 +293,7 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
                 className="text-[13px] font-medium select-none"
                 style={{ color: 'var(--theme-accent, #B98A44)' }}
               >
-                Hermes
+                munr
               </span>
             </div>
             {/* Right spacer to balance */}
@@ -404,11 +409,10 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
         {!authState.checked ? (
           <ConnectionStartupScreen onConnected={handleStartupConnected} />
         ) : null}
-      </div>
 
-      <MobileHamburgerMenu />
-      {/* System metrics footer removed */}
-      <CommandPalette pathname={pathname} sessions={sessions} />
-    </>
+        <MobileHamburgerMenu />
+        <CommandPalette pathname={pathname} sessions={sessions} />
+      </div>
+    </AuthGate>
   )
 }

@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/terminal-workspace-Xx_EoUdO.js","assets/main-gt-RKv12.js"])))=>i.map(i=>d[i]);
-import{r,_ as t}from"./main-gt-RKv12.js";import{u as o}from"./use-page-title-CxavF8ku.js";r.lazy(()=>t(()=>import("./terminal-workspace-Xx_EoUdO.js"),__vite__mapDeps([0,1])).then(e=>({default:e.TerminalWorkspace})));function n(){return o("Terminal"),null}export{n as component};

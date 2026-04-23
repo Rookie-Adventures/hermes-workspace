@@ -1,4 +1,5 @@
 import { createServer } from 'node:http'
+import { createHash } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
 import { join, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -9,6 +10,12 @@ const CLIENT_DIR = join(__dirname, 'dist', 'client')
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const host = process.env.HOST || '0.0.0.0'
+
+// Auth password — set via AUTH_PASSWORD env var. If empty, auth gate is disabled.
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD || ''
+const AUTH_HASH = AUTH_PASSWORD
+  ? createHash('sha256').update(AUTH_PASSWORD).digest('hex')
+  : ''
 
 const MIME_TYPES = {
   '.js': 'application/javascript',
@@ -55,6 +62,18 @@ async function tryServeStatic(req, res) {
     const ext = extname(filePath).toLowerCase()
     const contentType = MIME_TYPES[ext] || 'application/octet-stream'
     const data = await readFile(filePath)
+
+    // For HTML files, inject auth hash into the page
+    if (ext === '.html' && AUTH_HASH) {
+      const injected = `<script>window.__AUTH_HASH__="${AUTH_HASH}";</script>`
+      const html = data.toString('utf-8').replace('<head>', `<head>${injected}`)
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Content-Length': Buffer.byteLength(html),
+      })
+      res.end(html)
+      return true
+    }
 
     const headers = {
       'Content-Type': contentType,
@@ -110,6 +129,36 @@ const httpServer = createServer(async (req, res) => {
 
   try {
     const response = await server.fetch(request)
+    const contentType = response.headers.get('content-type') || ''
+    const isHtml = contentType.includes('text/html')
+
+    // Inject auth hash into HTML responses
+    if (AUTH_HASH && isHtml) {
+      const injectTag = `<script>window.__AUTH_HASH__="${AUTH_HASH}";</script>`
+      const newHeaders = new Headers(response.headers)
+      let bodyText = ''
+
+      if (response.body) {
+        const reader = response.body.getReader()
+        const chunks: Uint8Array[] = []
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          chunks.push(value)
+        }
+        bodyText = Buffer.concat(chunks).toString('utf-8')
+      } else {
+        bodyText = await response.text()
+      }
+
+      const modified = bodyText.replace('<head>', `<head>${injectTag}`)
+      res.writeHead(
+        response.status,
+        Object.fromEntries(newHeaders.entries()),
+      )
+      res.end(modified)
+      return
+    }
 
     res.writeHead(
       response.status,
