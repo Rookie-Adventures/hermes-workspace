@@ -1,8 +1,9 @@
 /**
- * AuthGate — simple password overlay.
+ * AuthGate — liquid-glass password overlay.
  *
  * Checks localStorage for a stored token. If missing, shows a full-screen
- * password prompt. On correct password, stores a token and reveals the app.
+ * frosted-glass password prompt. On correct password, stores a token
+ * and reveals the app.
  *
  * The expected password hash is injected server-side via window.__AUTH_HASH__.
  * If not present, the gate is disabled (open access).
@@ -72,7 +73,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   /* Gate disabled or already unlocked → render app */
   if (!gateEnabled || unlocked) return <>{children}</>
 
-  /* ── Password overlay ── */
+  /* ── Liquid-glass password overlay ── */
   return (
     <div
       style={{
@@ -82,51 +83,94 @@ export function AuthGate({ children }: { children: ReactNode }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--color-bg, #0B0E14)',
+        background: 'linear-gradient(135deg, rgba(11,14,20,.72) 0%, rgba(15,23,42,.65) 50%, rgba(11,14,20,.72) 100%)',
+        backdropFilter: 'blur(40px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(40px) saturate(180%)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
     >
+      {/* Glass card */}
       <form
         onSubmit={handleSubmit}
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 16,
-          width: 320,
+          gap: 20,
+          width: 340,
+          padding: '40px 32px 36px',
+          borderRadius: 24,
+          background: 'linear-gradient(165deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 100%)',
+          border: '1px solid rgba(255,255,255,.12)',
+          boxShadow: [
+            '0 8px 32px rgba(0,0,0,.3)',
+            'inset 0 1px 0 rgba(255,255,255,.1)',
+            'inset 0 -1px 0 rgba(255,255,255,.04)',
+            '0 0 0 0.5px rgba(255,255,255,.06)',
+          ].join(', '),
+          backdropFilter: 'blur(20px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(140%)',
         }}
       >
-        <img
-          src="/hermes-avatar.webp"
-          alt="munr"
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: 14,
-            marginBottom: 4,
-            filter: 'drop-shadow(0 4px 24px rgba(37,87,183,.35))',
-          }}
-        />
+        {/* Avatar with glow */}
         <div
           style={{
-            fontSize: 20,
+            position: 'relative',
+            width: 72,
+            height: 72,
+            marginBottom: 4,
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: -6,
+              borderRadius: 22,
+              background: 'radial-gradient(circle, rgba(59,130,246,.25) 0%, transparent 70%)',
+              filter: 'blur(8px)',
+            }}
+          />
+          <img
+            src="/hermes-avatar.webp"
+            alt="munr"
+            style={{
+              position: 'relative',
+              width: 72,
+              height: 72,
+              borderRadius: 18,
+              border: '1px solid rgba(255,255,255,.15)',
+              boxShadow: '0 4px 24px rgba(37,87,183,.2)',
+            }}
+          />
+        </div>
+
+        {/* Title */}
+        <div
+          style={{
+            fontSize: 22,
             fontWeight: 600,
-            color: 'var(--color-txt, #E8E8E8)',
+            color: 'rgba(255,255,255,.92)',
+            letterSpacing: '-0.02em',
+            textShadow: '0 1px 8px rgba(0,0,0,.4)',
           }}
         >
           munr
         </div>
+
+        {/* Subtitle */}
         <div
           style={{
             fontSize: 13,
-            color: 'var(--color-muted, #6F7D96)',
+            color: 'rgba(255,255,255,.45)',
             textAlign: 'center',
-            marginTop: -4,
+            marginTop: -8,
+            letterSpacing: '0.01em',
           }}
         >
           请输入访问密码
         </div>
 
+        {/* Input */}
         <input
           type="password"
           value={pwd}
@@ -139,33 +183,79 @@ export function AuthGate({ children }: { children: ReactNode }) {
           autoComplete="current-password"
           style={{
             width: '100%',
-            padding: '10px 14px',
-            borderRadius: 8,
-            border: '1px solid var(--color-border, rgba(255,255,255,.1))',
-            background: 'var(--color-input-bg, rgba(255,255,255,.06))',
-            color: 'var(--color-txt, #E8E8E8)',
+            padding: '12px 16px',
+            borderRadius: 12,
+            border: '1px solid rgba(255,255,255,.1)',
+            background: 'rgba(255,255,255,.05)',
+            color: 'rgba(255,255,255,.9)',
             fontSize: 14,
             outline: 'none',
             boxSizing: 'border-box',
+            transition: 'all 0.2s ease',
+            boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)',
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(59,130,246,.4)'
+            e.currentTarget.style.background = 'rgba(255,255,255,.07)'
+            e.currentTarget.style.boxShadow =
+              'inset 0 1px 2px rgba(0,0,0,.2), 0 0 0 3px rgba(59,130,246,.1)'
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255,255,255,.1)'
+            e.currentTarget.style.background = 'rgba(255,255,255,.05)'
+            e.currentTarget.style.boxShadow = 'inset 0 1px 2px rgba(0,0,0,.2)'
           }}
         />
 
+        {/* Error */}
         {error && (
-          <div style={{ fontSize: 12, color: '#f87171', marginTop: -8 }}>{error}</div>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'rgba(248,113,113,.85)',
+              marginTop: -10,
+              textShadow: '0 1px 4px rgba(0,0,0,.3)',
+            }}
+          >
+            {error}
+          </div>
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
           style={{
             width: '100%',
-            padding: '10px 0',
-            borderRadius: 8,
-            border: 'none',
-            background: 'var(--color-accent, #3b82f6)',
-            color: '#fff',
+            padding: '12px 0',
+            borderRadius: 12,
+            border: '1px solid rgba(255,255,255,.1)',
+            background:
+              'linear-gradient(135deg, rgba(59,130,246,.6) 0%, rgba(99,102,241,.5) 100%)',
+            color: 'rgba(255,255,255,.95)',
             fontSize: 14,
             fontWeight: 500,
             cursor: 'pointer',
+            letterSpacing: '0.02em',
+            boxShadow: [
+              '0 2px 12px rgba(59,130,246,.2)',
+              'inset 0 1px 0 rgba(255,255,255,.15)',
+            ].join(', '),
+            transition: 'all 0.2s ease',
+            marginTop: 4,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              'linear-gradient(135deg, rgba(59,130,246,.7) 0%, rgba(99,102,241,.6) 100%)'
+            e.currentTarget.style.boxShadow =
+              '0 4px 20px rgba(59,130,246,.3), inset 0 1px 0 rgba(255,255,255,.2)'
+            e.currentTarget.style.transform = 'translateY(-1px)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              'linear-gradient(135deg, rgba(59,130,246,.6) 0%, rgba(99,102,241,.5) 100%)'
+            e.currentTarget.style.boxShadow =
+              '0 2px 12px rgba(59,130,246,.2), inset 0 1px 0 rgba(255,255,255,.15)'
+            e.currentTarget.style.transform = 'translateY(0)'
           }}
         >
           进入
