@@ -1,5 +1,7 @@
 {
   "enabledPlugins": {
-    "deep-research@cb_teams_marketplace": true
+    "dockerfile-gen@cb_teams_marketplace": true,
+    "cicd-automation@codebuddy-plugins-official": true,
+    "code-refactoring@codebuddy-plugins-official": true
   }
 }

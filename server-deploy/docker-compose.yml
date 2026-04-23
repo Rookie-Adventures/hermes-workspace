@@ -46,7 +46,7 @@ services:
 
   # The Project Workspace Web UI (custom Chinese localized build)
   hermes-workspace:
-    image: hermes-workspace-cn:latest
+    image: subbb/hermes-workspace-cn:latest
     restart: unless-stopped
     depends_on:
       hermes-agent:

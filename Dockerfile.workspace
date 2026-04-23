@@ -4,11 +4,14 @@ FROM ghcr.io/outsourc-e/hermes-workspace:latest AS builder
 USER root
 WORKDIR /build
 
+# Ensure pnpm is available
+RUN corepack enable
+
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
 # Install ALL dependencies including devDependencies
-RUN npm install --legacy-peer-deps --include=dev
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY tsconfig.json vite.config.ts ./
@@ -17,7 +20,7 @@ COPY public/ ./public/
 COPY eslint.config.js prettier.config.js ./
 
 # Build
-RUN npx vite build
+RUN pnpm build
 
 # Final image — use base image, copy only dist + node_modules
 FROM ghcr.io/outsourc-e/hermes-workspace:latest
