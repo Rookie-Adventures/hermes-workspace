@@ -1,11 +1,25 @@
-# Fast rebuild — uses pre-built dist from the repo, skips npm install + vite build
+# Fast rebuild — uses pre-built dist from the repo, only reinstalls deps if package.json changed
+FROM ghcr.io/outsourc-e/hermes-workspace:latest AS builder
+
+USER root
+WORKDIR /build
+
+# Install dependencies (cached layer — only re-runs when package.json changes)
+COPY package.json pnpm-lock.yaml ./
+RUN npm install --legacy-peer-deps --include=dev
+
+# Copy pre-built dist directly (no need for full vite build)
+COPY dist ./dist
+
+# Final image
 FROM ghcr.io/outsourc-e/hermes-workspace:latest
 
 USER root
 WORKDIR /app
 
-# Copy pre-built dist directly
-COPY dist ./dist
+# Replace node_modules and dist with custom versions
+COPY --from=builder /build/node_modules ./node_modules
+COPY --from=builder /build/dist ./dist
 
 # Copy server entry point
 COPY server-entry.js ./
