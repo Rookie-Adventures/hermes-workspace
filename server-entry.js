@@ -140,7 +140,8 @@ const httpServer = createServer(async (req, res) => {
 
       if (response.body) {
         const reader = response.body.getReader()
-        const chunks: Uint8Array[] = []
+        const chunks = []
+
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
