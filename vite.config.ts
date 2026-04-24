@@ -702,7 +702,7 @@ const config = defineConfig(({ mode, command }) => {
         name: 'copy-pty-helper',
         closeBundle() {
           const src = resolve('src/server/pty-helper.py')
-          const destDir = resolve('dist/server/assets')
+          const destDir = resolve('.output/server/assets')
           const dest = resolve(destDir, 'pty-helper.py')
           if (existsSync(src)) {
             mkdirSync(destDir, { recursive: true })

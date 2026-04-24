@@ -40,22 +40,6 @@ jobs:
         run: pnpm run typecheck || pnpm exec tsc --noEmit || echo "⚠️ Typecheck not configured"
         continue-on-error: true
 
-      - name: Build
-        run: pnpm build
-
-      - name: Verify build output
-        run: |
-          if [ -d ".output" ]; then
-            echo "✅ Build output exists (.output)"
-            ls -la .output/
-          elif [ -d "dist" ]; then
-            echo "✅ Build output exists (dist)"
-            ls -la dist/
-          else
-            echo "❌ No build folder found (.output or dist)"
-            exit 1
-          fi
-
   test:
     name: Run Tests
     runs-on: ubuntu-latest

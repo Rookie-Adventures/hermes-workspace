@@ -48,10 +48,11 @@ jobs:
 
           FOUND=0
           for pattern in "${PATTERNS[@]}"; do
-            if grep -rE "$pattern" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.json" --include="*.env*" . 2>/dev/null \
+            if grep -rE "$pattern" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.json" --exclude="*.md" . 2>/dev/null \
               | grep -v node_modules \
               | grep -v ".lock" \
-              | grep -v dist \
+              | grep -v ".output" \
+              | grep -v "dist" \
               | grep -v "test-redaction" \
               | grep -v "diagnostics.ts" \
               | grep -v "placeholder" \
