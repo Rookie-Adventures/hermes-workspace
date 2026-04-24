@@ -45,11 +45,14 @@ jobs:
 
       - name: Verify build output
         run: |
-          if [ -d "dist" ]; then
-            echo "✅ Build output exists"
+          if [ -d ".output" ]; then
+            echo "✅ Build output exists (.output)"
+            ls -la .output/
+          elif [ -d "dist" ]; then
+            echo "✅ Build output exists (dist)"
             ls -la dist/
           else
-            echo "❌ No dist folder found"
+            echo "❌ No build folder found (.output or dist)"
             exit 1
           fi
 

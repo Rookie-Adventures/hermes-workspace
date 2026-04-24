@@ -22,14 +22,15 @@ COPY eslint.config.js prettier.config.js ./
 # Build
 RUN pnpm build
 
-# Final image — use base image, copy only dist + node_modules
+# Final image — use base image, copy only .output + node_modules
 FROM ghcr.io/outsourc-e/hermes-workspace:latest
 
 USER root
 WORKDIR /app
 
-# Replace dist and node_modules with our custom build
-COPY --from=builder /build/dist ./dist
+# Replace .output and node_modules with our custom build
+# TanStack Start uses .output for server and client assets
+COPY --from=builder /build/.output ./.output
 COPY --from=builder /build/node_modules ./node_modules
 
 # Copy server entry point
