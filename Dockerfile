@@ -1,15 +1,16 @@
 # syntax=docker/dockerfile:1.6
-# Project Workspace — production Docker image
-FROM node:22-slim AS build
+# Hermes Workspace — Ultimate Robust Production Image
+FROM node:22-bookworm AS build
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Install deps (cache-friendly)
+# Install dependencies (high compatibility mode)
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
-# Copy sources and build
+# Build the project
 COPY . .
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 
 # ─── runtime stage ────────────────────────────────────────────────────────
@@ -21,10 +22,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy TanStack Start build artefacts + runtime deps
+# Copy TanStack Start build artefacts + runtime dependencies
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
+COPY --from=build --chown=workspace:workspace /app/public ./public
 COPY --from=build --chown=workspace:workspace /app/skills ./skills
 
 USER workspace
