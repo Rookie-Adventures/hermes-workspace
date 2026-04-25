@@ -33,11 +33,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push (Dockerfile.workspace)
+      - name: Build & push
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile.workspace
+          file: ./Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

@@ -1,14 +1,8 @@
 name: Build & publish Docker image
 
-# Publishes Project Workspace to GitHub Container Registry (GHCR) so users
-# can deploy via Coolify / Easypanel / Dokploy / any Docker host with:
-#
-#   image: ghcr.io/outsourc-e/hermes-workspace:latest
-#
-# Triggers:
-#   - push to main        -> tags: latest, main, main-<sha>
-#   - push a git tag v*   -> tags: <version>, <major>.<minor>, latest
-#   - manual dispatch     -> tags: latest
+# Publishes Project Workspace to GitHub Container Registry (GHCR)
+# Image: ghcr.io/outsourc-e/hermes-workspace:latest
+
 on:
   push:
     branches: [main]
