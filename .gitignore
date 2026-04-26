@@ -137,3 +137,6 @@ __pycache__/
 .env.bak
 .runtime/
 workspace-final-markdown-review.md
+
+.gemini/
+gha-creds-*.json

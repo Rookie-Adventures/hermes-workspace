@@ -38,13 +38,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Lint & Typecheck
         run: |
           pnpm run lint
-          pnpm run typecheck
+          pnpm exec tsc --noEmit
       - name: Test
         run: pnpm test
 
@@ -71,3 +89,23 @@ jobs:
           tags: subbb/hermes-workspace-cn:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # 4. Deploy to Server
+  deploy:
+    name: Deploy to Production
+    needs: publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/hermes-workspace/server-deploy
+            docker-compose pull
+            docker-compose up -d
+            docker system prune -f
