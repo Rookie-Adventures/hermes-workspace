@@ -1,15 +1,19 @@
 # syntax=docker/dockerfile:1.6
+# Hermes Workspace — Full Compilation Environment Image
 FROM node:22-bookworm AS build
-RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ ca-certificates libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# 1. Install deps
+# 1. Install dependencies
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install
+RUN pnpm install --no-frozen-lockfile
 
-# 2. Build and FIND the output
+# 2. Build with full environment
 COPY . .
 ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 RUN echo "--- LOCATING INDEX FILES ---" && find . -maxdepth 5 -name "index.*js"
 
@@ -22,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy EVERYTHING from .output and .vinxi to be safe
+# Copy EVERYTHING to ensure no missing assets
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
