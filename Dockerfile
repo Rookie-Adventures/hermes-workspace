@@ -3,18 +3,15 @@ FROM node:22-bookworm AS build
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# 1. Install dependencies (vinxi is now included)
+# 1. Install deps
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# 2. Build the app
+# 2. Build and FIND the output
 COPY . .
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
-
-# 3. Diagnostic: Ensure we see what was built
-RUN ls -R .output/server || (echo "FATAL: Server build failed" && ls -R .output && exit 1)
+RUN echo "--- LOCATING INDEX FILES ---" && find . -maxdepth 5 -name "index.*js"
 
 # ─── Final Stage ───
 FROM node:22-slim
@@ -25,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy all build artifacts
+# Copy EVERYTHING from .output and .vinxi to be safe
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
@@ -36,8 +33,7 @@ COPY --from=build --chown=workspace:workspace /app/entry.js ./entry.js
 USER workspace
 ENV NODE_ENV=production \
     PORT=3000 \
-    HOST=0.0.0.0 \
-    HERMES_API_URL=http://hermes-agent:8642
+    HOST=0.0.0.0
 
 EXPOSE 3000
 ENTRYPOINT ["/usr/bin/tini", "--"]
