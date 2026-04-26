@@ -1,26 +1,21 @@
 # syntax=docker/dockerfile:1.6
 FROM node:22-bookworm AS build
+# Step 0: Base setup and tools
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends \
     python3 make g++ ca-certificates libc6-dev \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Step 1: Force reinstall dependencies to ensure fresh binaries
+# Step 1: Install dependencies with cleanup
 COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --no-frozen-lockfile
+RUN rm -rf node_modules .output .vinxi && pnpm install --no-frozen-lockfile
 
-# Step 2: Copy code and verify structure
+# Step 2: Full Build
 COPY . .
-RUN ls -la
-
-# Step 3: Run build with explicit error capture
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-# Use npx to ensure vinxi is found regardless of PATH issues
-RUN npx vinxi build || (echo "BUILD FAILED. LOGS:" && pnpm build 2>&1 | tail -n 50 && exit 1)
-
-# Step 4: Diagnostic output
-RUN find . -maxdepth 3 -name ".output"
+# Ensure we run build through npx to find binaries
+RUN npx vinxi build || (echo "CRITICAL: VINXI BUILD FAILED" && exit 1)
 
 # ─── Final Stage ───
 FROM node:22-slim
@@ -31,9 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Ensure we copy everything needed for TanStack Start
+# Copy minimum runtime assets
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
-COPY --from=build --chown=workspace:workspace /app/.vinxi ./.vinxi 2>/dev/null || :
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
 COPY --from=build --chown=workspace:workspace /app/public ./public
