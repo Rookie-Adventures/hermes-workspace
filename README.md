@@ -8,6 +8,7 @@
 
 [![Version](https://img.shields.io/badge/version-2.0.0-2557b7.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Docker Build](https://github.com/Rookie-Adventures/hermes-workspace/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Rookie-Adventures/hermes-workspace/actions/workflows/docker-publish.yml)
 [![Node](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-6366F1.svg)](CONTRIBUTING.md)
 
