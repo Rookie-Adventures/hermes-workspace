@@ -40,6 +40,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
+          no-cache: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max

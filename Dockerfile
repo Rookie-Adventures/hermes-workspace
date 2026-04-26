@@ -37,6 +37,7 @@ USER workspace
 ENV NODE_ENV=production \
     PORT=3000 \
     HOST=0.0.0.0 \
+    REFRESHED_AT=2026-04-26T23:55:00Z \
     HERMES_API_URL=http://hermes-agent:8642
 
 EXPOSE 3000
