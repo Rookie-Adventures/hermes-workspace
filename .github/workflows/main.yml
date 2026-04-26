@@ -29,11 +29,19 @@ jobs:
   # 2. CI: Quality Gates
   ci:
     name: Build & Test
-    needs: security-scan
+    # Temporarily remove dependency on security-scan to isolate build issues
+    # needs: security-scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Debug Environment
+        run: |
+          node -v
+          npm -v
+          pwd
+          ls -R .github/workflows
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
