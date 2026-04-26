@@ -1,22 +1,20 @@
 # syntax=docker/dockerfile:1.6
-# Hermes Workspace — Forensic Build Image
 FROM node:22-bookworm AS build
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Step 1: Install dependencies
+# 1. Install dependencies (vinxi is now included)
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# Step 2: Build with full diagnostic logging
+# 2. Build the app
 COPY . .
 ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 
-# Step 3: FORENSIC LOGGING - Where are the files?
-RUN echo "--- ROOT CONTENTS ---" && ls -F
-RUN [ -d ".output" ] && (echo "--- .OUTPUT STRUCTURE ---" && ls -R .output) || echo ".output NOT FOUND"
-RUN [ -d ".vinxi" ] && (echo "--- .VINXI STRUCTURE ---" && ls -R .vinxi) || echo ".vinxi NOT FOUND"
+# 3. Diagnostic: Ensure we see what was built
+RUN ls -R .output/server || (echo "FATAL: Server build failed" && ls -R .output && exit 1)
 
 # ─── Final Stage ───
 FROM node:22-slim
@@ -27,7 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy all build output directories
+# Copy all build artifacts
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
@@ -42,8 +40,5 @@ ENV NODE_ENV=production \
     HERMES_API_URL=http://hermes-agent:8642
 
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:3000/api/healthcheck || exit 1
-
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["node", "--max-old-space-size=2048", "entry.js"]
