@@ -1,17 +1,21 @@
 # syntax=docker/dockerfile:1.6
-# Hermes Workspace — Ultimate Robust Production Image
+# Hermes Workspace — Robust Production Image
 FROM node:22-bookworm AS build
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Install dependencies (high compatibility mode)
+# Install all dependencies
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# Build the project
+# Build the project with production flag
 COPY . .
+ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
+
+# --- DIAGNOSTIC: List output to ensure it exists ---
+RUN ls -la .output/server/index.mjs && echo "Found output!" || (ls -R .output && exit 1)
 
 # ─── runtime stage ────────────────────────────────────────────────────────
 FROM node:22-slim
@@ -22,7 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy TanStack Start build artefacts + runtime dependencies
+# Copy ALL built artefacts
+# TanStack Start needs the entire .output directory
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
@@ -36,8 +41,9 @@ ENV NODE_ENV=production \
     HERMES_API_URL=http://hermes-agent:8642
 
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1
 
+# Use tini for signal handling
 ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# Start using the standard output path
 CMD ["node", "--max-old-space-size=2048", ".output/server/index.mjs"]
