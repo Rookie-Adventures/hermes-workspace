@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.6
-# Hermes Workspace — Robust Production Image
+# Hermes Workspace — Ultimate Robust Production Image
 FROM node:22-bookworm AS build
 RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
@@ -8,14 +8,11 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# Build the project with production flag
+# Build the project
 COPY . .
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
-
-# --- DIAGNOSTIC: List output to ensure it exists ---
-RUN ls -la .output/server/index.mjs && echo "Found output!" || (ls -R .output && exit 1)
 
 # ─── runtime stage ────────────────────────────────────────────────────────
 FROM node:22-slim
@@ -26,13 +23,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy ALL built artefacts
-# TanStack Start needs the entire .output directory
+# Copy ALL potential build artefacts + server entry
 COPY --from=build --chown=workspace:workspace /app/.output ./.output
+# Try copying dist if it exists (for legacy/custom builds)
+COPY --from=build --chown=workspace:workspace /app/dist ./dist 2>/dev/null || :
 COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
 COPY --from=build --chown=workspace:workspace /app/public ./public
 COPY --from=build --chown=workspace:workspace /app/skills ./skills
+COPY --from=build --chown=workspace:workspace /app/server-entry.js ./server-entry.js
 
 USER workspace
 ENV NODE_ENV=production \
@@ -41,9 +40,9 @@ ENV NODE_ENV=production \
     HERMES_API_URL=http://hermes-agent:8642
 
 EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:3000/api/healthcheck || exit 1
 
-# Use tini for signal handling
 ENTRYPOINT ["/usr/bin/tini", "--"]
-
-# Start using the standard output path
-CMD ["node", "--max-old-space-size=2048", ".output/server/index.mjs"]
+# Use our smart entry point that auto-detects paths
+CMD ["node", "--max-old-space-size=2048", "server-entry.js"]

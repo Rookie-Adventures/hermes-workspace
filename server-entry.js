@@ -3,10 +3,41 @@ import { createHash } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
 import { join, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import server from './dist/server/server.js'
+import { existsSync } from 'node:fs'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const CLIENT_DIR = join(__dirname, 'dist', 'client')
+
+// --- Smart Path Resolution ---
+const POSSIBLE_SERVER_PATHS = [
+  join(__dirname, '.output', 'server', 'index.mjs'),
+  join(__dirname, '.output', 'server', 'index.js'),
+  join(__dirname, 'dist', 'server', 'server.js'),
+]
+
+let server = null
+let CLIENT_DIR = join(__dirname, 'public') // Fallback
+
+for (const path of POSSIBLE_SERVER_PATHS) {
+  if (existsSync(path)) {
+    console.log(`[server-entry] Found server build at: ${path}`)
+    server = await import(path).then(m => m.default || m)
+    
+    // Auto-detect client assets dir relative to server build
+    if (path.includes('.output')) {
+      CLIENT_DIR = join(__dirname, '.output', 'public')
+    } else if (path.includes('dist')) {
+      CLIENT_DIR = join(__dirname, 'dist', 'client')
+    }
+    break
+  }
+}
+
+if (!server) {
+  console.error('[server-entry] FATAL: Could not find server build in any expected location (.output or dist)')
+  process.exit(1)
+}
+
+console.log(`[server-entry] Using client assets from: ${CLIENT_DIR}`)
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const host = process.env.HOST || '0.0.0.0'
