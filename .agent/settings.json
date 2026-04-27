@@ -1,0 +1,45 @@
+{
+  "general": {
+    "plan": {
+      "directory": ""
+    }
+  },
+  "ui": {
+    "hideWindowTitle": true,
+    "hideTips": true,
+    "showMemoryUsage": true,
+    "incrementalRendering": true
+  },
+  "ide": {
+    "enabled": true
+  },
+  "billing": {
+    "overageStrategy": "always"
+  },
+  "model": {
+    "name": "gemini-2.0-flash"
+  },
+  "context": {
+    "loadMemoryFromIncludeDirectories": true,
+    "fileFiltering": {
+      "customIgnoreFilePaths": [
+        "node_modules/**",
+        "dist/**",
+        ".vinxi/**",
+        "pnpm-lock.yaml",
+        "**/.git/**",
+        "public/screenshots/**",
+        "public/gallery/**",
+        "docs/images/**"
+      ]
+    }
+  },
+  "tools": {
+    "shell": {
+      "showColor": true
+    }
+  },
+  "security": {
+    "disableAlwaysAllow": false
+  }
+}
