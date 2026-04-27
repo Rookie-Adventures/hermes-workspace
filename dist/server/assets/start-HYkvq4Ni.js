@@ -1,4 +1,2 @@
-const startInstance = void 0;
-export {
-  startInstance
-};
+const startInstance = void 0
+export { startInstance }

@@ -1,2 +1,40 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/terminal-workspace-D2T5VPv8.js","assets/main-r209hwEK.js"])))=>i.map(i=>d[i]);
-import{j as e,r as a,_ as o}from"./main-r209hwEK.js";a.lazy(()=>o(()=>import("./terminal-workspace-D2T5VPv8.js"),__vite__mapDeps([0,1])).then(r=>({default:r.TerminalWorkspace})));const n=function({error:t}){return e.jsxs("div",{className:"flex flex-col items-center justify-center h-full p-6 text-center bg-primary-50",children:[e.jsx("h2",{className:"text-xl font-semibold text-primary-900 mb-3",children:"Terminal Error"}),e.jsx("p",{className:"text-sm text-primary-600 mb-4 max-w-md",children:t instanceof Error?t.message:"Failed to initialize terminal"}),e.jsx("button",{onClick:()=>window.location.reload(),className:"px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors",children:"Reload Terminal"})]})};export{n as errorComponent};
+const __vite__mapDeps = (
+  i,
+  m = __vite__mapDeps,
+  d = m.f ||
+    (m.f = [
+      'assets/terminal-workspace-D2T5VPv8.js',
+      'assets/main-r209hwEK.js',
+    ]),
+) => i.map((i) => d[i])
+import { j as e, r as a, _ as o } from './main-r209hwEK.js'
+a.lazy(() =>
+  o(
+    () => import('./terminal-workspace-D2T5VPv8.js'),
+    __vite__mapDeps([0, 1]),
+  ).then((r) => ({ default: r.TerminalWorkspace })),
+)
+const n = function ({ error: t }) {
+  return e.jsxs('div', {
+    className:
+      'flex flex-col items-center justify-center h-full p-6 text-center bg-primary-50',
+    children: [
+      e.jsx('h2', {
+        className: 'text-xl font-semibold text-primary-900 mb-3',
+        children: 'Terminal Error',
+      }),
+      e.jsx('p', {
+        className: 'text-sm text-primary-600 mb-4 max-w-md',
+        children:
+          t instanceof Error ? t.message : 'Failed to initialize terminal',
+      }),
+      e.jsx('button', {
+        onClick: () => window.location.reload(),
+        className:
+          'px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors',
+        children: 'Reload Terminal',
+      }),
+    ],
+  })
+}
+export { n as errorComponent }

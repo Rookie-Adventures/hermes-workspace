@@ -16,7 +16,11 @@ services:
     volumes:
       - hermes-data:/opt/data
     healthcheck:
-      test: ['CMD-SHELL', 'python3 -c "import urllib.request; urllib.request.urlopen(\"http://localhost:8642/health\")" || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'python3 -c "import urllib.request; urllib.request.urlopen(\"http://localhost:8642/health\")" || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -36,7 +40,11 @@ services:
     volumes:
       - hermes-data:/opt/data
     healthcheck:
-      test: ['CMD-SHELL', 'python3 -c "import urllib.request; urllib.request.urlopen(\"http://localhost:9119/api/status\")" || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'python3 -c "import urllib.request; urllib.request.urlopen(\"http://localhost:9119/api/status\")" || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

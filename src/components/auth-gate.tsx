@@ -15,7 +15,10 @@ const STORAGE_KEY = 'munr-auth-token'
 
 /* SHA-256 helper */
 async function sha256(str: string): Promise<string> {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
+  const buf = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(str),
+  )
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
@@ -83,7 +86,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, rgba(11,14,20,.72) 0%, rgba(15,23,42,.65) 50%, rgba(11,14,20,.72) 100%)',
+        background:
+          'linear-gradient(135deg, rgba(11,14,20,.72) 0%, rgba(15,23,42,.65) 50%, rgba(11,14,20,.72) 100%)',
         backdropFilter: 'blur(40px) saturate(180%)',
         WebkitBackdropFilter: 'blur(40px) saturate(180%)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
@@ -100,7 +104,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
           width: 400,
           padding: '40px 36px 36px',
           borderRadius: 24,
-          background: 'linear-gradient(165deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 100%)',
+          background:
+            'linear-gradient(165deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 100%)',
           border: '1px solid rgba(255,255,255,.12)',
           boxShadow: [
             '0 8px 32px rgba(0,0,0,.3)',
@@ -126,7 +131,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
               position: 'absolute',
               inset: -6,
               borderRadius: 22,
-              background: 'radial-gradient(circle, rgba(59,130,246,.25) 0%, transparent 70%)',
+              background:
+                'radial-gradient(circle, rgba(59,130,246,.25) 0%, transparent 70%)',
               filter: 'blur(8px)',
             }}
           />
@@ -286,10 +292,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
           }}
         >
           <div style={{ marginBottom: 8 }}>
-            Munr is currently in active development and testing. This workspace is
-            reserved for internal use and approved team members only. If you were
-            directed here, please contact the administrator through the same
-            channel you received this link to request access.
+            Munr is currently in active development and testing. This workspace
+            is reserved for internal use and approved team members only. If you
+            were directed here, please contact the administrator through the
+            same channel you received this link to request access.
           </div>
           <div
             style={{

@@ -1,13 +1,11 @@
-import { useEffect } from "react";
-const BASE_TITLE = "munr";
+import { useEffect } from 'react'
+const BASE_TITLE = 'munr'
 function usePageTitle(page) {
   useEffect(() => {
-    document.title = page ? `${page} — ${BASE_TITLE}` : BASE_TITLE;
+    document.title = page ? `${page} — ${BASE_TITLE}` : BASE_TITLE
     return () => {
-      document.title = BASE_TITLE;
-    };
-  }, [page]);
+      document.title = BASE_TITLE
+    }
+  }, [page])
 }
-export {
-  usePageTitle as u
-};
+export { usePageTitle as u }

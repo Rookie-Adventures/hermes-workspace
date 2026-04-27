@@ -1,12 +1,12 @@
-import { lazy } from "react";
-import { u as usePageTitle } from "./use-page-title-CljdUyfw.js";
-lazy(() => import("./terminal-workspace-sdPAIMTx.js").then((m) => ({
-  default: m.TerminalWorkspace
-})));
+import { lazy } from 'react'
+import { u as usePageTitle } from './use-page-title-CljdUyfw.js'
+lazy(() =>
+  import('./terminal-workspace-sdPAIMTx.js').then((m) => ({
+    default: m.TerminalWorkspace,
+  })),
+)
 function TerminalRoute() {
-  usePageTitle("Terminal");
-  return null;
+  usePageTitle('Terminal')
+  return null
 }
-export {
-  TerminalRoute as component
-};
+export { TerminalRoute as component }

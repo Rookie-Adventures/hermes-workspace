@@ -35,20 +35,20 @@
 
 ## 📸 Screenshots
 
-|                 Chat                 |                  Conductor                   |
-| :----------------------------------: | :------------------------------------------: |
+|                 Chat                 |                   Conductor                    |
+| :----------------------------------: | :--------------------------------------------: |
 | ![Chat](./docs/screenshots/chat.png) | ![Conductor](./docs/screenshots/conductor.png) |
 
-|                   Dashboard                  |                  Memory                  |
-| :------------------------------------------: | :--------------------------------------: |
+|                   Dashboard                    |                  Memory                  |
+| :--------------------------------------------: | :--------------------------------------: |
 | ![Dashboard](./docs/screenshots/dashboard.png) | ![Memory](./docs/screenshots/memory.png) |
 
 |                   Terminal                   |                   Settings                   |
 | :------------------------------------------: | :------------------------------------------: |
 | ![Terminal](./docs/screenshots/terminal.png) | ![Settings](./docs/screenshots/settings.png) |
 
-|                  Tasks                  |                 Jobs                 |
-| :--------------------------------------: | :----------------------------------: |
+|                 Tasks                  |                 Jobs                 |
+| :------------------------------------: | :----------------------------------: |
 | ![Tasks](./docs/screenshots/tasks.png) | ![Jobs](./docs/screenshots/jobs.png) |
 
 ---
@@ -344,11 +344,11 @@ ghcr.io/outsourc-e/hermes-workspace:latest
 
 Available tags:
 
-| Tag | What it is |
-|---|---|
-| `latest` | Latest `main` commit (stable; recommended) |
-| `v2.0.0` | Pinned semver tag |
-| `main-<sha>` | Specific commit |
+| Tag          | What it is                                 |
+| ------------ | ------------------------------------------ |
+| `latest`     | Latest `main` commit (stable; recommended) |
+| `v2.0.0`     | Pinned semver tag                          |
+| `main-<sha>` | Specific commit                            |
 
 Minimal Coolify / Easypanel config:
 
@@ -357,8 +357,8 @@ service: hermes-workspace
 image: ghcr.io/outsourc-e/hermes-workspace:latest
 port: 3000
 env:
-  HERMES_API_URL: http://hermes-agent:8642   # point at your gateway
-  HERMES_API_TOKEN: ${API_SERVER_KEY}        # if gateway auth is enabled
+  HERMES_API_URL: http://hermes-agent:8642 # point at your gateway
+  HERMES_API_TOKEN: ${API_SERVER_KEY} # if gateway auth is enabled
 ```
 
 The image is built for `linux/amd64` and `linux/arm64`. Pair it with either

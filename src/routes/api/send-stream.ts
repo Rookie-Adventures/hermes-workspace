@@ -8,13 +8,17 @@ import {
   unregisterActiveSendRun,
 } from '../../server/send-run-tracker'
 import { getChatMode } from '../../server/gateway-capabilities'
-import { ensureLocalSession, appendLocalMessage, getLocalMessages, touchLocalSession } from '../../server/local-session-store'
-import { getLocalProviderDef, getDiscoveredModels } from '../../server/local-provider-discovery'
 import {
-  
-  
-  openaiChat
-} from '../../server/openai-compat-api'
+  ensureLocalSession,
+  appendLocalMessage,
+  getLocalMessages,
+  touchLocalSession,
+} from '../../server/local-session-store'
+import {
+  getLocalProviderDef,
+  getDiscoveredModels,
+} from '../../server/local-provider-discovery'
+import { openaiChat } from '../../server/openai-compat-api'
 import {
   SESSIONS_API_UNAVAILABLE_MESSAGE,
   createSession,
@@ -23,7 +27,10 @@ import {
   listSessions,
   streamChat,
 } from '../../server/hermes-api'
-import type {OpenAICompatContentPart, OpenAICompatMessage} from '../../server/openai-compat-api';
+import type {
+  OpenAICompatContentPart,
+  OpenAICompatMessage,
+} from '../../server/openai-compat-api'
 // Hermes agent runs can take 5+ minutes with complex tool chains
 const SEND_STREAM_RUN_TIMEOUT_MS = 600_000
 const SESSION_BOOTSTRAP_KEYS = new Set(['main', 'new'])
@@ -340,10 +347,14 @@ export const Route = createFileRoute('/api/send-stream')({
         let chatMode = getChatMode()
         let localBaseUrl: string | undefined
         const requestModel = typeof body.model === 'string' ? body.model : ''
-        const bareModel = requestModel.includes('/') ? requestModel.split('/').slice(1).join('/') : requestModel
+        const bareModel = requestModel.includes('/')
+          ? requestModel.split('/').slice(1).join('/')
+          : requestModel
         if (requestModel) {
           const discoveredModels = getDiscoveredModels()
-          const localMatch = discoveredModels.find((m) => m.id === requestModel || m.id === bareModel)
+          const localMatch = discoveredModels.find(
+            (m) => m.id === requestModel || m.id === bareModel,
+          )
           if (localMatch) {
             const providerDef = getLocalProviderDef(localMatch.provider)
             if (providerDef) {
@@ -405,7 +416,10 @@ export const Route = createFileRoute('/api/send-stream')({
                 const portableSessionKey = sessionKey
 
                 // Ensure session exists (user message appended after building history)
-                ensureLocalSession(portableSessionKey, typeof body.model === 'string' ? body.model : undefined)
+                ensureLocalSession(
+                  portableSessionKey,
+                  typeof body.model === 'string' ? body.model : undefined,
+                )
                 const portableFriendlyId =
                   resolvedFriendlyId ||
                   requestedFriendlyId ||
@@ -434,13 +448,20 @@ export const Route = createFileRoute('/api/send-stream')({
                     attachments,
                   )
                   // Inject locale preference so the agent responds in the user's language
-                  const locale = typeof body.locale === 'string' ? body.locale.trim() : ''
-                  const localeSystemMsg: Array<OpenAICompatMessage> = locale && locale !== 'en'
-                    ? [{ role: 'system', content: `Respond in ${locale === 'es' ? 'Spanish' : locale === 'fr' ? 'French' : locale === 'zh' ? 'Chinese' : locale === 'de' ? 'German' : locale === 'ja' ? 'Japanese' : locale === 'ko' ? 'Korean' : locale === 'pt' ? 'Portuguese' : locale === 'ru' ? 'Russian' : locale === 'ar' ? 'Arabic' : 'English'}. The user's interface is set to this language.` }]
-                    : []
+                  const locale =
+                    typeof body.locale === 'string' ? body.locale.trim() : ''
+                  const localeSystemMsg: Array<OpenAICompatMessage> =
+                    locale && locale !== 'en'
+                      ? [
+                          {
+                            role: 'system',
+                            content: `Respond in ${locale === 'es' ? 'Spanish' : locale === 'fr' ? 'French' : locale === 'zh' ? 'Chinese' : locale === 'de' ? 'German' : locale === 'ja' ? 'Japanese' : locale === 'ko' ? 'Korean' : locale === 'pt' ? 'Portuguese' : locale === 'ru' ? 'Russian' : locale === 'ar' ? 'Arabic' : 'English'}. The user's interface is set to this language.`,
+                          },
+                        ]
+                      : []
                   // Load persisted history for this session, then append user message
                   const persistedMessages = getLocalMessages(portableSessionKey)
-                  const persistedHistory = persistedMessages.map(m => ({
+                  const persistedHistory = persistedMessages.map((m) => ({
                     role: m.role as 'user' | 'assistant' | 'system',
                     content: m.content,
                   }))
@@ -448,11 +469,13 @@ export const Route = createFileRoute('/api/send-stream')({
                   appendLocalMessage(portableSessionKey, {
                     id: crypto.randomUUID(),
                     role: 'user',
-                    content: typeof body.message === 'string' ? body.message : '',
+                    content:
+                      typeof body.message === 'string' ? body.message : '',
                     timestamp: Date.now(),
                   })
                   // Use persisted history if available, otherwise fall back to client-sent history
-                  const effectiveHistory = persistedHistory.length > 0 ? persistedHistory : history
+                  const effectiveHistory =
+                    persistedHistory.length > 0 ? persistedHistory : history
                   const portableMessages: Array<OpenAICompatMessage> = [
                     ...localeSystemMsg,
                     ...effectiveHistory,
@@ -462,7 +485,11 @@ export const Route = createFileRoute('/api/send-stream')({
                     },
                   ]
                   const stream = await openaiChat(portableMessages, {
-                    model: localBaseUrl ? bareModel : (typeof body.model === 'string' ? body.model : undefined),
+                    model: localBaseUrl
+                      ? bareModel
+                      : typeof body.model === 'string'
+                        ? body.model
+                        : undefined,
                     temperature:
                       typeof body.temperature === 'number'
                         ? body.temperature
@@ -807,7 +834,9 @@ export const Route = createFileRoute('/api/send-stream')({
                           readString(data.kind) ||
                           'artifact',
                         path:
-                          readString(artifact.path) || readString(data.path) || '',
+                          readString(artifact.path) ||
+                          readString(data.path) ||
+                          '',
                         sessionKey: sessionKeyFromEvent,
                         runId,
                       }

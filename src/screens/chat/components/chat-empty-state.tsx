@@ -60,10 +60,7 @@ export function ChatEmptyState({
         </div>
 
         {/* Editorial micro-label */}
-        <p
-          className="micro-label mb-2"
-          style={{ color: 'var(--theme-muted)' }}
-        >
+        <p className="micro-label mb-2" style={{ color: 'var(--theme-muted)' }}>
           munr
         </p>
 

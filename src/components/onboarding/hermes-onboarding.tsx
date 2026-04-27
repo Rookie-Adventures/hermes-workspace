@@ -525,8 +525,8 @@ export function HermesOnboarding() {
               />
               <h2 className="text-xl font-bold">Welcome to munr</h2>
               <p className="text-sm" style={mutedStyle}>
-                Works with any OpenAI-compatible backend. Gateway APIs
-                unlock sessions, memory, skills, and other extras automatically.
+                Works with any OpenAI-compatible backend. Gateway APIs unlock
+                sessions, memory, skills, and other extras automatically.
               </p>
               <button
                 onClick={() => {
@@ -548,8 +548,8 @@ export function HermesOnboarding() {
               <div className="text-4xl">🔌</div>
               <h2 className="text-lg font-bold">Connect Your Backend</h2>
               <p className="text-sm" style={mutedStyle}>
-                Start by verifying that munr can reach your
-                OpenAI-compatible backend.
+                Start by verifying that munr can reach your OpenAI-compatible
+                backend.
               </p>
 
               {backendStatus === 'checking' && (

@@ -19,7 +19,8 @@ export const THEMES: Array<{
   {
     id: 'hermes-nous',
     label: 'Hermes Nous',
-    description: 'Deep teal background, cream accent — matches Nous Research chrome',
+    description:
+      'Deep teal background, cream accent — matches Nous Research chrome',
     icon: '◱',
   },
   {

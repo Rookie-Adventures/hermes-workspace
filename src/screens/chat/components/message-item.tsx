@@ -192,7 +192,9 @@ export function buildInlineToolRenderPlan(
     }
   }
 
-  const trailingSections = toolSections.filter((section) => !usedKeys.has(section.key))
+  const trailingSections = toolSections.filter(
+    (section) => !usedKeys.has(section.key),
+  )
   for (const section of trailingSections) {
     plan.push({ kind: 'tool', section })
   }
@@ -2333,7 +2335,9 @@ function MessageItemComponent({
                   ) : item.text.trim().length > 0 ? (
                     <div key={`text-${index}`} className="relative">
                       {extractStandaloneMarkdownFence(item.text) ? (
-                        <MarkdownMessageCard content={extractStandaloneMarkdownFence(item.text)!} />
+                        <MarkdownMessageCard
+                          content={extractStandaloneMarkdownFence(item.text)!}
+                        />
                       ) : (
                         <MessageContent
                           markdown
@@ -2388,7 +2392,10 @@ function MessageItemComponent({
             {isUser && isQueued && (
               <span
                 className="self-end text-[10px]"
-                style={{ color: 'color-mix(in srgb, var(--chat-user-foreground) 60%, transparent)' }}
+                style={{
+                  color:
+                    'color-mix(in srgb, var(--chat-user-foreground) 60%, transparent)',
+                }}
               >
                 Sent
               </span>

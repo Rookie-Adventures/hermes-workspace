@@ -269,7 +269,7 @@ export function WorkspaceShell({ children }: WorkspaceShellProps) {
 
   return (
     <AuthGate>
-    <div
+      <div
         className="relative overflow-hidden theme-bg theme-text"
         style={shellStyle}
       >

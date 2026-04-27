@@ -1,7 +1,7 @@
 ---
 name: gitlab-ci-patterns
 description: Build GitLab CI/CD pipelines with multi-stage workflows, caching, and distributed runners for scalable automation. Use when implementing GitLab CI/CD, optimizing pipeline performance, or setting up automated testing and deployment.
-allowed-tools: 
+allowed-tools:
 disable: true
 ---
 
@@ -31,7 +31,7 @@ stages:
 
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_CERTDIR: '/certs'
 
 build:
   stage: build
@@ -142,7 +142,7 @@ stages:
 
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}/terraform
-  TF_VERSION: "1.6.0"
+  TF_VERSION: '1.6.0'
 
 before_script:
   - cd ${TF_ROOT}

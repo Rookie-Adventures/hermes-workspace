@@ -6,12 +6,12 @@ Hermes Workspace is a full-stack AI-agent command center designed to provide a u
 
 - **Type:** Full-stack AI Agent Workspace
 - **Main Technologies:**
-    - **Frontend:** React 19 (TypeScript), TanStack Start (SSR), TanStack Router (File-based routing), TanStack Query.
-    - **Styling:** Tailwind CSS v4 (via `@tailwindcss/vite`), Motion (animations).
-    - **State Management:** Zustand.
-    - **Backend:** TanStack Start Server Functions, Node.js API routes, Proxying to Hermes Agent (Python/FastAPI).
-    - **Components:** Monaco Editor (Files), Xterm.js (Terminal), Recharts (Dashboard), HugeIcons.
-    - **Tooling:** Vite/Vinxi, ESLint, Prettier, Vitest, Playwright (Smoke tests).
+  - **Frontend:** React 19 (TypeScript), TanStack Start (SSR), TanStack Router (File-based routing), TanStack Query.
+  - **Styling:** Tailwind CSS v4 (via `@tailwindcss/vite`), Motion (animations).
+  - **State Management:** Zustand.
+  - **Backend:** TanStack Start Server Functions, Node.js API routes, Proxying to Hermes Agent (Python/FastAPI).
+  - **Components:** Monaco Editor (Files), Xterm.js (Terminal), Recharts (Dashboard), HugeIcons.
+  - **Tooling:** Vite/Vinxi, ESLint, Prettier, Vitest, Playwright (Smoke tests).
 
 ## Building and Running
 
@@ -34,15 +34,15 @@ Ensure you have **Node.js 22+** and `pnpm` installed.
 - **State Management:** **Zustand** stores in `src/stores/` (e.g., `chat-store.ts`, `workspace-store.ts`, `terminal-panel-store.ts`). The `chat-store` handles complex real-time SSE streaming, message deduplication, and history merging.
 - **Backend & API:** Uses **TanStack Start** server functions. Logic for interacting with the Hermes gateway resides in `src/server/`.
 - **Proxying:** The Vite dev server proxies several paths:
-    - `/ws-hermes`: WebSocket proxy to the Hermes gateway.
-    - `/api/hermes-proxy`: REST API proxy for Hermes backend.
-    - `/hermes-ui`: Proxy to embed the Hermes gateway's own UI.
-    - `/workspace-api`: Proxy to the internal `workspace-daemon`.
+  - `/ws-hermes`: WebSocket proxy to the Hermes gateway.
+  - `/api/hermes-proxy`: REST API proxy for Hermes backend.
+  - `/hermes-ui`: Proxy to embed the Hermes gateway's own UI.
+  - `/workspace-api`: Proxy to the internal `workspace-daemon`.
 - **Terminal:** Employs a server-side PTY helper (`src/server/pty-helper.py`) and a terminal session manager (`src/server/terminal-sessions.ts`) to provide interactive terminal access via Xterm.js.
 - **Environment Variables:**
-    - `HERMES_API_URL`: URL of the Hermes gateway (default: `http://127.0.0.1:8642`).
-    - `HERMES_API_TOKEN`: Optional API key for the gateway.
-    - `HERMES_ALLOWED_HOSTS`: Comma-separated list of allowed hosts for the web UI.
+  - `HERMES_API_URL`: URL of the Hermes gateway (default: `http://127.0.0.1:8642`).
+  - `HERMES_API_TOKEN`: Optional API key for the gateway.
+  - `HERMES_ALLOWED_HOSTS`: Comma-separated list of allowed hosts for the web UI.
 
 ## Architecture
 

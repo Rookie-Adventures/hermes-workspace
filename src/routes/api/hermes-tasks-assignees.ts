@@ -13,13 +13,19 @@ import path from 'node:path'
 import os from 'node:os'
 import YAML from 'yaml'
 
-const HERMES_HOME = process.env.HERMES_HOME ?? path.join(os.homedir(), '.hermes')
+const HERMES_HOME =
+  process.env.HERMES_HOME ?? path.join(os.homedir(), '.hermes')
 const CONFIG_PATH = path.join(HERMES_HOME, 'config.yaml')
 const PROFILES_PATH = path.join(os.homedir(), '.hermes', 'profiles')
 
 function readConfig(): Record<string, unknown> {
   try {
-    return (YAML.parse(fs.readFileSync(CONFIG_PATH, 'utf-8')) as Record<string, unknown>) ?? {}
+    return (
+      (YAML.parse(fs.readFileSync(CONFIG_PATH, 'utf-8')) as Record<
+        string,
+        unknown
+      >) ?? {}
+    )
   } catch {
     return {}
   }
@@ -27,7 +33,7 @@ function readConfig(): Record<string, unknown> {
 
 function getProfileNames(): string[] {
   try {
-    return fs.readdirSync(PROFILES_PATH).filter(name => {
+    return fs.readdirSync(PROFILES_PATH).filter((name) => {
       try {
         return fs.statSync(path.join(PROFILES_PATH, name)).isDirectory()
       } catch {
@@ -48,7 +54,9 @@ export const Route = createFileRoute('/api/hermes-tasks-assignees')({
     handlers: {
       GET: async ({ request }) => {
         if (!isAuthenticated(request)) {
-          return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+          })
         }
 
         // Try gateway first — it may have a richer endpoint
@@ -73,15 +81,23 @@ export const Route = createFileRoute('/api/hermes-tasks-assignees')({
         const humanReviewer = (tasksConfig.human_reviewer as string) || null
         const profiles = getProfileNames()
 
-        const assignees = profiles.map(id => ({ id, label: id, isHuman: id === humanReviewer }))
+        const assignees = profiles.map((id) => ({
+          id,
+          label: id,
+          isHuman: id === humanReviewer,
+        }))
         if (humanReviewer && !profiles.includes(humanReviewer)) {
-          assignees.unshift({ id: humanReviewer, label: humanReviewer, isHuman: true })
+          assignees.unshift({
+            id: humanReviewer,
+            label: humanReviewer,
+            isHuman: true,
+          })
         }
 
-        return new Response(
-          JSON.stringify({ assignees, humanReviewer }),
-          { status: 200, headers: { 'Content-Type': 'application/json' } },
-        )
+        return new Response(JSON.stringify({ assignees, humanReviewer }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       },
     },
   },

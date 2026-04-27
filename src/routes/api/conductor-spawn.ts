@@ -52,7 +52,10 @@ function loadDispatchSkill(): string {
   const candidates = [
     resolve(repoRoot(), 'skills/workspace-dispatch/SKILL.md'),
     resolve(process.cwd(), 'skills/workspace-dispatch/SKILL.md'),
-    resolve(process.env.HOME ?? '~', '.hermes/skills/workspace-dispatch/SKILL.md'),
+    resolve(
+      process.env.HOME ?? '~',
+      '.hermes/skills/workspace-dispatch/SKILL.md',
+    ),
     resolve(
       process.env.HOME ?? '~',
       '.ocplatform/workspace/skills/workspace-dispatch/SKILL.md',
@@ -92,14 +95,17 @@ function buildOrchestratorPrompt(
 ): string {
   const outputBase = options.projectsDir || '/tmp'
   const outputPrefix =
-    outputBase === '/tmp' ? '/tmp/dispatch-<slug>' : `${outputBase}/dispatch-<slug>`
+    outputBase === '/tmp'
+      ? '/tmp/dispatch-<slug>'
+      : `${outputBase}/dispatch-<slug>`
 
   return [
     'You are a mission orchestrator. Execute this mission autonomously.',
     '',
     '## Dispatch Skill Instructions',
     '',
-    skill || '(workspace-dispatch skill not found locally; proceed using create_task to spawn workers)',
+    skill ||
+      '(workspace-dispatch skill not found locally; proceed using create_task to spawn workers)',
     '',
     '## Mission',
     '',
@@ -228,10 +234,7 @@ export const Route = createFileRoute('/api/conductor-spawn')({
           })
 
           if (result.error) {
-            return json(
-              { ok: false, error: result.error },
-              { status: 502 },
-            )
+            return json({ ok: false, error: result.error }, { status: 502 })
           }
 
           // Hermes runs cron jobs in sessions keyed `cron_<jobId>_<timestamp>`.
@@ -250,8 +253,7 @@ export const Route = createFileRoute('/api/conductor-spawn')({
           return json(
             {
               ok: false,
-              error:
-                error instanceof Error ? error.message : String(error),
+              error: error instanceof Error ? error.message : String(error),
             },
             { status: 500 },
           )

@@ -50,8 +50,7 @@ export type DashboardCapabilities = {
 }
 
 /** Full capabilities — backward compat with existing code */
-export type GatewayCapabilities =
-  CoreCapabilities &
+export type GatewayCapabilities = CoreCapabilities &
   EnhancedCapabilities &
   DashboardCapabilities
 
@@ -319,7 +318,9 @@ async function autoDetectGatewayUrl(): Promise<void> {
     }
   }
 
-  console.warn('[gateway] Could not reach Hermes gateway on 8645, 8642, or 8643')
+  console.warn(
+    '[gateway] Could not reach Hermes gateway on 8645, 8642, or 8643',
+  )
 }
 
 async function autoDetectDashboardUrl(): Promise<void> {

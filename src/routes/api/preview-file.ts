@@ -79,7 +79,9 @@ export const Route = createFileRoute('/api/preview-file')({
             return new Response('File too large for preview', { status: 413 })
           }
           const body = readFileSync(abs)
-          const mime = MIME_BY_EXT[extname(abs).toLowerCase()] ?? 'application/octet-stream'
+          const mime =
+            MIME_BY_EXT[extname(abs).toLowerCase()] ??
+            'application/octet-stream'
           return new Response(body, {
             status: 200,
             headers: {

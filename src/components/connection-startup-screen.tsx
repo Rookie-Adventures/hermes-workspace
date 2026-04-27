@@ -114,8 +114,7 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
           // looking at the failure panel
           setServerLog([
             String(
-              data.message ||
-                'Auto-started Hermes gateway — reconnecting…',
+              data.message || 'Auto-started Hermes gateway — reconnecting…',
             ),
           ])
         }
@@ -257,9 +256,8 @@ export function ConnectionStartupScreen({ onConnected }: Props) {
               Welcome! Let&apos;s connect your backend
             </p>
             <p className="mt-2 text-sm leading-6 text-white/60">
-              munr works with any OpenAI-compatible backend. Gateway APIs
-              unlock enhanced features automatically when they are
-              available.
+              munr works with any OpenAI-compatible backend. Gateway APIs unlock
+              enhanced features automatically when they are available.
             </p>
 
             {/* Auto-start section */}
