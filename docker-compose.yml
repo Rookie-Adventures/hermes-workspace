@@ -11,19 +11,13 @@ services:
       API_SERVER_ENABLED: "true"
     volumes:
       - hermes-data:/opt/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8642/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     ports:
       - "8642:8642"
 
   hermes-workspace:
     image: hermes-workspace-hermes-workspace:latest
     depends_on:
-      hermes-agent:
-        condition: service_healthy
+      - hermes-agent
     env_file:
       - .env
     environment:
