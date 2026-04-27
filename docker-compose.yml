@@ -1,6 +1,7 @@
 services:
   hermes-agent:
     image: nousresearch/hermes-agent:latest
+    command: ["gateway", "run"]
     tty: true
     stdin_open: true
     env_file:
