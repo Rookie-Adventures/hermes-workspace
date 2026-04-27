@@ -1,13 +1,67 @@
 {
-  "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
-  },
-  "search.exclude": {
-    "**/routeTree.gen.ts": true
-  },
-  "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
-  }
+    /* 你原有的 Google Cloud & UI 配置 */
+    "window.commandCenter": true,
+    "http.proxySupport": "off",
+    "workbench.startupEditor": "welcomePageInEmptyWorkbench",
+    "redhat.telemetry.enabled": false,
+    "workbench.layoutControl.enabled": false,
+    "window.autoDetectColorScheme": true,
+    "chat.disableAIFeatures": true,
+    "http.systemCertificatesNode": true,
+    "geminicodeassist.project": "aiaiai-492209",
+    "terminal.integrated.defaultProfile.linux": "Google Cloud Shell",
+    "window.menuBarVisibility": "classic",
+    "google.cloud.project": "aiaiai-492209",
+    "cloudShell.showCloudCodeInstallHint": false,
+
+    /* 自动化与格式化 (ESLint + Prettier) */
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always"
+    },
+
+    /* 文件列表嵌套 - 让侧边栏更清爽 */
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "package.json": "pnpm-lock.yaml, .npmrc, .prettierrc*, eslint.config.js, .prettierignore, .eslintignore",
+        "tsconfig.json": "tsconfig.*.json",
+        ".env": ".env.*, .env.example",
+        "vite.config.ts": "vite.config.*, vitest.config.*",
+        "Dockerfile": ".dockerignore, docker-compose*, docker"
+    },
+
+    /* 搜索与文件屏蔽 - 节省 Cloud Shell 资源 */
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/.vinxi": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/pnpm-lock.yaml": true,
+        "**/.vinxi": true
+    },
+
+    /* TypeScript & JavaScript 开发增强 */
+    "typescript.updateImportsOnPaste": true,
+    "javascript.updateImportsOnPaste": true,
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.inlineSuggest.enabled": true,
+
+    /* 终端体验优化 */
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.copyOnSelection": true,
+    "terminal.integrated.scrollback": 10000,
+
+    /* Git 协作与自动推送优化 */
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.postCommitCommand": "push",
+    "git.pullBeforePush": true
 }
-
-
