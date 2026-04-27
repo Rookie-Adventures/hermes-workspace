@@ -25,7 +25,7 @@ services:
       - "9119:9119"
 
   hermes-workspace:
-    image: ${{ secrets.DOCKERHUB_USERNAME }}/hermes-workspace:latest
+    image: subbb/hermes-workspace:latest
     depends_on:
       - hermes-agent
       - hermes-dashboard
