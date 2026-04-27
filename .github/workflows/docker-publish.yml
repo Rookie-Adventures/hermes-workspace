@@ -25,4 +25,3 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/hermes-workspace:latest
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hermes-workspace:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hermes-workspace:buildcache,mode=max
-EOF
