@@ -13,8 +13,7 @@ RUN pnpm install --no-frozen-lockfile
 # Step 2: Full Build
 COPY . .
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-RUN npx vinxi build || (echo "CRITICAL: VINXI BUILD FAILED" && exit 1)
+RUN pnpm build
 
 # ─── Final Stage ───
 FROM node:22-slim
@@ -25,16 +24,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy built artifacts and entry point
-COPY --from=build --chown=workspace:workspace /app/.output ./.output
+# Copy build artefacts + runtime deps
+COPY --from=build --chown=workspace:workspace /app/dist ./dist
+COPY --from=build --chown=workspace:workspace /app/node_modules ./node_modules
 COPY --from=build --chown=workspace:workspace /app/package.json ./package.json
-COPY --from=build --chown=workspace:workspace /app/public ./public
+COPY --from=build --chown=workspace:workspace /app/server-entry.js ./server-entry.js
 COPY --from=build --chown=workspace:workspace /app/skills ./skills
-COPY --from=build --chown=workspace:workspace /app/entry.js ./entry.js
-COPY --from=build --chown=workspace:workspace /app/src/server/pty-helper.py ./src/server/pty-helper.py
-
-# Install production dependencies
-RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 
 USER workspace
 ENV NODE_ENV=production \
@@ -43,4 +38,4 @@ ENV NODE_ENV=production \
 
 EXPOSE 3000
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["node", "--max-old-space-size=2048", "entry.js"]
+CMD ["node", "--max-old-space-size=2048", "server-entry.js"]

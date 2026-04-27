@@ -24,21 +24,17 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Copy built artifacts from builder
-COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/entry.js ./entry.js
-COPY --from=builder /app/public ./public
-# Copy pty-helper if it exists (for terminal support)
-COPY --from=builder /app/src/server/pty-helper.py ./src/server/pty-helper.py 2>/dev/null || true
+COPY --from=builder /app/server-entry.js ./server-entry.js
+COPY --from=builder /app/skills ./skills
 
 # Install production dependencies
-# Nitro's node-server preset is mostly self-contained but entry.js and some runtime 
-# hooks might need node_modules.
 RUN pnpm install --prod --frozen-lockfile
 
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-# Use the workspace entry point which finds the built output
-CMD ["node", "entry.js"]
+# Start command
+CMD ["node", "server-entry.js"]
