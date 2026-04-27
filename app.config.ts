@@ -29,7 +29,7 @@ export default createApp({
       vite: {
         resolve: {
           alias: {
-            'node:async_hooks': fileURLToPath(new URL('./src/lib/empty.ts', import.meta.url)),
+            'node:async_hooks': fileURLToPath(new URL('./src/lib/empty-async-storage.ts', import.meta.url)),
             'node:crypto': fileURLToPath(new URL('./src/lib/empty.ts', import.meta.url)),
             'node:fs': fileURLToPath(new URL('./src/lib/empty.ts', import.meta.url)),
             'node:os': fileURLToPath(new URL('./src/lib/empty.ts', import.meta.url)),
