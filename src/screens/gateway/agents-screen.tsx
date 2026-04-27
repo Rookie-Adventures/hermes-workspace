@@ -1374,7 +1374,7 @@ export function AgentsScreen({
               <button
                 type="button"
                 onClick={() => {
-                  void navigate({ to: '/settings' })
+                  void navigate({ to: '/settings', search: {} })
                 }}
                 className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-accent-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-accent-600 sm:px-4 sm:py-2 sm:text-sm"
               >

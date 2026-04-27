@@ -421,7 +421,8 @@ function getMessageHistoryIndex(
   msg: ChatMessage | null | undefined,
 ): number | undefined {
   if (!msg) return undefined
-  const value = (msg as Record<string, unknown>).__historyIndex
+  const raw = msg as Record<string, unknown>
+  const value = raw.__historyIndex ?? raw.historyIndex
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined
 }
 
@@ -465,10 +466,6 @@ function compareMessagesByTime(left: ChatMessage, right: ChatMessage): number {
     getMessageEventTime(right) ?? getMessageReceiveTime(right) ?? 0
   if (leftTime !== rightTime) return leftTime - rightTime
 
-  const leftRank = getMessageChronologyRank(left)
-  const rightRank = getMessageChronologyRank(right)
-  if (leftRank !== rightRank) return leftRank - rightRank
-
   const leftHistoryIndex = getMessageHistoryIndex(left)
   const rightHistoryIndex = getMessageHistoryIndex(right)
   if (
@@ -478,6 +475,10 @@ function compareMessagesByTime(left: ChatMessage, right: ChatMessage): number {
   ) {
     return leftHistoryIndex - rightHistoryIndex
   }
+
+  const leftRank = getMessageChronologyRank(left)
+  const rightRank = getMessageChronologyRank(right)
+  if (leftRank !== rightRank) return leftRank - rightRank
 
   const leftRealtimeSequence = getMessageRealtimeSequence(left)
   const rightRealtimeSequence = getMessageRealtimeSequence(right)
