@@ -44,6 +44,13 @@ Ensure you have **Node.js 22+** and `pnpm` installed.
   - `HERMES_API_TOKEN`: Optional API key for the gateway.
   - `HERMES_ALLOWED_HOSTS`: Comma-separated list of allowed hosts for the web UI.
 
+## Environment Persistence (Google Cloud Shell)
+
+This workspace is running in Google Cloud Shell. Note the following persistence rules:
+- **Persistent:** The `$HOME` directory (`/home/zhuyizhi84`) and everything within it (including this workspace) is saved across sessions.
+- **Ephemeral:** System-level changes (e.g., packages installed via `sudo apt-get`, global npm packages not in `$HOME`, running processes) are **reset** after the session ends (usually after 1 hour of inactivity).
+- **Automation:** Critical system tools should be added to `~/.bashrc` or an initialization script if they need to be re-installed automatically.
+
 ## Architecture
 
 - **Gateway Integration:** The workspace acts as an "enhanced" client for the Hermes Agent. It detects if the gateway supports extended APIs (sessions, memory, skills, jobs) and unlocks corresponding UI features.

@@ -46,7 +46,7 @@ coverage
 *.temp
 .cache
 .parcel-cache
-
+.cache/
 # Tauri
 src-tauri/target
 src-tauri/WixTools
